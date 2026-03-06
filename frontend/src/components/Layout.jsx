@@ -54,7 +54,7 @@ const Layout = ({ children }) => {
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-500 to-teal-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
             D
           </div>
-          <h1 className="text-white font-bold tracking-tight">Receipt Generator</h1>
+          <h1 className="text-white font-bold tracking-tight">DAS Management</h1>
         </div>
         
         <div className="px-6 py-4 flex items-center gap-3">

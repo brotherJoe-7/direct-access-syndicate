@@ -86,7 +86,7 @@ const About = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-1">Mrs. Aminata Conteh</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Financial Manager</p>
-                      <p className="text-slate-600 leading-relaxed">Mrs. Conteh oversees the digital transition of our financial pipeline. Her implementation of the DAS Receipt Generator has achieved 100% transparency in school fee tracking for our parent community.</p>
+                      <p className="text-slate-600 leading-relaxed">Mrs. Conteh oversees the digital transition of our financial pipeline. Her implementation of Direct Access Syndicate Management has achieved 100% transparency in school fee tracking for our parent community.</p>
                   </div>
               </div>
           </div>

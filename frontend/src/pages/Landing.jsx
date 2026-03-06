@@ -46,7 +46,7 @@ const Landing = () => {
           Next-Generation <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Education</span>
         </h1>
         <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          Streamline your school's administration, manage digital receipts, and track attendance seamlessly with DAS Receipt Generator.
+          Streamline your school's administration, manage digital receipts, and track attendance seamlessly with Direct Access Syndicate Management.
         </p>
         <div className="flex justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           {user ? (

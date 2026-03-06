@@ -55,7 +55,7 @@ const Feedbacks = () => {
   };
 
   const handleWhatsAppShare = (feedback) => {
-      const text = `*DAS Premium Report Card*\n\n*Student:* ${feedback.student_name}\n*Teacher:* ${feedback.teacher_name}\n*Credibility Score:* ${feedback.credibility_score}/10\n*Subject:* ${feedback.subject}\n\n*Remarks:*\n${feedback.feedback_text}\n\n-- Generated from DAS Receipt Generator`;
+      const text = `*DAS Premium Report Card*\n\n*Student:* ${feedback.student_name}\n*Teacher:* ${feedback.teacher_name}\n*Credibility Score:* ${feedback.credibility_score}/10\n*Subject:* ${feedback.subject}\n\n*Remarks:*\n${feedback.feedback_text}\n\n-- Generated from Direct Access Syndicate Management`;
       const encodedText = encodeURIComponent(text);
       window.open(`https://wa.me/?text=${encodedText}`, '_blank');
   };
