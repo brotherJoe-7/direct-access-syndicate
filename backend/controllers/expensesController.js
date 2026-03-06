@@ -4,7 +4,7 @@ const pool = require('../config/db');
 // Get all expenses (Admin only)
 const getExpenses = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM expenses ORDER BY created_at DESC');
+    const { rows } = await pool.query('SELECT * FROM expenses ORDER BY created_at DESC');
     res.json(rows);
   } catch (error) {
     console.error('Error fetching expenses:', error);
@@ -17,12 +17,12 @@ const createExpense = async (req, res) => {
   const { category, description, amount, paid_to } = req.body;
 
   try {
-    const [result] = await pool.execute(
-      'INSERT INTO expenses (category, description, amount, paid_to) VALUES (?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO expenses (category, description, amount, paid_to) VALUES ($1, $2, $3, $4) RETURNING id',
       [category, description, amount, paid_to]
     );
 
-    res.status(201).json({ id: result.insertId, message: 'Expense recorded successfully' });
+    res.status(201).json({ id: rows[0].id, message: 'Expense recorded successfully' });
   } catch (error) {
     console.error('Error creating expense:', error);
     res.status(500).json({ message: 'Server error creating expense' });

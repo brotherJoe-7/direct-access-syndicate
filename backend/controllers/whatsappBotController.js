@@ -1,5 +1,5 @@
 const { MessagingResponse } = require('twilio').twiml;
-const db = require('../config/db');
+const pool = require('../config/db');
 
 const handleIncomingMessage = async (req, res) => {
     const twiml = new MessagingResponse();
@@ -10,8 +10,7 @@ const handleIncomingMessage = async (req, res) => {
 
     try {
         // 1. Identify the Parent by extracting email logic (Mocking phone lookup since we use email mostly)
-        // In a real production system, parents would have a 'phone' column. We will just use the default parent for the demo.
-        const [parents] = await db.execute('SELECT id, student_id, parent_name FROM parents LIMIT 1');
+        const { rows: parents } = await pool.query('SELECT id, student_id, parent_name FROM parents LIMIT 1');
         
         if (parents.length === 0) {
             twiml.message("Sorry, I couldn't find a registered parent record associated with this number.");
@@ -25,8 +24,8 @@ const handleIncomingMessage = async (req, res) => {
 
         // 2. State Machine Routing based on Keywords
         if (incomingMessage.includes('receipt') || incomingMessage.includes('paid')) {
-            const [receipts] = await db.execute(
-                'SELECT * FROM receipts WHERE parent_name = ? ORDER BY issue_date DESC LIMIT 1',
+            const { rows: receipts } = await pool.query(
+                'SELECT * FROM receipts WHERE parent_name = $1 ORDER BY issue_date DESC LIMIT 1',
                 [parentName]
             );
 
@@ -39,15 +38,15 @@ const handleIncomingMessage = async (req, res) => {
             }
 
         } else if (incomingMessage.includes('feedback') || incomingMessage.includes('report') || incomingMessage.includes('credibility')) {
-            const [feedbacks] = await db.execute(
-                'SELECT * FROM student_feedbacks WHERE student_id = ? ORDER BY created_at DESC LIMIT 1',
+            const { rows: feedbacks } = await pool.query(
+                'SELECT * FROM student_feedbacks WHERE student_id = $1 ORDER BY created_at DESC LIMIT 1',
                 [studentId]
             );
 
             if (feedbacks.length > 0) {
                 const f = feedbacks[0];
-                const typeEmoji = f.feedback_type === 'Positive' ? '🌟' : f.feedback_type === 'Constructive' ? '⚠️' : '🔔';
-                const msg = `${typeEmoji} *Recent Feedback Report*\n\n*Type:* ${f.feedback_type}\n*Message:* "${f.feedback_text}"\n*Date:* ${new Date(f.created_at).toLocaleDateString()}\n\nReply 'Menu' for more options.`;
+                const typeEmoji = '🌟'; // Simplified as feedback_type column might not exist or differs
+                const msg = `${typeEmoji} *Recent Feedback Report*\n\n*Subject:* ${f.subject}\n*Message:* "${f.feedback_text}"\n*Date:* ${new Date(f.created_at).toLocaleDateString()}\n\nReply 'Menu' for more options.`;
                 twiml.message(msg);
             } else {
                 twiml.message("There are no recent teacher feedbacks or credibility reports for your child.");

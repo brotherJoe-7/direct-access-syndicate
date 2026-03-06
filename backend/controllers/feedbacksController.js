@@ -9,7 +9,6 @@ const getFeedbacks = async (req, res) => {
       FROM student_feedbacks f
       JOIN admins a ON f.teacher_id = a.id
       JOIN students s ON f.student_id = s.id
-      ORDER BY f.created_at DESC
     `;
     let params = [];
 
@@ -20,13 +19,15 @@ const getFeedbacks = async (req, res) => {
         FROM student_feedbacks f
         JOIN admins a ON f.teacher_id = a.id
         JOIN students s ON f.student_id = s.id
-        WHERE s.parent_name = ?
+        WHERE s.parent_name = $1
         ORDER BY f.created_at DESC
       `;
       params = [req.user.name];
+    } else {
+      query += ' ORDER BY f.created_at DESC';
     }
 
-    const [rows] = await pool.query(query, params);
+    const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error('Error fetching feedbacks:', error);
@@ -44,17 +45,17 @@ const createFeedback = async (req, res) => {
   }
 
   try {
-    const [result] = await pool.execute(
-      'INSERT INTO student_feedbacks (student_id, teacher_id, subject, feedback_text, credibility_score) VALUES (?, ?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO student_feedbacks (student_id, teacher_id, subject, feedback_text, credibility_score) VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [student_id, teacher_id, subject, feedback_text, credibility_score]
     );
 
-    await pool.execute(
-      'INSERT INTO activity_logs (user_id, role, action, details) VALUES (?, ?, ?, ?)',
+    await pool.query(
+      'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
       [teacher_id, 'admin', 'create_feedback', `Admin left feedback for student ID ${student_id}`]
     );
 
-    res.status(201).json({ id: result.insertId, message: 'Feedback submitted successfully' });
+    res.status(201).json({ id: rows[0].id, message: 'Feedback submitted successfully' });
   } catch (error) {
     console.error('Error creating feedback:', error);
     res.status(500).json({ message: 'Server error adding feedback' });

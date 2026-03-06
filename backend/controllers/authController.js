@@ -8,7 +8,7 @@ const login = async (req, res) => {
 
   try {
     // 1. Check Admins table First
-    const [admins] = await pool.execute('SELECT * FROM admins WHERE username = ?', [username]);
+    const { rows: admins } = await pool.query('SELECT * FROM admins WHERE username = $1', [username]);
     if (admins.length > 0) {
       const admin = admins[0];
       const isMatch = await bcrypt.compare(password, admin.password);
@@ -21,8 +21,8 @@ const login = async (req, res) => {
         );
 
         // Log the activity
-        await pool.execute(
-          'INSERT INTO activity_logs (user_id, role, action, details) VALUES (?, ?, ?, ?)',
+        await pool.query(
+          'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
           [admin.id, 'admin', 'login', `Admin ${admin.username} logged in`]
         );
 
@@ -31,7 +31,7 @@ const login = async (req, res) => {
     }
 
     // 2. If not admin, check Parents table (username = email in PHP code)
-    const [parents] = await pool.execute('SELECT * FROM parents WHERE email = ?', [username]);
+    const { rows: parents } = await pool.query('SELECT * FROM parents WHERE email = $1', [username]);
     if (parents.length > 0) {
       const parent = parents[0];
       const isMatch = await bcrypt.compare(password, parent.password);
@@ -44,8 +44,8 @@ const login = async (req, res) => {
         );
 
         // Log the activity
-        await pool.execute(
-          'INSERT INTO activity_logs (user_id, role, action, details) VALUES (?, ?, ?, ?)',
+        await pool.query(
+          'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
           [parent.id, 'parent', 'login', `Parent ${parent.parent_name} logged in`]
         );
 

@@ -6,18 +6,18 @@ const getDashboardStats = async (req, res) => {
   try {
     if (req.user.role === 'admin') {
       // Admin calculations
-      const [[incomeResult]] = await pool.query('SELECT SUM(amount) AS total FROM receipts');
-      const [[expensesResult]] = await pool.query('SELECT SUM(amount) AS total FROM expenses');
+      const { rows: incomeRows } = await pool.query('SELECT SUM(amount) AS total FROM receipts');
+      const { rows: expensesRows } = await pool.query('SELECT SUM(amount) AS total FROM expenses');
       
-      const totalIncome = incomeResult.total || 0;
-      const totalExpenses = expensesResult.total || 0;
+      const totalIncome = parseFloat(incomeRows[0]?.total || 0);
+      const totalExpenses = parseFloat(expensesRows[0]?.total || 0);
       const totalSavings = totalIncome - totalExpenses;
 
       // Breakdown by level
-      const [levels] = await pool.query('SELECT level, SUM(amount) AS total FROM receipts GROUP BY level');
+      const { rows: levels } = await pool.query('SELECT level, SUM(amount) AS total FROM receipts GROUP BY level');
       
       // Activity Logs
-      const [activityLogs] = await pool.query('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
+      const { rows: activityLogs } = await pool.query('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
 
       return res.json({
         totalIncome,
@@ -28,31 +28,31 @@ const getDashboardStats = async (req, res) => {
       });
     } else {
       // Parent calculations
-      const [[receiptCount]] = await pool.query('SELECT COUNT(*) AS cnt FROM receipts WHERE parent_name = ?', [req.user.name]);
+      const { rows: receiptRows } = await pool.query('SELECT COUNT(*) AS cnt FROM receipts WHERE parent_name = $1', [req.user.name]);
 
-      const [attendance] = await pool.query(`
+      const { rows: attendanceRows } = await pool.query(`
         SELECT SUM(CASE WHEN a.status='Present' THEN 1 ELSE 0 END) AS present,
                SUM(CASE WHEN a.status='Absent' THEN 1 ELSE 0 END) AS absent
         FROM attendance a
         JOIN students s ON a.student_id = s.id
         JOIN parents p ON p.student_id = s.id
-        WHERE p.id = ?
+        WHERE p.id = $1
       `, [req.user.id]);
 
-      const [childrenAttendance] = await pool.query(`
+      const { rows: childrenAttendance } = await pool.query(`
         SELECT s.student_name,
                SUM(CASE WHEN a.status='Present' THEN 1 ELSE 0 END) AS present,
                SUM(CASE WHEN a.status='Absent' THEN 1 ELSE 0 END) AS absent
         FROM students s
         LEFT JOIN attendance a ON s.id = a.student_id
         JOIN parents p ON p.student_id = s.id
-        WHERE p.id = ?
+        WHERE p.id = $1
         GROUP BY s.id, s.student_name
       `, [req.user.id]);
 
       return res.json({
-        receiptCount: receiptCount.cnt,
-        totalAttendance: attendance[0] || { present: 0, absent: 0 },
+        receiptCount: parseInt(receiptRows[0]?.cnt || 0),
+        totalAttendance: attendanceRows[0] || { present: 0, absent: 0 },
         childrenAttendance
       });
     }

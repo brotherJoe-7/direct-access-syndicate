@@ -13,20 +13,19 @@ const getAttendance = async (req, res) => {
 
     if (req.user.role === 'parent') {
       // Find parent's children
-      const [children] = await pool.query('SELECT student_id FROM parents WHERE id = ?', [req.user.id]);
+      const { rows: children } = await pool.query('SELECT student_id FROM parents WHERE id = $1', [req.user.id]);
       if (children.length === 0) {
          return res.json([]); 
       }
       
       const childIds = children.map(c => c.student_id);
-      query += ` WHERE a.student_id IN (?) `;
-      // Note: we'd ideally use IN operator with array, simplified for this example
+      query += ` WHERE a.student_id = ANY($1) `;
       params = [childIds];
     }
     
     query += ' ORDER BY a.date DESC';
 
-    const [rows] = await pool.query(query, params);
+    const { rows } = await pool.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error('Error fetching attendance:', error);
@@ -40,18 +39,18 @@ const markAttendance = async (req, res) => {
   const recorded_by = req.user.name;
 
   try {
-    const [result] = await pool.execute(
-      'INSERT INTO attendance (student_id, date, status, recorded_by) VALUES (?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO attendance (student_id, date, status, recorded_by) VALUES ($1, $2, $3, $4) RETURNING id',
       [student_id, date, status, recorded_by]
     );
 
     // Log action
-    await pool.execute(
-      'INSERT INTO audit_logs (admin_id, action, student_id) VALUES (?, ?, ?)',
+    await pool.query(
+      'INSERT INTO audit_logs (admin_id, action, student_id) VALUES ($1, $2, $3)',
       [req.user.id, 'mark_attendance', student_id]
     );
 
-    res.status(201).json({ id: result.insertId, message: 'Attendance marked' });
+    res.status(201).json({ id: rows[0].id, message: 'Attendance marked' });
   } catch (error) {
     console.error('Error marking attendance:', error);
     res.status(500).json({ message: 'Server error marking attendance' });

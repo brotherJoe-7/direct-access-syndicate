@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 const updateProfileImage = async (req, res) => {
     try {
@@ -9,7 +9,7 @@ const updateProfileImage = async (req, res) => {
         const imageUrl = `/uploads/${req.file.filename}`;
         const parentId = req.user.id;
 
-        await db.execute('UPDATE parents SET profile_img = ? WHERE id = ?', [imageUrl, parentId]);
+        await pool.query('UPDATE parents SET profile_img = $1 WHERE id = $2', [imageUrl, parentId]);
 
         res.json({ message: 'Profile image updated successfully', profile_img: imageUrl });
     } catch (error) {
@@ -21,7 +21,7 @@ const updateProfileImage = async (req, res) => {
 const getParentProfile = async (req, res) => {
     try {
         const parentId = req.user.id;
-        const [rows] = await db.execute('SELECT id, parent_name, email, student_id, profile_img FROM parents WHERE id = ?', [parentId]);
+        const { rows } = await pool.query('SELECT id, parent_name, email, student_id, profile_img FROM parents WHERE id = $1', [parentId]);
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Parent not found' });
@@ -37,8 +37,8 @@ const getParentProfile = async (req, res) => {
 // Admin Functions
 const getAllParents = async (req, res) => {
     try {
-        const [rows] = await db.execute(`
-            SELECT p.id, p.parent_name, p.email, p.student_id, p.profile_img, s.name as student_name 
+        const { rows } = await pool.query(`
+            SELECT p.id, p.parent_name, p.email, p.student_id, p.profile_img, s.student_name 
             FROM parents p
             LEFT JOIN students s ON p.student_id = s.id
             ORDER BY p.id DESC
@@ -55,8 +55,8 @@ const updateParentAdmin = async (req, res) => {
         const { id } = req.params;
         const { parent_name, email, student_id } = req.body;
         
-        await db.execute(
-            'UPDATE parents SET parent_name = ?, email = ?, student_id = ? WHERE id = ?',
+        await pool.query(
+            'UPDATE parents SET parent_name = $1, email = $2, student_id = $3 WHERE id = $4',
             [parent_name, email, student_id, id]
         );
         
@@ -70,7 +70,7 @@ const updateParentAdmin = async (req, res) => {
 const deleteParent = async (req, res) => {
     try {
         const { id } = req.params;
-        await db.execute('DELETE FROM parents WHERE id = ?', [id]);
+        await pool.query('DELETE FROM parents WHERE id = $1', [id]);
         res.json({ message: 'Parent deleted successfully' });
     } catch (error) {
         console.error('Error deleting parent:', error);
