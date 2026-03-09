@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -29,10 +30,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center relative overflow-hidden">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-600/30 blur-[120px] rounded-full mix-blend-screen" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-600/30 blur-[120px] rounded-full mix-blend-screen" />
+    <div className="min-h-screen bg-slate-900 flex flex-col pt-20">
+      <Navbar />
+      
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden px-4">
+        {/* Dynamic Background Elements */}
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-600/20 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-600/20 blur-[120px] rounded-full mix-blend-screen" />
 
       <div className="z-10 w-full max-w-md p-8 glass rounded-2xl animate-fade-in-up">
         <div className="text-center mb-8">

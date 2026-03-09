@@ -12,7 +12,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3">
             <div className="h-12 w-12 flex items-center justify-center overflow-hidden rounded-lg">
-              <img src={logoImg} alt="DAS Logo" className="h-full w-full object-contain" />
+              <img src="/logo.png" alt="DAS Logo" className="h-full w-full object-contain" />
             </div>
             <span className="text-green-600 font-black tracking-tighter text-2xl hidden sm:block">
               Direct Access Syndicate
