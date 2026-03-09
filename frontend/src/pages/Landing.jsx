@@ -1,69 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, Shield, Phone, Mail, MapPin } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 
 const Landing = () => {
   const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {/* Navigation */}
-      <nav className="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex-shrink-0 flex items-center gap-2 text-green-600 font-black tracking-tight text-2xl">
-              <div className="bg-green-600 rounded-xl p-2 h-10 w-10 flex items-center justify-center shadow-lg shadow-green-500/20">
-                <span className="text-white text-xl">D</span>
-              </div>
-              DAS
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link to="/services" className="text-slate-600 hover:text-green-600 font-medium transition-colors">Services</Link>
-              <Link to="/about" className="text-slate-600 hover:text-green-600 font-medium transition-colors">About Us</Link>
-              <Link to="/contact" className="text-slate-600 hover:text-green-600 font-medium transition-colors">Contact</Link>
-              
-              {user ? (
-                <Link to="/dashboard" className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-green-500/30 hover:bg-green-700 hover:shadow-green-500/40 transition-all active:scale-95">
-                  Dashboard
-                </Link>
-              ) : (
-                <Link to="/login" className="bg-green-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-green-500/30 hover:bg-green-700 hover:shadow-green-500/40 transition-all active:scale-95">
-                  Sign In
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-40 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-600 font-medium mb-8 animate-fade-in-up">
-          <Shield size={16} /> Premium School Management Solution
+          <Shield size={16} /> Premium School Solution
         </div>
-        <h1 className="text-5xl md:text-7xl font-black text-slate-800 tracking-tight mb-8 leading-tight animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+        <h1 className="text-4xl md:text-7xl font-black text-slate-800 tracking-tight mb-8 leading-tight animate-fade-in-up" style={{ animationDelay: '100ms' }}>
           Next-Generation <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600">Education</span>
         </h1>
-        <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-          Streamline your school's administration, manage digital receipts, and track attendance seamlessly with Direct Access Syndicate Management.
+        <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          Streamline your school's administration, manage digital receipts, and track attendance seamlessly with Direct Access Syndicate.
         </p>
         <div className="flex justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
           {user ? (
-            <Link to="/dashboard" className="bg-green-600 text-white px-8 py-3.5 rounded-xl font-medium shadow-xl shadow-green-500/30 hover:bg-green-700 transition-all border border-green-600">
+            <Link to="/dashboard" className="bg-green-600 text-white px-8 py-3.5 rounded-xl font-bold shadow-xl shadow-green-500/30 hover:bg-green-700 transition-all border border-green-600">
               Go to Dashboard
             </Link>
           ) : (
             <>
-              <Link to="/login" className="bg-green-600 text-white px-8 py-3.5 rounded-xl font-medium shadow-xl shadow-green-500/30 hover:bg-green-700 transition-all border border-green-600">
+              <Link to="/login" className="bg-green-600 text-white px-8 py-3.5 rounded-xl font-bold shadow-xl shadow-green-500/30 hover:bg-green-700 transition-all border border-green-600">
                 Staff Login
               </Link>
-              <Link to="/apply" className="bg-emerald-500 text-white px-8 py-3.5 rounded-xl font-medium shadow-xl shadow-emerald-500/30 hover:bg-emerald-600 transition-all">
+              <Link to="/apply" className="bg-emerald-500 text-white px-8 py-3.5 rounded-xl font-bold shadow-xl shadow-emerald-500/30 hover:bg-emerald-600 transition-all">
                 Apply Now
               </Link>
             </>
           )}
-          <Link to="/services" className="bg-white text-slate-700 px-8 py-3.5 rounded-xl font-medium shadow-sm hover:shadow-md transition-all border border-slate-200">
+          <Link to="/services" className="bg-white text-slate-700 px-8 py-3.5 rounded-xl font-bold shadow-sm hover:shadow-md transition-all border border-slate-200">
             Learn More
           </Link>
         </div>
@@ -112,8 +86,8 @@ const Landing = () => {
       {/* Contact Section Removed - Now a separate page */}
 
       {/* Footer */}
-      <footer className="bg-slate-50 py-8 border-t border-slate-200 text-center">
-        <p className="text-slate-500 font-medium">© {new Date().getFullYear()} Direct Access Syndicate. All rights reserved.</p>
+      <footer className="bg-slate-50 py-12 border-t border-slate-200 text-center">
+        <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">© {new Date().getFullYear()} Direct Access Syndicate. All rights reserved.</p>
       </footer>
     </div>
   );

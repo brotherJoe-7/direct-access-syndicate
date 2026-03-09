@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useVoice } from '../hooks/useVoice';
+import { ASSETS_BASE_URL } from '../config';
 import { CalendarCheck, Receipt, UserCheck, Search, Filter, HelpCircle, Clock, Camera, GraduationCap, Wallet, Info, Volume2, VolumeX } from 'lucide-react';
 
 const ParentDashboard = () => {
@@ -69,7 +70,7 @@ const ParentDashboard = () => {
           <div className="relative group">
             <div className="w-24 h-24 rounded-full bg-slate-100 border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
               {parent?.profile_img ? (
-                <img src={`http://localhost:5000${parent.profile_img}`} alt="Profile" className="w-full h-full object-cover" />
+                <img src={`${ASSETS_BASE_URL}${parent.profile_img}`} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <div className="text-3xl font-bold text-slate-400">{parent?.parent_name?.charAt(0)}</div>
               )}

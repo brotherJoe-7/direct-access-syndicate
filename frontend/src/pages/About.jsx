@@ -1,31 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { BookOpen, CheckCircle, Shield } from 'lucide-react';
+import Navbar from '../components/Navbar';
 
 const About = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col pt-20">
-      {/* Simple Nav */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <Link to="/" className="flex items-center gap-2 text-green-600 font-black tracking-tight text-2xl">
-               <div className="bg-green-600 rounded-xl p-2 h-10 w-10 flex items-center justify-center shadow-lg shadow-green-500/20">
-                <span className="text-white text-xl">D</span>
-              </div>
-              DAS
-            </Link>
-            <Link to="/" className="text-slate-600 hover:text-green-600 font-medium transition-colors">
-                Back to Home
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center max-w-3xl mx-auto mb-16">
-              <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight mb-6">About DAS System</h1>
-              <p className="text-xl text-slate-500 leading-relaxed">The Direct Access Syndicate (DAS) is built to eliminate paperwork and bridge the communication gap between parents, students, and administration.</p>
+              <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight mb-6">About Direct Access Syndicate</h1>
+              <p className="text-lg md:text-xl text-slate-500 leading-relaxed">The Direct Access Syndicate (DAS) is built to eliminate paperwork and bridge the communication gap between parents, students, and administration.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-16 items-center mb-24">

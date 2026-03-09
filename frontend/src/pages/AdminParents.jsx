@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
+import { ASSETS_BASE_URL } from '../config';
 import { Users, Edit, Trash2, Search, X, Save, UserPlus } from 'lucide-react';
 
 const AdminParents = () => {
@@ -100,7 +101,7 @@ const AdminParents = () => {
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
                                                 {parent.profile_img ? (
-                                                    <img src={`http://localhost:5000${parent.profile_img}`} alt="" className="w-full h-full object-cover" />
+                                                    <img src={`${ASSETS_BASE_URL}${parent.profile_img}`} alt="" className="w-full h-full object-cover" />
                                                 ) : (
                                                     <span className="text-sm font-bold text-slate-400">{parent.parent_name?.charAt(0)}</span>
                                                 )}
