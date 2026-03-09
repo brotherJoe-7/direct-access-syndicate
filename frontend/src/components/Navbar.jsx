@@ -7,13 +7,15 @@ const Navbar = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-100 transition-all top-0">
+    <nav className="fixed w-full bg-white shadow-md z-[100] border-b border-slate-200 top-0 left-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className="flex justify-between items-center h-20">
           <Link to="/" className="flex items-center gap-3">
-            <img src={logoImg} alt="DAS Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
-            <span className="text-green-600 font-black tracking-tight text-xl md:text-2xl hidden sm:block">
-              DAS
+            <div className="h-12 w-12 flex items-center justify-center overflow-hidden rounded-lg">
+              <img src={logoImg} alt="DAS Logo" className="h-full w-full object-contain" />
+            </div>
+            <span className="text-green-600 font-black tracking-tighter text-2xl hidden sm:block">
+              Direct Access Syndicate
             </span>
           </Link>
           
