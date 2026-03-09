@@ -37,7 +37,7 @@ const Login = () => {
       <div className="z-10 w-full max-w-md p-8 glass rounded-2xl animate-fade-in-up">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500 mb-2">
-            DAS Management
+            Direct Access Syndicate
           </h1>
           <p className="text-slate-400 text-sm">Sign in to your account</p>
         </div>

@@ -28,8 +28,8 @@ const Services = () => {
                     <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                         <Users size={28} />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-3">Student Management</h3>
-                    <p className="text-slate-600 leading-relaxed">Efficiently register students via our public Application Portal. Link students directly to Parent portals for integrated family management.</p>
+                    <h3 className="text-xl font-bold text-slate-800 mb-3">Student Records</h3>
+                    <p className="text-slate-600 leading-relaxed">Efficiently register students via our public Application Portal. Link students directly to Parent portals for integrated family records.</p>
                 </div>
   
                 {/* Service Card */}

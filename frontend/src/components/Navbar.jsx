@@ -19,8 +19,8 @@ const Navbar = () => {
           
           <div className="flex items-center gap-4 md:gap-8 text-sm md:text-base">
             <Link to="/services" className="text-slate-600 hover:text-green-600 font-semibold transition-colors">Services</Link>
-            <Link to="/about" className="text-slate-600 hover:text-green-600 font-semibold transition-colors hidden md:block">About</Link>
-            <Link to="/contact" className="text-slate-600 hover:text-green-600 font-semibold transition-colors hidden md:block">Contact</Link>
+            <Link to="/about" className="text-slate-600 hover:text-green-600 font-semibold transition-colors">About Us</Link>
+            <Link to="/contact" className="text-slate-600 hover:text-green-600 font-semibold transition-colors">Contact</Link>
             
             {user ? (
               <Link to="/dashboard" className="bg-green-600 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-bold shadow-lg shadow-green-500/30 hover:bg-green-700 transition-all">
