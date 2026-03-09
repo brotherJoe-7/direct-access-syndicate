@@ -38,7 +38,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Base Route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Direct Access Syndicate Management API' });
+  res.json({ message: 'Welcome to Direct Access Syndicate API' });
 });
 
 const PORT = process.env.PORT || 5000;
