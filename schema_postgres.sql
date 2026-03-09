@@ -13,7 +13,17 @@ CREATE TABLE IF NOT EXISTS students (
   level VARCHAR(100) NOT NULL,
   parent_name VARCHAR(255) NOT NULL,
   contact VARCHAR(100),
+  is_qualified BOOLEAN DEFAULT FALSE,
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS learning_materials (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  type VARCHAR(100) NOT NULL, -- 'Material', 'Exercise', 'Practical', 'Answer'
+  file_url VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS parents (

@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useVoice } from '../hooks/useVoice';
 import { ASSETS_BASE_URL } from '../config';
-import { CalendarCheck, Receipt, UserCheck, Search, Filter, HelpCircle, Clock, Camera, GraduationCap, Wallet, Info, Volume2, VolumeX } from 'lucide-react';
+import { CalendarCheck, Receipt, UserCheck, Search, Filter, HelpCircle, Clock, Camera, GraduationCap, Wallet, Info, Volume2, VolumeX, BookOpen } from 'lucide-react';
 
 const ParentDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -146,6 +146,26 @@ const ParentDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {stats.isQualified && (
+            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-3xl p-8 text-white shadow-xl shadow-indigo-500/20 flex flex-col items-center text-center relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6 relative z-10 transition-transform group-hover:scale-110">
+                    <BookOpen size={32} />
+                </div>
+                <h3 className="text-xl font-black mb-2 uppercase tracking-tight relative z-10">Learning Path</h3>
+                <p className="text-indigo-100 font-medium mb-6 relative z-10">Access exclusive materials, exercises, and answers for your studies.</p>
+                <div className="flex gap-2 w-full mt-auto relative z-10">
+                  <a href="/parent/learning" className="flex-1 py-3 bg-white text-indigo-600 rounded-xl font-black hover:bg-indigo-50 transition-all active:scale-95 shadow-lg flex items-center justify-center">ENTER PORTAL</a>
+                  <button 
+                    onClick={() => speak("Learning Path. Access exclusive materials, exercises, and answers for your studies.")}
+                    className="px-4 bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all"
+                  >
+                    <Volume2 size={20} />
+                  </button>
+                </div>
+            </div>
+          )}
+
           <div className="bg-blue-600 rounded-3xl p-8 text-white shadow-xl shadow-blue-500/20 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-6">
                   <GraduationCap size={32} />

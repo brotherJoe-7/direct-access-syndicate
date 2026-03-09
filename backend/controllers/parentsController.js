@@ -38,7 +38,7 @@ const getParentProfile = async (req, res) => {
 const getAllParents = async (req, res) => {
     try {
         const { rows } = await pool.query(`
-            SELECT p.id, p.parent_name, p.email, p.student_id, p.profile_img, s.student_name 
+            SELECT p.id, p.parent_name, p.email, p.student_id, p.profile_img, s.student_name, s.is_qualified 
             FROM parents p
             LEFT JOIN students s ON p.student_id = s.id
             ORDER BY p.id DESC

@@ -40,7 +40,10 @@ const AdminParents = () => {
         e.preventDefault();
         setIsSaving(true);
         try {
-            await api.put(`/parents/${editingParent.id}`, editingParent);
+            await Promise.all([
+                api.put(`/parents/${editingParent.id}`, editingParent),
+                api.put(`/learning/students/${editingParent.student_id}/qualify`, { is_qualified: editingParent.is_qualified })
+            ]);
             setEditingParent(null);
             fetchParents();
         } catch (err) {
@@ -91,6 +94,7 @@ const AdminParents = () => {
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Parent Details</th>
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Email Address</th>
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Assigned Student</th>
+                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Qualification</th>
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
                         </thead>
@@ -112,9 +116,13 @@ const AdminParents = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-slate-600 font-medium">
                                         {parent.email}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-black uppercase tracking-tight">
-                                            {parent.student_name || 'No Student'}
+                                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-tight ${
+                                            parent.is_qualified 
+                                            ? 'bg-indigo-100 text-indigo-700' 
+                                            : 'bg-slate-100 text-slate-400'
+                                        }`}>
+                                            {parent.is_qualified ? 'Qualified' : 'Standard'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -170,6 +178,19 @@ const AdminParents = () => {
                                     value={editingParent.email}
                                     onChange={(e) => setEditingParent({...editingParent, email: e.target.value})}
                                 />
+                            </div>
+                            <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                                <div>
+                                    <p className="text-sm font-black text-indigo-900 uppercase tracking-tight">Qualify for Learning Path</p>
+                                    <p className="text-xs text-indigo-600 font-medium whitespace-normal pr-4">Unlocks exclusive materials, practicals, and answers for this student.</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingParent({...editingParent, is_qualified: !editingParent.is_qualified})}
+                                    className={`w-14 h-8 rounded-full transition-all relative ${editingParent.is_qualified ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                                >
+                                    <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${editingParent.is_qualified ? 'left-7' : 'left-1'}`}></div>
+                                </button>
                             </div>
                             {/* Note: In a real app we'd fetch students for a dropdown here */}
                         </div>

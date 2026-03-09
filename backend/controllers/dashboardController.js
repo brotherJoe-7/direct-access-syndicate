@@ -40,20 +40,21 @@ const getDashboardStats = async (req, res) => {
       `, [req.user.id]);
 
       const { rows: childrenAttendance } = await pool.query(`
-        SELECT s.student_name,
+        SELECT s.student_name, s.is_qualified,
                SUM(CASE WHEN a.status='Present' THEN 1 ELSE 0 END) AS present,
                SUM(CASE WHEN a.status='Absent' THEN 1 ELSE 0 END) AS absent
         FROM students s
         LEFT JOIN attendance a ON s.id = a.student_id
         JOIN parents p ON p.student_id = s.id
         WHERE p.id = $1
-        GROUP BY s.id, s.student_name
+        GROUP BY s.id, s.student_name, s.is_qualified
       `, [req.user.id]);
 
       return res.json({
         receiptCount: parseInt(receiptRows[0]?.cnt || 0),
         totalAttendance: attendanceRows[0] || { present: 0, absent: 0 },
-        childrenAttendance
+        childrenAttendance,
+        isQualified: childrenAttendance.some(c => c.is_qualified)
       });
     }
   } catch (error) {
