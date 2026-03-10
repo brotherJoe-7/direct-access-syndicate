@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
+import logoImg from '../assets/logo.png';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -45,7 +46,7 @@ const Login = () => {
         <div className="z-10 w-full max-w-md p-8 glass rounded-2xl animate-fade-in-up">
           {/* Logo on login card */}
           <div className="flex flex-col items-center mb-8">
-            <img src="/logo.png" alt="DAS Logo" className="h-20 w-20 object-contain mb-3" />
+            <img src={logoImg} alt="DAS Logo" className="h-20 w-20 object-contain mb-3" />
             <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
               Direct Access Syndicate
             </h1>
