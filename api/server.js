@@ -1,18 +1,15 @@
-// api/index.js — Vercel Serverless Entry Point
+// backend/server.js
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config({ path: require('path').join(__dirname, '..', 'backend', '.env') });
+require('dotenv').config();
 
 const app = express();
 
-// CORS — allow all origins for Vercel deployment
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// Routes — mount without /api prefix since Vercel rewrites /api/* -> api/index.js
+// Routes
 const authRoutes = require('./routes/auth');
 const studentsRoutes = require('./routes/students');
 const receiptsRoutes = require('./routes/receipts');
@@ -23,8 +20,8 @@ const feedbacksRoutes = require('./routes/feedbacks');
 const whatsappRoutes = require('./routes/whatsapp');
 const parentsRoutes = require('./routes/parents');
 const learningRoutes = require('./routes/learning');
+const path = require('path');
 
-// Mount at /api/* because Vercel passes the FULL path including /api/
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentsRoutes);
 app.use('/api/receipts', receiptsRoutes);
@@ -36,14 +33,17 @@ app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/parents', parentsRoutes);
 app.use('/api/learning', learningRoutes);
 
-// Health check
-app.get('/api', (req, res) => {
-  res.json({ message: 'Direct Access Syndicate API is running', status: 'ok' });
+// Static uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Base Route
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to Direct Access Syndicate API' });
 });
 
-// 404 handler for unknown API routes
-app.use((req, res) => {
-  res.status(404).json({ message: `Route not found: ${req.method} ${req.url}` });
-});
+const PORT = process.env.PORT || 5000;
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
 
 module.exports = app;
