@@ -5,8 +5,8 @@ const pool = require('../config/db');
 const generateRegCode = async () => {
   const year = new Date().getFullYear();
   const prefix = `DAS-${year}-`;
-  const [rows] = await pool.execute(
-    `SELECT reg_code FROM students WHERE reg_code LIKE ? ORDER BY id DESC LIMIT 1`,
+  const { rows } = await pool.query(
+    `SELECT reg_code FROM students WHERE reg_code LIKE $1 ORDER BY id DESC LIMIT 1`,
     [`${prefix}%`]
   );
   if (rows.length === 0) {
@@ -20,7 +20,7 @@ const generateRegCode = async () => {
 // Get all students
 const getAllStudents = async (req, res) => {
   try {
-    const [rows] = await pool.execute('SELECT * FROM students ORDER BY student_name ASC');
+    const { rows } = await pool.query('SELECT * FROM students ORDER BY student_name ASC');
     res.json(rows);
   } catch (error) {
     console.error('Error fetching students:', error);
@@ -34,14 +34,14 @@ const createStudent = async (req, res) => {
   try {
     const reg_code = await generateRegCode();
 
-    const [result] = await pool.execute(
-      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES (?, ?, ?, ?, ?, NOW())',
+    const { rows } = await pool.query(
+      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',
       [student_name, level, parent_name, contact, reg_code]
     );
-    const studentId = result.insertId;
+    const studentId = rows[0].id;
 
-    await pool.execute(
-      'INSERT INTO activity_logs (user_id, role, action, details) VALUES (?, ?, ?, ?)',
+    await pool.query(
+      'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
       [req.user.id, 'admin', 'register_student', `Registered student ${student_name} (${reg_code})`]
     );
 
@@ -56,7 +56,7 @@ const createStudent = async (req, res) => {
 const deleteStudent = async (req, res) => {
   const { id } = req.params;
   try {
-    await pool.execute('DELETE FROM students WHERE id = ?', [id]);
+    await pool.query('DELETE FROM students WHERE id = $1', [id]);
     res.json({ message: 'Student deleted successfully' });
   } catch (error) {
     console.error('Error deleting student:', error);
@@ -69,8 +69,8 @@ const updateStudent = async (req, res) => {
   const { id } = req.params;
   const { student_name, level, parent_name, contact } = req.body;
   try {
-    await pool.execute(
-      'UPDATE students SET student_name = ?, level = ?, parent_name = ?, contact = ? WHERE id = ?',
+    await pool.query(
+      'UPDATE students SET student_name = $1, level = $2, parent_name = $3, contact = $4 WHERE id = $5',
       [student_name, level, parent_name, contact, id]
     );
     res.json({ message: 'Student updated successfully' });
@@ -88,16 +88,16 @@ const enrollStudent = async (req, res) => {
   try {
     const reg_code = await generateRegCode();
 
-    const [result] = await pool.execute(
-      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES (?, ?, ?, ?, ?, NOW())',
+    const { rows } = await pool.query(
+      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',
       [student_name, level, parent_name, contact, reg_code]
     );
-    const studentId = result.insertId;
+    const studentId = rows[0].id;
 
-    await pool.execute('UPDATE parents SET student_id = ? WHERE id = ? AND student_id IS NULL', [studentId, req.user.id]);
+    await pool.query('UPDATE parents SET student_id = $1 WHERE id = $2 AND student_id IS NULL', [studentId, req.user.id]);
 
-    await pool.execute(
-      'INSERT INTO activity_logs (user_id, role, action, details) VALUES (?, ?, ?, ?)',
+    await pool.query(
+      'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
       [req.user.id, 'parent', 'enroll_student', `Parent enrolled student ${student_name}`]
     );
 
@@ -115,12 +115,12 @@ const applyStudent = async (req, res) => {
   try {
     const reg_code = await generateRegCode();
 
-    const [result] = await pool.execute(
-      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES (?, ?, ?, ?, ?, NOW())',
+    const { rows } = await pool.query(
+      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',
       [student_name, level, parent_name, contact, reg_code]
     );
 
-    res.status(201).json({ id: result.insertId, reg_code, message: 'Application submitted successfully. Your registration code is: ' + reg_code });
+    res.status(201).json({ id: rows[0].id, reg_code, message: 'Application submitted successfully. Your registration code is: ' + reg_code });
   } catch (error) {
     console.error('Error with public application:', error);
     res.status(500).json({ message: 'Server error processing application' });

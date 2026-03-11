@@ -1,14 +1,8 @@
 // backend/config/db.js
-const mysql = require('mysql2/promise');
+const { createPool } = require('@vercel/postgres');
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'das_receipts',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+const pool = createPool({
+  connectionString: process.env.POSTGRES_URL,
 });
 
 module.exports = pool;

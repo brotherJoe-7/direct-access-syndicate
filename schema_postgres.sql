@@ -1,4 +1,5 @@
--- Postgres Schema for Vercel Postgres
+-- Postgres Schema for Vercel Postgres (Neon)
+-- Phase 14: Updated with reg_code, profile_img, parent_students
 
 CREATE TABLE IF NOT EXISTS admins (
   id SERIAL PRIMARY KEY,
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS students (
   level VARCHAR(100) NOT NULL,
   parent_name VARCHAR(255) NOT NULL,
   contact VARCHAR(100),
+  reg_code VARCHAR(20) UNIQUE,
   registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -21,7 +23,15 @@ CREATE TABLE IF NOT EXISTS parents (
   parent_name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
-  student_id INT
+  student_id INT,
+  profile_img VARCHAR(500)
+);
+
+CREATE TABLE IF NOT EXISTS parent_students (
+  id SERIAL PRIMARY KEY,
+  parent_id INT NOT NULL REFERENCES parents(id) ON DELETE CASCADE,
+  student_id INT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  UNIQUE(parent_id, student_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts (
@@ -80,12 +90,12 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seed an admin user (password is 'admin123')
+-- Seed admin user (password is 'admin123')
 INSERT INTO admins (username, password, role) 
 VALUES ('admin', '$2b$10$UoQ0HItL/g.PtzdZNo63.ezW0v9xM2bFwY1p5EStXvD6S1R8A8ehe', 'admin')
 ON CONFLICT (username) DO NOTHING;
 
--- Seed a parent user (password is 'parent123')
+-- Seed parent user (password is 'parent123')
 INSERT INTO parents (parent_name, email, password, student_id) 
 VALUES ('John Doe', 'parent@test.com', '$2b$10$fN9sS5Y8Wj6Z4gR6R8v8U.Y8v8U.Y8v8U.Y8v8U.Y8v8U.Y8v8U.', 1)
 ON CONFLICT (email) DO NOTHING;
