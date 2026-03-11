@@ -37,84 +37,96 @@ const Receipts = () => {
       window.print();
   }
 
+  const createPDFDocument = async (receipt) => {
+    const doc = new jsPDF({ unit: 'mm', format: 'a5' });
+    const w = doc.internal.pageSize.getWidth();
+    const verifyUrl = `${window.location.origin}/verify?r=${receipt.receipt_no}`;
+
+    // Load and compress logo (scales down heavily to prevent 5MB PDFs)
+    const toBase64 = (src, scale = 100) => new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = scale; canvas.height = scale; // Compress aggressively
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+
+    const logoData = await toBase64(logoImg, 64);
+    const qrData = await toBase64(`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(verifyUrl)}`, 150);
+
+    // Header
+    doc.setFillColor(22, 163, 74);
+    doc.rect(0, 0, w, 30, 'F');
+    if (logoData) doc.addImage(logoData, 'PNG', 8, 5, 20, 20);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.text('Direct Access Syndicate', 32, 13);
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+    doc.text('Syke street at arthodox school near flaming church | 078003333 / 073573032', 32, 19);
+    doc.text('Freetown, Sierra Leone', 32, 24);
+
+    // Title
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+    doc.text('OFFICIAL RECEIPT', w / 2, 42, { align: 'center' });
+
+    // Line
+    doc.setDrawColor(226, 232, 240);
+    doc.line(10, 46, w - 10, 46);
+
+    // Details
+    const details = [
+      ['Receipt No:', receipt.receipt_no],
+      ['Issue Date:', new Date(receipt.issue_date).toLocaleDateString()],
+      ['Student:', receipt.student_name],
+      ['Parent / Guardian:', receipt.parent_name],
+      ['Class Level:', receipt.level],
+      ['Payment Method:', receipt.method],
+    ];
+    let y = 54;
+    details.forEach(([label, value]) => {
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
+      doc.text(label, 12, y);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 41, 59);
+      doc.text(String(value || 'N/A'), 65, y);
+      y += 10;
+    });
+
+    // Amount box
+    doc.setFillColor(240, 253, 244);
+    doc.roundedRect(10, y, w - 20, 20, 4, 4, 'F');
+    doc.setTextColor(5, 150, 105);
+    doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+    doc.text('AMOUNT PAID', w / 2, y + 8, { align: 'center' });
+    doc.setFontSize(16);
+    doc.text(`SLL ${Number(receipt.amount).toLocaleString()}`, w / 2, y + 16, { align: 'center' });
+
+    // QRCode & Footer
+    y += 25;
+    if (qrData) {
+      doc.addImage(qrData, 'PNG', w / 2 - 12.5, y, 25, 25);
+    }
+    
+    y += 30;
+    doc.setTextColor(148, 163, 184);
+    doc.setFontSize(7); doc.setFont('helvetica', 'italic');
+    doc.text(`Verify securely at: ${verifyUrl}`, w / 2, y, { align: 'center' });
+    y += 5;
+    doc.text(`Generated on ${new Date().toLocaleString()} | Direct Access Syndicate`, w / 2, y, { align: 'center' });
+
+    return doc;
+  };
+
   const generatePDF = async (receipt) => {
     setIsGenerating(true);
     try {
-      const doc = new jsPDF({ unit: 'mm', format: 'a5' });
-      const w = doc.internal.pageSize.getWidth();
-
-      // Load logo
-      const toBase64 = (src) => new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width; canvas.height = img.height;
-          canvas.getContext('2d').drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = () => resolve(null);
-        img.src = src;
-      });
-      const logoData = await toBase64(logoImg);
-
-      // Header
-      doc.setFillColor(22, 163, 74);
-      doc.rect(0, 0, w, 30, 'F');
-      if (logoData) doc.addImage(logoData, 'PNG', 8, 5, 20, 20);
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-      doc.text('Direct Access Syndicate', 32, 13);
-      doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-      doc.text('Syke street at arthodox school near flaming church | 078003333 / 073573032', 32, 19);
-      doc.text('Freetown, Sierra Leone', 32, 24);
-
-      // Title
-      doc.setTextColor(30, 41, 59);
-      doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-      doc.text('OFFICIAL RECEIPT', w / 2, 42, { align: 'center' });
-
-      // Line
-      doc.setDrawColor(226, 232, 240);
-      doc.line(10, 46, w - 10, 46);
-
-      // Details
-      const details = [
-        ['Receipt No:', receipt.receipt_no],
-        ['Issue Date:', new Date(receipt.issue_date).toLocaleDateString()],
-        ['Student:', receipt.student_name],
-        ['Parent / Guardian:', receipt.parent_name],
-        ['Class Level:', receipt.level],
-        ['Payment Method:', receipt.method],
-      ];
-      let y = 54;
-      details.forEach(([label, value]) => {
-        doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139);
-        doc.text(label, 12, y);
-        doc.setFont('helvetica', 'bold'); doc.setTextColor(30, 41, 59);
-        doc.text(String(value || 'N/A'), 65, y);
-        y += 10;
-      });
-
-      // Amount box
-      doc.setFillColor(240, 253, 244);
-      doc.roundedRect(10, y, w - 20, 20, 4, 4, 'F');
-      doc.setTextColor(5, 150, 105);
-      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-      doc.text('AMOUNT PAID', w / 2, y + 8, { align: 'center' });
-      doc.setFontSize(16);
-      doc.text(`SLL ${Number(receipt.amount).toLocaleString()}`, w / 2, y + 16, { align: 'center' });
-
-      // Footer
-      y += 28;
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(7); doc.setFont('helvetica', 'italic');
-      doc.text(`Verify at: ${window.location.origin}/verify?r=${receipt.receipt_no}`, w / 2, y, { align: 'center' });
-      y += 5;
-      doc.text(`Generated on ${new Date().toLocaleString()} | Direct Access Syndicate`, w / 2, y, { align: 'center' });
-
-      const filename = `DAS_Receipt_${receipt.receipt_no}.pdf`;
-      doc.save(filename);
+      const doc = await createPDFDocument(receipt);
+      doc.save(`DAS_Receipt_${receipt.receipt_no}.pdf`);
     } catch (err) {
       console.error('PDF generation failed:', err);
       alert('Could not generate PDF. Please try printing instead.');
@@ -127,20 +139,48 @@ const Receipts = () => {
     setSharingReceipt(receipt);
   };
 
-  const sendViaWhatsApp = () => {
+  const sendViaWhatsApp = async () => {
     if (!sharingReceipt) return;
     const r = sharingReceipt;
-    const msg = `🧾 *Direct Access Syndicate - Official Receipt*\n\n` +
-      `*Receipt No:* ${r.receipt_no}\n` +
-      `*Student:* ${r.student_name}\n` +
-      `*Parent:* ${r.parent_name}\n` +
-      `*Class:* ${r.level}\n` +
-      `*Method:* ${r.method}\n` +
-      `*AMOUNT PAID:* SLL ${Number(r.amount).toLocaleString()}\n` +
-      `*Date:* ${new Date(r.issue_date).toLocaleDateString()}\n\n` +
-      `_Verify: ${window.location.origin}/verify?r=${r.receipt_no}_`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
-    setSharingReceipt(null);
+    setIsGenerating(true);
+    
+    try {
+      // 1. Generate PDF file
+      const doc = await createPDFDocument(r);
+      const pdfBlob = doc.output('blob');
+      const filename = `DAS_Receipt_${r.receipt_no}.pdf`;
+      const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+
+      // 2. Prepare WhatsApp Text
+      const msg = `🧾 *Direct Access Syndicate - Official Receipt*\n\n` +
+        `*Receipt No:* ${r.receipt_no}\n` +
+        `*Student:* ${r.student_name}\n` +
+        `*AMOUNT PAID:* SLL ${Number(r.amount).toLocaleString()}\n\n` +
+        `_Find the attached PDF Receipt below!_`;
+
+      // 3. Try Native Share (Mobile) with the File
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `DAS Receipt ${r.receipt_no}`,
+          text: msg
+        });
+        setSharingReceipt(null);
+      } else {
+        // Fallback for Desktop: Download the minimal PDF, then open WhatsApp Web text
+        doc.save(filename);
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg + '\n\n*Note: The PDF receipt has been downloaded to your device.*')}`, '_blank', 'noopener,noreferrer');
+        setSharingReceipt(null);
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+         console.error('Sharing failed:', err);
+         alert('Native sharing failed. A standard download will start instead.');
+         generatePDF(r);
+      }
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const toggleExpand = (id) => {

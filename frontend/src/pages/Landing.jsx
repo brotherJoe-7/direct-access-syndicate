@@ -92,13 +92,14 @@ const Landing = () => {
               <img src="/src/assets/gallery_3.png" alt="Students" className="w-full h-full object-cover aspect-[4/3] sm:aspect-auto group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop' }} />
             </div>
             {[
-              { src: '/src/assets/gallery_1.png', alt: 'Student studying', fallback: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_2.png', alt: 'Teachers and Students', fallback: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_4.png', alt: 'Activities', fallback: 'https://images.unsplash.com/photo-1544367567-0f2fcb046eb9?q=80&w=800&auto=format&fit=crop' },
-              { src: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop', alt: 'Laboratory' },
+              { src: '/src/assets/gallery_1.jpeg', alt: 'Student studying', fallback: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=800&auto=format&fit=crop' },
+              { src: '/src/assets/gallery_2.jpeg', alt: 'Teachers and Students', fallback: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop' },
+              { src: '/src/assets/gallery_4.jpeg', alt: 'Activities', fallback: 'https://images.unsplash.com/photo-1544367567-0f2fcb046eb9?q=80&w=800&auto=format&fit=crop' },
+              { src: '/src/assets/gallery_5.jpeg', alt: 'Laboratory', fallback: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop' },
+              { src: '/src/assets/gallery_6.jpeg', alt: 'Classroom', fallback: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop' }
             ].map((img, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden shadow-md group">
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover aspect-square group-hover:scale-105 transition-transform duration-500" onError={img.fallback ? (e) => { e.target.src = img.fallback } : undefined} />
+              <div key={i} className={`rounded-2xl overflow-hidden shadow-md group ${i === 4 ? 'col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square' : 'aspect-square'}`}>
+                <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={img.fallback ? (e) => { e.target.src = img.fallback } : undefined} />
               </div>
             ))}
           </div>

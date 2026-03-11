@@ -19,7 +19,7 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-10 items-center mb-16">
               <div className="relative">
                  <div className="absolute inset-0 bg-green-500/10 blur-3xl rounded-full"></div>
-                 <img src="/src/assets/gallery_4.png" alt="Library" className="relative z-10 rounded-3xl shadow-2xl w-full object-cover aspect-[4/3]" onError={(e) => {e.target.style.display='none'}} />
+                 <img src="/src/assets/gallery_4.jpeg" alt="Library" className="relative z-10 rounded-3xl shadow-2xl w-full object-cover aspect-[4/3]" onError={(e) => {e.target.style.display='none'}} />
                  <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 hidden sm:block z-20">
                     <div className="flex items-center gap-4">
                         <Shield className="text-green-500" size={32} />
@@ -59,21 +59,21 @@ const About = () => {
                   {/* Proprietor */}
                   <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
                       <div className="w-32 h-32 mx-auto rounded-full bg-slate-100 mb-6 overflow-hidden border-4 border-white shadow-lg">
-                          <img src="/src/assets/proprietor.png" alt="Proprietor" className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=P&background=0D8ABC&color=fff&size=200' }} />
+                          <img src="/src/assets/proprietor.jpeg" alt="Proprietor" className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=A+B&background=0D8ABC&color=fff&size=200' }} />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Dr. Emmanuel Mensah</h3>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Alpha Amadu Bah</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Founder & Proprietor</p>
-                      <p className="text-slate-600 leading-relaxed">Dr. Mensah founded DAS with the vision of creating an Africa-centric educational hub powered by world-class technology. With 20+ years in education administration across West Africa, he continues to steer the academy's growth.</p>
+                      <p className="text-slate-600 leading-relaxed">Alpha Amadu Bah founded DAS with the vision of creating an Africa-centric educational hub powered by world-class technology. He continues to steer the academy's growth with unwavering dedication to excellence.</p>
                   </div>
 
                   {/* Manager/Finance */}
                   <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
                       <div className="w-32 h-32 mx-auto rounded-full bg-slate-100 mb-6 overflow-hidden border-4 border-white shadow-lg">
-                          <img src="https://ui-avatars.com/api/?name=FM&background=059669&color=fff&size=200" alt="Financial Manager" className="w-full h-full object-cover" />
+                          <img src="/src/assets/financial_manager.jpeg" alt="Financial Manager" className="w-full h-full object-cover" onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=J+N&background=059669&color=fff&size=200' }} />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Mrs. Aminata Conteh</h3>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Joseph Nimneh</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Financial Manager</p>
-                      <p className="text-slate-600 leading-relaxed">Mrs. Conteh oversees the digital transition of our financial pipeline. Her implementation of Direct Access Syndicate Management has achieved 100% transparency in school fee tracking for our parent community.</p>
+                      <p className="text-slate-600 leading-relaxed">Joseph Nimneh oversees the digital transition of our financial pipeline. His implementation of Direct Access Syndicate has achieved 100% transparency in school fee tracking for our parent community.</p>
                   </div>
               </div>
           </div>

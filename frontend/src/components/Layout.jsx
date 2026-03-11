@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings } from 'lucide-react';
+import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen } from 'lucide-react';
 
 const SidebarItem = ({ to, icon, label }) => {
   const IconComponent = icon;
@@ -23,6 +23,7 @@ const SidebarItem = ({ to, icon, label }) => {
 
 const Layout = ({ children }) => {
   const { role, user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const adminLinks = [
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -42,14 +43,23 @@ const Layout = ({ children }) => {
     { to: '/parent/reports', icon: FileText, label: 'Reports' },
     { to: '/parent/enroll', icon: Users, label: 'Enroll Child' },
     { to: '/parent/settings', icon: Settings, label: 'Profile' },
+    { to: '/parent/guide', icon: BookOpen, label: 'Parent Guide' },
   ];
 
   const links = role === 'admin' ? adminLinks : parentLinks;
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans relative">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-all">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 border-r border-slate-800 flex flex-col transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-20 flex px-6 py-6 items-center gap-3 border-b border-slate-800/50">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-500 to-teal-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">
             D
@@ -86,20 +96,28 @@ const Layout = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-slate-50">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 relative">
         {/* Top Navbar */}
-        <header className="h-16 bg-white/70 backdrop-blur-md border-b border-slate-200/50 px-8 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-           <h2 className="text-xl font-bold text-slate-800">
-             DAS Portal
-           </h2>
+        <header className="h-16 bg-white/70 backdrop-blur-md border-b border-slate-200/50 px-4 sm:px-8 flex items-center justify-between z-10 shadow-sm shrink-0">
+           <div className="flex items-center gap-3">
+             <button 
+               onClick={() => setIsMobileMenuOpen(true)}
+               className="p-2 -ml-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 lg:hidden"
+             >
+               <Menu size={20} />
+             </button>
+             <h2 className="text-xl font-bold text-slate-800 hidden sm:block">
+               DAS Portal
+             </h2>
+           </div>
            <div className="flex items-center gap-4">
               <span className="text-sm text-slate-500 font-medium">Logged in via Secure Gateway</span>
            </div>
         </header>
 
         {/* Page Content */}
-        <div className="p-8 max-w-7xl mx-auto pb-24">
-          <div className="animate-fade-in-up">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+          <div className="max-w-7xl mx-auto pb-24 animate-fade-in-up">
             {children}
           </div>
         </div>
@@ -107,5 +125,5 @@ const Layout = ({ children }) => {
     </div>
   );
 };
-import { User } from 'lucide-react'; // Fix missing import
+
 export default Layout;

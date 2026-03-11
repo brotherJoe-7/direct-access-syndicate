@@ -15,6 +15,7 @@ import Apply from './pages/Apply';
 import Contact from './pages/Contact';
 import Services from './pages/Services';
 import About from './pages/About';
+import ParentGuide from './pages/ParentGuide';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
@@ -110,6 +111,11 @@ function App() {
             <Route path="/parent/reports" element={
               <ProtectedRoute roleRequired="parent">
                 <Feedbacks />
+              </ProtectedRoute>
+            } />
+            <Route path="/parent/guide" element={
+              <ProtectedRoute roleRequired="parent">
+                <ParentGuide />
               </ProtectedRoute>
             } />
             
