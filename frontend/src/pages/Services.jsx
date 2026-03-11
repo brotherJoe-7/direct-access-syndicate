@@ -25,8 +25,8 @@ const Services = () => {
                         </div>
                         <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">{stream.name}</h3>
                         <div className="mb-6">
-                            <div className="text-xl font-bold text-slate-900">Le {stream.basePrice.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Base Fee</span></div>
-                            <div className="text-sm font-black text-green-600">+ Le {stream.pricePerSubject.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Per Subject</span></div>
+                            <div className="text-xl font-bold text-slate-900">Le {stream.basePrice.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Base Fee</span></div>
+                            <div className="text-sm font-bold text-green-600">+ Le {stream.pricePerSubject.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Per Subject</span></div>
                         </div>
                         
                         <div className="space-y-3 mb-8 flex-1">

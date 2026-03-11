@@ -30,7 +30,7 @@ export const STREAMS = [
     {
         name: 'Junior Secondary (JSS)',
         id: 'JSS',
-        pricePerSubject: 50 + 0, // 50
+        pricePerSubject: 50,
         basePrice: 650,
         subjects: ['General Maths', 'English', 'Integrated Science', 'Social Studies', 'Home Economics', 'Business Studies', 'Vocation']
     },
