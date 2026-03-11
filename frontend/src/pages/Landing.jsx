@@ -4,9 +4,32 @@ import PublicNav from '../components/PublicNav';
 import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
+import gallery1 from '../assets/gallery_1.jpeg';
+import gallery2 from '../assets/gallery_2.jpeg';
+import gallery3 from '../assets/gallery_3.png';
+import gallery4 from '../assets/gallery_4.jpeg';
+import gallery5 from '../assets/gallery_5.jpeg';
+import gallery6 from '../assets/gallery_6.jpeg';
+import proprietorImg from '../assets/proprietor.jpeg';
+import managerImg from '../assets/financial_manager.jpeg';
 
 const Landing = () => {
   const { user } = useAuth();
+
+  const leadership = [
+    {
+      name: 'Alpha Amadu Bah',
+      role: 'Proprietor',
+      image: proprietorImg,
+      desc: 'Visionary leader dedicated to educational excellence and community development in Sierra Leone.'
+    },
+    {
+      name: 'Joseph Nimneh',
+      role: 'Financial Manager',
+      image: managerImg,
+      desc: 'Expert in financial stewardship, ensuring the Syndicate\'s resources are managed with integrity.'
+    }
+  ];
 
   const features = [
     {
@@ -80,6 +103,28 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Leadership Section */}
+      <section className="py-16 px-4 max-w-6xl mx-auto border-t border-slate-100">
+        <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">Meet Our Leadership</h2>
+            <p className="text-slate-500 mt-2">The dedicated team behind the Syndicate's success.</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {leadership.map((leader, i) => (
+                <div key={i} className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50 p-6 rounded-3xl border border-slate-100 group hover:shadow-xl transition-all">
+                    <div className="w-32 h-32 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                        <img src={leader.image} alt={leader.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="text-center sm:text-left">
+                        <h4 className="text-xl font-black text-slate-800">{leader.name}</h4>
+                        <p className="text-green-600 font-bold text-xs uppercase tracking-widest mb-3">{leader.role}</p>
+                        <p className="text-slate-500 text-sm leading-relaxed">{leader.desc}</p>
+                    </div>
+                </div>
+            ))}
+        </div>
+      </section>
+
       {/* Gallery */}
       <section className="bg-slate-50 py-16 px-4 border-y border-slate-100">
         <div className="max-w-6xl mx-auto">
@@ -89,17 +134,17 @@ const Landing = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
             <div className="col-span-2 sm:col-span-1 row-span-2 rounded-2xl overflow-hidden shadow-md group">
-              <img src="/src/assets/gallery_3.png" alt="Students" className="w-full h-full object-cover aspect-[4/3] sm:aspect-auto group-hover:scale-105 transition-transform duration-500" onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop' }} />
+              <img src={gallery3} alt="Students" className="w-full h-full object-cover aspect-[4/3] sm:aspect-auto group-hover:scale-105 transition-transform duration-500" />
             </div>
             {[
-              { src: '/src/assets/gallery_1.jpeg', alt: 'Student studying', fallback: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_2.jpeg', alt: 'Teachers and Students', fallback: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_4.jpeg', alt: 'Activities', fallback: 'https://images.unsplash.com/photo-1544367567-0f2fcb046eb9?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_5.jpeg', alt: 'Laboratory', fallback: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop' },
-              { src: '/src/assets/gallery_6.jpeg', alt: 'Classroom', fallback: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop' }
+              { src: gallery1, alt: 'Student studying' },
+              { src: gallery2, alt: 'Teachers and Students' },
+              { src: gallery4, alt: 'Activities' },
+              { src: gallery5, alt: 'Laboratory' },
+              { src: gallery6, alt: 'Classroom' }
             ].map((img, i) => (
               <div key={i} className={`rounded-2xl overflow-hidden shadow-md group ${i === 4 ? 'col-span-2 sm:col-span-1 aspect-[2/1] sm:aspect-square' : 'aspect-square'}`}>
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onError={img.fallback ? (e) => { e.target.src = img.fallback } : undefined} />
+                <img src={img.src} alt={img.alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               </div>
             ))}
           </div>

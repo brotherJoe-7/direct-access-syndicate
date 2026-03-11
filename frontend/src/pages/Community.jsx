@@ -44,7 +44,7 @@ const Community = () => {
       setPosts([data, ...posts]);
       setMessage('');
     } catch (err) {
-      alert('Failed to send message');
+      alert(`Failed to send message: ${err.response?.data?.detail || err.message}`);
     } finally {
       setSending(false);
     }

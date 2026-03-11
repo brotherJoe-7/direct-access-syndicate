@@ -28,7 +28,8 @@ const createPost = async (req, res) => {
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error creating community post:', error);
-        res.status(500).json({ message: 'Error creating community post' });
+        console.error('User Context:', req.user);
+        res.status(500).json({ message: 'Error creating community post', detail: error.message });
     }
 };
 
