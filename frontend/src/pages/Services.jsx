@@ -24,7 +24,10 @@ const Services = () => {
                             <BookOpen size={28} />
                         </div>
                         <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">{stream.name}</h3>
-                        <div className="text-xl font-bold text-slate-900 mb-6">Le {stream.basePrice.toLocaleString()} <span className="text-xs text-slate-400 font-medium uppercase tracking-widest block mt-1">Base Enrollment Fee</span></div>
+                        <div className="mb-6">
+                            <div className="text-xl font-bold text-slate-900">Le {stream.basePrice.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Base Fee</span></div>
+                            <div className="text-sm font-black text-green-600">+ Le {stream.pricePerSubject.toLocaleString()} <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">Per Subject</span></div>
+                        </div>
                         
                         <div className="space-y-3 mb-8 flex-1">
                             <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Core Subjects</p>
