@@ -9,7 +9,8 @@ const {
     linkStudentByCode,
     getAllParents,
     updateParentAdmin,
-    deleteParent
+    deleteParent,
+    createParent
 } = require('../controllers/parentsController');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
@@ -43,6 +44,7 @@ router.get('/children', verifyToken, getMyChildren);
 router.post('/children/link', verifyToken, linkStudentByCode);
 
 // Admin Routes
+router.post('/', verifyAdmin, createParent);
 router.get('/all', verifyAdmin, getAllParents);
 router.put('/:id', verifyAdmin, updateParentAdmin);
 router.delete('/:id', verifyAdmin, deleteParent);

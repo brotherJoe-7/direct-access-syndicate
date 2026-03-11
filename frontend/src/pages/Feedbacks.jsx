@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -6,23 +6,45 @@ import { PlusCircle, MessageSquare, Star, Share2, Award, Calendar } from 'lucide
 
 const Feedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
+  const [grades, setGrades] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('feedback'); // 'feedback' or 'grades'
   const { role } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
      student_id: '', subject: '', feedback_text: '', credibility_score: 5
   });
 
-  const fetchFeedbacks = async () => {
+  const fetchFeedbacks = useCallback(async () => {
     try {
       const { data } = await api.get('/feedbacks');
       setFeedbacks(data);
     } catch (err) {
       console.error('Failed to fetch feedbacks', err);
-    } finally {
-      setLoading(false);
     }
+  }, []);
+
+  const fetchGrades = async () => {
+      try {
+          // If parent, we might need a different approach or fetch for all linked children
+          // For now, let's assume we can fetch by student_id if we have one, or a general endpoint
+          // But since the gradingController.js has getGradesByStudent, we'll use that if possible.
+          // If admin, we fetch when a student is selected (already in Grades.jsx)
+          // For this page, let's fetch ALL grades if admin, or relevant grades if parent.
+          
+          if (role === 'parent') {
+              const childrenRes = await api.get('/parents/children');
+              const children = childrenRes.data || [];
+              const allGrades = await Promise.all(children.map(c => api.get(`/grades/${c.id}`)));
+              setGrades(allGrades.flatMap(r => r.data));
+          } else {
+              // Admin sees all grades here? Or maybe we just keep Grades.jsx for admin.
+              // Let's just fetch all if possible or leave empty for admin to manage in Grades.jsx
+          }
+      } catch (err) {
+          console.error('Failed to fetch grades', err);
+      }
   };
 
   const fetchStudents = async () => {
@@ -37,9 +59,13 @@ const Feedbacks = () => {
   };
 
   useEffect(() => {
-    fetchFeedbacks();
-    fetchStudents();
-  }, [role]);
+    const init = async () => {
+        setLoading(true);
+        await Promise.all([fetchFeedbacks(), fetchGrades(), fetchStudents()]);
+        setLoading(false);
+    };
+    init();
+  }, [role, fetchFeedbacks, fetchGrades, fetchStudents]);
 
   const handleSubmit = async (e) => {
       e.preventDefault();
@@ -91,9 +117,27 @@ const Feedbacks = () => {
         )}
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-slate-100 pb-px">
+          {['feedback', 'grades'].map(tab => (
+              <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-4 px-2 text-sm font-black uppercase tracking-widest transition-all relative ${
+                      activeTab === tab ? 'text-green-600' : 'text-slate-400 hover:text-slate-600'
+                  }`}
+              >
+                  {tab === 'feedback' ? 'Teacher Feedback' : 'Academic Grades'}
+                  {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-green-600 rounded-t-full"></div>}
+              </button>
+          ))}
+      </div>
+
       {loading ? (
-        <div className="text-center py-12 text-slate-500 font-medium">Loading reports...</div>
-      ) : (
+        <div className="flex h-64 items-center justify-center">
+            <div className="w-8 h-8 border-4 border-green-600/20 border-t-green-600 rounded-full animate-spin"></div>
+        </div>
+      ) : activeTab === 'feedback' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {feedbacks.map((feedback) => (
              <div key={feedback.id} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/60 hover:shadow-md transition-shadow relative overflow-hidden group">
@@ -139,6 +183,36 @@ const Feedbacks = () => {
                  <p className="text-slate-500 max-w-sm mx-auto">There are currently no performance or credibility reports available in the system.</p>
               </div>
           )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {grades.map((grade) => (
+                <div key={grade.id} className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100/60 relative overflow-hidden group">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-black ${
+                            grade.score >= 50 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                        }`}>
+                            <span className="text-lg">{grade.score}%</span>
+                            <span className="text-[10px] uppercase tracking-tighter opacity-70">{grade.grade}</span>
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-slate-800 text-lg leading-tight">{grade.subject}</h3>
+                            <p className="text-xs font-semibold text-slate-400 mt-1">{grade.term}</p>
+                        </div>
+                    </div>
+                    <div className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 text-sm text-slate-600 italic">
+                        "{grade.remarks}"
+                    </div>
+                    <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mt-4">Student: {grade.student_name || 'Linked Child'}</p>
+                </div>
+            ))}
+            {grades.length === 0 && (
+                <div className="col-span-full bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-sm">
+                    <Award size={56} className="mx-auto text-slate-200 mb-4" />
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">No Grades Yet</h3>
+                    <p className="text-slate-500 max-w-sm mx-auto">Academic scores for this term have not been published yet.</p>
+                </div>
+            )}
         </div>
       )}
 

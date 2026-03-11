@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const bcrypt = require('bcrypt');
 
 const updateProfileImage = async (req, res) => {
     try {
@@ -119,6 +120,42 @@ const deleteParent = async (req, res) => {
     }
 };
 
+const createParent = async (req, res) => {
+    try {
+        const { parent_name, email, password, student_ids } = req.body;
+        
+        // Check if email exists
+        const { rows: existing } = await pool.query('SELECT id FROM parents WHERE email = $1', [email]);
+        if (existing.length > 0) {
+            return res.status(400).json({ message: 'A parent with this email already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        const { rows } = await pool.query(
+            'INSERT INTO parents (parent_name, email, password) VALUES ($1, $2, $3) RETURNING id',
+            [parent_name, email, hashedPassword]
+        );
+        
+        const newParentId = rows[0].id;
+
+        // If admin provided students to link immediately
+        if (student_ids && Array.isArray(student_ids) && student_ids.length > 0) {
+            for (const studentId of student_ids) {
+                await pool.query(
+                    'INSERT INTO parent_students (parent_id, student_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+                    [newParentId, studentId]
+                );
+            }
+        }
+
+        res.status(201).json({ message: 'Parent account generated successfully', id: newParentId });
+    } catch (error) {
+        console.error('Error creating parent:', error);
+        res.status(500).json({ message: 'Error creating parent account' });
+    }
+};
+
 module.exports = {
     updateProfileImage,
     getParentProfile,
@@ -126,5 +163,6 @@ module.exports = {
     linkStudentByCode,
     getAllParents,
     updateParentAdmin,
-    deleteParent
+    deleteParent,
+    createParent
 };

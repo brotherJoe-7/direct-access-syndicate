@@ -30,13 +30,13 @@ const getAllStudents = async (req, res) => {
 
 // Create a new student (Admin only) - auto-generates reg_code
 const createStudent = async (req, res) => {
-  const { student_name, level, parent_name, contact } = req.body;
+  const { student_name, level, parent_name, contact, subjects_enrolled, total_fees_assessed } = req.body;
   try {
     const reg_code = await generateRegCode();
 
     const { rows } = await pool.query(
-      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',
-      [student_name, level, parent_name, contact, reg_code]
+      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at, subjects_enrolled, total_fees_assessed) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7) RETURNING id',
+      [student_name, level, parent_name, contact, reg_code, JSON.stringify(subjects_enrolled || []), total_fees_assessed || 0]
     );
     const studentId = rows[0].id;
 
@@ -110,14 +110,14 @@ const enrollStudent = async (req, res) => {
 
 // Public application endpoint (No Auth)
 const applyStudent = async (req, res) => {
-  const { student_name, level, parent_name, contact } = req.body;
+  const { student_name, level, parent_name, contact, subjects_enrolled, total_fees_assessed } = req.body;
 
   try {
     const reg_code = await generateRegCode();
 
     const { rows } = await pool.query(
-      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id',
-      [student_name, level, parent_name, contact, reg_code]
+      'INSERT INTO students (student_name, level, parent_name, contact, reg_code, registered_at, subjects_enrolled, total_fees_assessed) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7) RETURNING id',
+      [student_name, level, parent_name, contact, reg_code, JSON.stringify(subjects_enrolled || []), total_fees_assessed || 0]
     );
 
     res.status(201).json({ id: rows[0].id, reg_code, message: 'Application submitted successfully. Your registration code is: ' + reg_code });

@@ -19,6 +19,9 @@ const dashboardRoutes = require('./routes/dashboard');
 const feedbacksRoutes = require('./routes/feedbacks');
 const whatsappRoutes = require('./routes/whatsapp');
 const parentsRoutes = require('./routes/parents');
+const communityRoutes = require('./routes/community');
+const learningRoutes = require('./routes/learning');
+const gradingRoutes = require('./routes/grading');
 const path = require('path');
 
 app.use('/api/auth', authRoutes);
@@ -30,6 +33,9 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/feedbacks', feedbacksRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/parents', parentsRoutes);
+app.use('/api/community', communityRoutes);
+app.use('/api/learning', learningRoutes);
+app.use('/api/grades', gradingRoutes);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

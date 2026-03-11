@@ -8,7 +8,6 @@ import NewReceipt from './pages/NewReceipt';
 import Students from './pages/Students';
 import Attendance from './pages/Attendance';
 import Expenses from './pages/Expenses';
-import Enrollment from './pages/Enrollment';
 import Feedbacks from './pages/Feedbacks';
 import AdminParents from './pages/AdminParents';
 import Apply from './pages/Apply';
@@ -16,6 +15,9 @@ import Contact from './pages/Contact';
 import Services from './pages/Services';
 import About from './pages/About';
 import ParentGuide from './pages/ParentGuide';
+import Community from './pages/Community';
+import Learning from './pages/Learning';
+import Grades from './pages/Grades';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
@@ -87,6 +89,21 @@ function App() {
                 <Feedbacks />
               </ProtectedRoute>
             } />
+            <Route path="/admin/community" element={
+              <ProtectedRoute roleRequired="admin">
+                <Community />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/learning" element={
+              <ProtectedRoute roleRequired="admin">
+                <Learning />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/grades" element={
+              <ProtectedRoute roleRequired="admin">
+                <Grades />
+              </ProtectedRoute>
+            } />
             
             <Route path="/parent/*" element={
               <ProtectedRoute roleRequired="parent">
@@ -103,11 +120,6 @@ function App() {
                 <Attendance />
               </ProtectedRoute>
             } />
-            <Route path="/parent/enroll" element={
-              <ProtectedRoute roleRequired="parent">
-                <Enrollment />
-              </ProtectedRoute>
-            } />
             <Route path="/parent/reports" element={
               <ProtectedRoute roleRequired="parent">
                 <Feedbacks />
@@ -116,6 +128,16 @@ function App() {
             <Route path="/parent/guide" element={
               <ProtectedRoute roleRequired="parent">
                 <ParentGuide />
+              </ProtectedRoute>
+            } />
+            <Route path="/parent/community" element={
+              <ProtectedRoute roleRequired="parent">
+                <Community />
+              </ProtectedRoute>
+            } />
+            <Route path="/parent/learning" element={
+              <ProtectedRoute roleRequired="parent">
+                <Learning />
               </ProtectedRoute>
             } />
             

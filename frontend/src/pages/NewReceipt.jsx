@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
-import { Receipt, Save } from 'lucide-react';
+import { Receipt, Save, Search, Check } from 'lucide-react';
+import { STREAMS } from '../constants/streams';
 
 const NewReceipt = () => {
   const [formData, setFormData] = useState({
@@ -13,8 +14,48 @@ const NewReceipt = () => {
     method: 'Cash',
     amount: ''
   });
+  const [students, setStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const { data } = await api.get('/students');
+        setStudents(data);
+      } catch (err) {
+        console.error('Failed to fetch students', err);
+      }
+    };
+    fetchStudents();
+  }, []);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (!query) {
+      setFilteredStudents([]);
+      return;
+    }
+    const filtered = students.filter(s => 
+      s.student_name.toLowerCase().includes(query.toLowerCase()) ||
+      s.reg_code?.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredStudents(filtered);
+  };
+
+  const selectStudent = (student) => {
+    setFormData({
+      ...formData,
+      student_name: student.student_name,
+      parent_name: student.parent_name,
+      level: student.level,
+      amount: student.total_fees_assessed || ''
+    });
+    setSearchQuery('');
+    setFilteredStudents([]);
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -55,6 +96,38 @@ const NewReceipt = () => {
                 </div>
             </div>
 
+            <div className="relative space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Quick Select Student</label>
+                <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input 
+                        type="text" 
+                        placeholder="Search by name or reg code..." 
+                        value={searchQuery} 
+                        onChange={(e) => handleSearch(e.target.value)} 
+                        className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+                    />
+                </div>
+                {filteredStudents.length > 0 && (
+                    <div className="absolute z-10 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                        {filteredStudents.map(student => (
+                            <button
+                                key={student.id}
+                                type="button"
+                                onClick={() => selectStudent(student)}
+                                className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center justify-between border-b border-slate-50 last:border-0"
+                            >
+                                <div>
+                                    <p className="font-bold text-slate-800">{student.student_name}</p>
+                                    <p className="text-xs text-slate-500">{student.level} • {student.reg_code}</p>
+                                </div>
+                                <Check className="text-green-500 opacity-0 group-hover:opacity-100" size={16} />
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Parent/Guardian Name</label>
@@ -71,13 +144,7 @@ const NewReceipt = () => {
                     <label className="text-sm font-semibold text-slate-700">Class Level</label>
                     <select name="level" required value={formData.level} onChange={handleChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
                         <option value="">-- Select Level --</option>
-                        <option value="Nursery">Nursery</option>
-                        <option value="Primary">Primary</option>
-                        <option value="JSS">JSS</option>
-                        <option value="SSS Arts">SSS Arts</option>
-                        <option value="SSS Science">SSS Science</option>
-                        <option value="SSS Commercial">SSS Commercial</option>
-                        <option value="IGCSE">IGCSE</option>
+                        {STREAMS.map(stream => <option key={stream.id} value={stream.id}>{stream.name}</option>)}
                     </select>
                 </div>
                 <div className="space-y-2">

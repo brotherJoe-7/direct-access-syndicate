@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
-import { Users, UserPlus, Trash2 } from 'lucide-react';
+import { Users, UserPlus, Trash2, Check } from 'lucide-react';
+import { STREAMS } from '../constants/streams';
 
 const Students = () => {
   const [students, setStudents] = useState([]);
@@ -11,6 +12,29 @@ const Students = () => {
   const [formData, setFormData] = useState({
      student_name: '', level: '', parent_name: '', contact: ''
   });
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [totalFees, setTotalFees] = useState(0);
+
+  const currentStream = STREAMS.find(s => s.id === formData.level);
+
+  const handleLevelChange = (level) => {
+      setFormData({ ...formData, level });
+      setSelectedSubjects([]);
+      const stream = STREAMS.find(s => s.id === level);
+      setTotalFees(stream ? stream.basePrice : 0);
+  };
+
+  const toggleSubject = (subject) => {
+      const isSelected = selectedSubjects.includes(subject);
+      const newSubjects = isSelected 
+        ? selectedSubjects.filter(s => s !== subject)
+        : [...selectedSubjects, subject];
+      
+      setSelectedSubjects(newSubjects);
+      if (currentStream) {
+          setTotalFees(currentStream.basePrice + (newSubjects.length * currentStream.pricePerSubject));
+      }
+  };
 
   const fetchStudents = async () => {
     try {
@@ -40,9 +64,15 @@ const Students = () => {
   const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-          await api.post('/students', formData);
+          await api.post('/students', {
+              ...formData,
+              subjects_enrolled: selectedSubjects,
+              total_fees_assessed: totalFees
+          });
           setIsModalOpen(false);
           setFormData({ student_name: '', level: '', parent_name: '', contact: ''});
+          setSelectedSubjects([]);
+          setTotalFees(0);
           fetchStudents();
       } catch (err) {
           console.error('Error adding student', err);
@@ -120,19 +150,46 @@ const Students = () => {
                           <label className="text-sm font-medium text-slate-700">Student Full Name</label>
                           <input type="text" required value={formData.student_name} onChange={(e) => setFormData({...formData, student_name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
                       </div>
-                      <div className="space-y-1">
+                       <div className="space-y-1">
                           <label className="text-sm font-medium text-slate-700">Class Level</label>
-                          <select required value={formData.level} onChange={(e) => setFormData({...formData, level: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+                          <select 
+                              required 
+                              value={formData.level} 
+                              onChange={(e) => handleLevelChange(e.target.value)} 
+                              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
+                          >
                               <option value="">Select Level</option>
-                              <option value="Nursery">Nursery</option>
-                              <option value="Primary">Primary</option>
-                              <option value="JSS">JSS</option>
-                              <option value="SSS Arts">SSS Arts</option>
-                              <option value="SSS Science">SSS Science</option>
-                              <option value="SSS Commercial">SSS Commercial</option>
-                              <option value="IGCSE">IGCSE</option>
+                              {STREAMS.map(stream => <option key={stream.id} value={stream.id}>{stream.name}</option>)}
                           </select>
                       </div>
+
+                      {currentStream && (
+                          <div className="space-y-3 animate-fade-in p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                              <label className="text-xs font-black uppercase tracking-widest text-slate-400">Select Subjects</label>
+                              <div className="grid grid-cols-2 gap-2">
+                                  {currentStream.subjects.map(subject => {
+                                      const isSelected = selectedSubjects.includes(subject);
+                                      return (
+                                          <button
+                                              key={subject}
+                                              type="button"
+                                              onClick={() => toggleSubject(subject)}
+                                              className={`flex items-center justify-between px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
+                                                  isSelected ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-slate-200 text-slate-600'
+                                              }`}
+                                          >
+                                              {subject}
+                                              {isSelected && <Check size={12} />}
+                                          </button>
+                                      );
+                                  })}
+                              </div>
+                              <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
+                                  <span className="text-xs font-bold text-slate-500">Total Calculation:</span>
+                                  <span className="text-sm font-black text-green-600">Le {totalFees.toLocaleString()}</span>
+                              </div>
+                          </div>
+                      )}
                       <div className="space-y-1">
                           <label className="text-sm font-medium text-slate-700">Parent/Guardian Name</label>
                           <input type="text" required value={formData.parent_name} onChange={(e) => setFormData({...formData, parent_name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />

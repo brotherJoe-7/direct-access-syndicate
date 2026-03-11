@@ -14,10 +14,6 @@ const ParentDashboard = () => {
   const [selectedChild, setSelectedChild] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [linkCode, setLinkCode] = useState('');
-  const [linkMsg, setLinkMsg] = useState('');
-  const [linkLoading, setLinkLoading] = useState(false);
-  const [showLinkForm, setShowLinkForm] = useState(false);
   const { speak, isSpeaking, stop } = useVoice();
 
   const fetchData = async () => {
@@ -57,18 +53,7 @@ const ParentDashboard = () => {
     } finally { setUploading(false); }
   };
 
-  const handleLinkStudent = async () => {
-    if (!linkCode.trim()) return;
-    setLinkLoading(true);
-    try {
-      const res = await api.post('/parents/children/link', { reg_code: linkCode.trim() });
-      setLinkMsg(`✅ ${res.data.message}`);
-      setLinkCode('');
-      fetchData();
-    } catch (err) {
-      setLinkMsg(`❌ ${err.response?.data?.message || 'Error linking student.'}`);
-    } finally { setLinkLoading(false); }
-  };
+
 
   const readDashboard = () => {
     const text = `Hello ${parent?.parent_name || 'Parent'}. 
@@ -135,12 +120,6 @@ const ParentDashboard = () => {
             <div className="flex items-center gap-2 mb-2">
               <Users size={14} className="text-slate-500" />
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">My Children</p>
-              <button
-                onClick={() => setShowLinkForm(!showLinkForm)}
-                className="ml-auto flex items-center gap-1 text-xs text-green-600 font-medium hover:underline"
-              >
-                <LinkIcon size={12} /> Add Student
-              </button>
             </div>
             <div className="flex gap-2 flex-wrap">
               {children.map(child => (
@@ -173,37 +152,14 @@ const ParentDashboard = () => {
           </div>
         )}
 
-        {/* Link Student Form */}
-        {(showLinkForm || children.length === 0) && (
-          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-4">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className="text-sm font-bold text-amber-800">🔗 Link a Student</p>
-                <p className="text-xs text-amber-600">Enter the student registration code given by the school.</p>
-              </div>
-              {showLinkForm && children.length > 0 && (
-                <button onClick={() => { setShowLinkForm(false); setLinkMsg(''); }}>
-                  <X size={16} className="text-amber-400" />
-                </button>
-              )}
-            </div>
-            <div className="flex gap-2 mt-2">
-              <input
-                type="text"
-                value={linkCode}
-                onChange={(e) => setLinkCode(e.target.value)}
-                placeholder="e.g. DAS-2024-001"
-                className="flex-1 border border-amber-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white font-mono"
-              />
-              <button
-                onClick={handleLinkStudent}
-                disabled={linkLoading}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-all disabled:opacity-50 flex items-center gap-1"
-              >
-                {linkLoading ? <RefreshCw size={14} className="animate-spin" /> : 'Link'}
-              </button>
-            </div>
-            {linkMsg && <p className="text-xs mt-2 text-amber-800">{linkMsg}</p>}
+        {/* Empty Children State */}
+        {children.length === 0 && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center">
+            <Users size={32} className="mx-auto text-amber-500 mb-3" />
+            <h3 className="text-lg font-bold text-amber-800 mb-1">No Students Linked</h3>
+            <p className="text-sm text-amber-600 max-w-sm mx-auto">
+              You do not have any active children linked to your account. Please contact the school administration to bind your student records to this profile.
+            </p>
           </div>
         )}
 
@@ -229,9 +185,9 @@ const ParentDashboard = () => {
         {/* Quick Actions */}
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'View Receipts', icon: <Receipt size={22} />, link: '/receipts', color: 'bg-green-600', desc: 'All payment records' },
-            { label: 'Attendance Report', icon: <CalendarCheck size={22} />, link: '/attendance', color: 'bg-blue-600', desc: 'Daily attendance log' },
-            { label: 'Progress Report', icon: <GraduationCap size={22} />, link: '/feedbacks', color: 'bg-purple-600', desc: 'Teacher feedback' },
+            { label: 'View Receipts', icon: <Receipt size={22} />, link: '/parent/receipts', color: 'bg-green-600', desc: 'All payment records' },
+            { label: 'Attendance Report', icon: <CalendarCheck size={22} />, link: '/parent/attendance', color: 'bg-blue-600', desc: 'Daily attendance log' },
+            { label: 'Progress Report', icon: <GraduationCap size={22} />, link: '/parent/reports', color: 'bg-purple-600', desc: 'Teacher feedback' },
             { label: 'WhatsApp Bot', icon: <UserCheck size={22} />, href: 'https://wa.me/23278003333?text=Report', color: 'bg-emerald-600', desc: 'Chat with school' },
           ].map((action, i) => (
             action.href ? (

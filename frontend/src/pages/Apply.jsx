@@ -1,20 +1,48 @@
 import React, { useState } from 'react';
 import api from '../utils/api';
-import { Send, CheckCircle, GraduationCap } from 'lucide-react';
+import { Send, CheckCircle, GraduationCap, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { STREAMS } from '../constants/streams';
 
 const Apply = () => {
   const [formData, setFormData] = useState({
      student_name: '', level: '', parent_name: '', contact: ''
   });
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [totalFees, setTotalFees] = useState(0);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const currentStream = STREAMS.find(s => s.id === formData.level);
+
+  const handleLevelChange = (level) => {
+      setFormData({ ...formData, level });
+      setSelectedSubjects([]);
+      const stream = STREAMS.find(s => s.id === level);
+      setTotalFees(stream ? stream.basePrice : 0);
+  };
+
+  const toggleSubject = (subject) => {
+      const isSelected = selectedSubjects.includes(subject);
+      const newSubjects = isSelected 
+        ? selectedSubjects.filter(s => s !== subject)
+        : [...selectedSubjects, subject];
+      
+      setSelectedSubjects(newSubjects);
+      if (currentStream) {
+          setTotalFees(currentStream.basePrice + (newSubjects.length * currentStream.pricePerSubject));
+      }
+  };
 
   const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
       try {
-          await api.post('/students/apply', formData);
+          await api.post('/students/apply', {
+              ...formData,
+              subjects_enrolled: selectedSubjects,
+              total_fees_assessed: totalFees
+          });
           setSuccess(true);
       } catch (err) {
           console.error('Error submitting application', err);
@@ -62,21 +90,49 @@ const Apply = () => {
                 <div>
                     <label className="block text-sm font-bold tracking-wide text-slate-700 mb-2 uppercase">Desired Class Level</label>
                     <div className="relative">
-                        <select required value={formData.level} onChange={(e) => setFormData({...formData, level: e.target.value})} className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all appearance-none cursor-pointer">
+                        <select 
+                            required 
+                            value={formData.level} 
+                            onChange={(e) => handleLevelChange(e.target.value)} 
+                            className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all appearance-none cursor-pointer"
+                        >
                             <option value="">-- Select Grade Level --</option>
-                            <option value="Nursery">Nursery</option>
-                            <option value="Primary">Primary</option>
-                            <option value="JSS">Junior Secondary (JSS)</option>
-                            <option value="SSS Arts">Senior Secondary (Arts)</option>
-                            <option value="SSS Science">Senior Secondary (Science)</option>
-                            <option value="SSS Commercial">Senior Secondary (Commercial)</option>
-                            <option value="IGCSE">IGCSE</option>
+                            {STREAMS.map(stream => <option key={stream.id} value={stream.id}>{stream.name}</option>)}
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
                             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                         </div>
                     </div>
                 </div>
+
+                {currentStream && (
+                    <div className="space-y-4 animate-fade-in">
+                        <label className="block text-sm font-bold tracking-wide text-slate-700 mb-2 uppercase">Select Subjects (Optional)</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {currentStream.subjects.map(subject => {
+                                const isSelected = selectedSubjects.includes(subject);
+                                return (
+                                    <button
+                                        key={subject}
+                                        type="button"
+                                        onClick={() => toggleSubject(subject)}
+                                        className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm font-semibold ${
+                                            isSelected ? 'bg-green-50 border-green-500 text-green-700' : 'bg-slate-50 border-slate-100 text-slate-600 hover:border-slate-200'
+                                        }`}
+                                    >
+                                        {subject}
+                                        {isSelected && <Check size={16} />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="bg-green-600 rounded-2xl p-5 text-white shadow-lg shadow-green-500/20">
+                            <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Total Fee Assessment</p>
+                            <p className="text-2xl font-black">SLL {totalFees.toLocaleString()}</p>
+                            <p className="text-[10px] mt-2 opacity-70">Incl. base fee + {selectedSubjects.length} subjects</p>
+                        </div>
+                    </div>
+                )}
 
                 <div>
                     <label className="block text-sm font-bold tracking-wide text-slate-700 mb-2 uppercase">Parent / Guardian Name</label>
