@@ -19,7 +19,6 @@ const dashboardRoutes = require('./routes/dashboard');
 const feedbacksRoutes = require('./routes/feedbacks');
 const whatsappRoutes = require('./routes/whatsapp');
 const parentsRoutes = require('./routes/parents');
-const learningRoutes = require('./routes/learning');
 const path = require('path');
 
 app.use('/api/auth', authRoutes);
@@ -31,14 +30,13 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/feedbacks', feedbacksRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/parents', parentsRoutes);
-app.use('/api/learning', learningRoutes);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Base Route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Direct Access Syndicate API' });
+  res.json({ message: 'Welcome to Direct Access Syndicate Management API' });
 });
 
 const PORT = process.env.PORT || 5000;

@@ -1,17 +1,22 @@
-import Navbar from '../components/Navbar';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { BookOpen, CheckCircle, Shield } from 'lucide-react';
+import PublicNav from '../components/PublicNav';
+import logo from '../assets/logo.png';
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col pt-20">
-      <Navbar />
+    <div className="min-h-screen bg-white font-sans flex flex-col">
+      <PublicNav />
 
-      <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-              <h1 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tight mb-6">About Direct Access Syndicate</h1>
-              <p className="text-lg md:text-xl text-slate-500 leading-relaxed">The Direct Access Syndicate (DAS) is built to eliminate paperwork and bridge the communication gap between parents, students, and administration.</p>
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 pt-24">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+              <img src={logo} alt="DAS" className="h-14 w-14 rounded-xl mx-auto mb-4 object-cover shadow" />
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight mb-4">About Direct Access Syndicate</h1>
+              <p className="text-base text-slate-500 leading-relaxed">Eliminating paperwork and bridging the communication gap between parents, students, and administration.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
+          <div className="grid md:grid-cols-2 gap-10 items-center mb-16">
               <div className="relative">
                  <div className="absolute inset-0 bg-green-500/10 blur-3xl rounded-full"></div>
                  <img src="/src/assets/gallery_4.png" alt="Library" className="relative z-10 rounded-3xl shadow-2xl w-full object-cover aspect-[4/3]" onError={(e) => {e.target.style.display='none'}} />
@@ -26,31 +31,30 @@ const About = () => {
                  </div>
               </div>
               <div>
-                  <h2 className="text-3xl font-black text-slate-800 mb-6">Our Core Mission</h2>
-                  <p className="text-lg text-slate-600 mb-6 leading-relaxed">
+                  <h2 className="text-2xl font-black text-slate-800 mb-4">Our Core Mission</h2>
+                  <p className="text-sm text-slate-600 mb-4 leading-relaxed">
                     We believe in providing crystal clear transparency regarding financial receipts, expenses, and daily student activities through a fully modernized digital platform. 
                   </p>
-                  <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+                  <p className="text-sm text-slate-600 mb-6 leading-relaxed">
                     By heavily investing in our technological ecosystem, we empower our educators to focus on what they do best: teaching the next generation of leaders.
                   </p>
                   
-                  <ul className="space-y-4">
-                      <li className="flex items-center gap-3 text-slate-700 font-medium">
-                          <CheckCircle className="text-green-500 shrink-0" size={20} /> Integrity & Transparency
+                  <ul className="space-y-3">
+                      <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
+                          <CheckCircle className="text-green-500 shrink-0" size={18} /> Integrity & Transparency
                       </li>
-                      <li className="flex items-center gap-3 text-slate-700 font-medium">
-                          <CheckCircle className="text-green-500 shrink-0" size={20} /> Digital Excellence
+                      <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
+                          <CheckCircle className="text-green-500 shrink-0" size={18} /> Digital Excellence
                       </li>
-                      <li className="flex items-center gap-3 text-slate-700 font-medium">
-                          <CheckCircle className="text-green-500 shrink-0" size={20} /> Parent-Teacher Synergy
+                      <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
+                          <CheckCircle className="text-green-500 shrink-0" size={18} /> Parent-Teacher Synergy
                       </li>
                   </ul>
               </div>
           </div>
 
-          {/* Leadership Profiles */}
-          <div className="mt-16">
-              <h2 className="text-3xl font-black text-center text-slate-800 mb-12">Our Leadership</h2>
+          <div className="mt-10">
+              <h2 className="text-2xl font-black text-center text-slate-800 mb-8">Our Leadership</h2>
               <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                   {/* Proprietor */}
                   <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
@@ -69,11 +73,15 @@ const About = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-1">Mrs. Aminata Conteh</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Financial Manager</p>
-                      <p className="text-slate-600 leading-relaxed">Mrs. Conteh oversees the digital transition of our financial pipeline. Her implementation of Direct Access Syndicate has achieved 100% transparency in school fee tracking for our parent community.</p>
+                      <p className="text-slate-600 leading-relaxed">Mrs. Conteh oversees the digital transition of our financial pipeline. Her implementation of Direct Access Syndicate Management has achieved 100% transparency in school fee tracking for our parent community.</p>
                   </div>
               </div>
           </div>
       </div>
+
+      <footer className="bg-slate-900 py-6 px-4 text-center">
+        <p className="text-slate-500 text-xs">© {new Date().getFullYear()} Direct Access Syndicate. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

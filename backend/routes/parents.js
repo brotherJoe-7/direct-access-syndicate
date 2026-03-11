@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { updateProfileImage, getParentProfile, getAllParents, updateParentAdmin, deleteParent } = require('../controllers/parentsController');
+const {
+    updateProfileImage,
+    getParentProfile,
+    getMyChildren,
+    linkStudentByCode,
+    getAllParents,
+    updateParentAdmin,
+    deleteParent
+} = require('../controllers/parentsController');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
 // Multer Storage Configuration
@@ -15,7 +23,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage,
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|webp/;
@@ -28,8 +36,11 @@ const upload = multer({
     }
 });
 
+// Parent Routes
 router.get('/profile', verifyToken, getParentProfile);
 router.post('/profile/image', verifyToken, upload.single('profile_image'), updateProfileImage);
+router.get('/children', verifyToken, getMyChildren);
+router.post('/children/link', verifyToken, linkStudentByCode);
 
 // Admin Routes
 router.get('/all', verifyAdmin, getAllParents);

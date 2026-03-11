@@ -1,4 +1,7 @@
-import Navbar from '../components/Navbar';
+import React, { useState } from 'react';
+import api from '../utils/api';
+import { Send, CheckCircle, GraduationCap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Apply = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +32,7 @@ const Apply = () => {
                       <CheckCircle size={40} />
                   </div>
                   <h2 className="text-2xl font-black text-slate-800 mb-2">Application Received!</h2>
-                  <p className="text-slate-500 mb-8">Thank you for choosing Direct Access Syndicate. Our administration team will review your application and contact you shortly.</p>
+                  <p className="text-slate-500 mb-8">Thank you for choosing DAS. Our administration team will review your application and contact you shortly.</p>
                   <Link to="/" className="inline-flex items-center justify-center w-full py-3.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition-all">
                       Return to Home
                   </Link>
@@ -39,15 +42,14 @@ const Apply = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-        <Navbar />
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
         
         <div className="text-center max-w-2xl mx-auto mb-10">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-teal-500 text-white mb-6 shadow-lg">
                 <GraduationCap size={32} />
             </div>
             <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-4">Join The Syndicate</h1>
-            <p className="text-lg text-slate-500">Submit an application for new student enrollment.</p>
+            <p className="text-lg text-slate-500">Submit an application for new student enrollment. No account required.</p>
         </div>
 
         <div className="max-w-xl w-full bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sm:p-10">

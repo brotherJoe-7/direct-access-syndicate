@@ -1,5 +1,5 @@
 {
-  "name": "das-frontend",
+  "name": "das-management-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,6 +15,7 @@
     "axios": "^1.13.6",
     "date-fns": "^4.1.0",
     "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.0",
     "lucide-react": "^0.577.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.0",

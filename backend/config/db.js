@@ -1,18 +1,14 @@
-const { Pool } = require('pg');
+// backend/config/db.js
+const mysql = require('mysql2/promise');
 
-const isProduction = !!(process.env.POSTGRES_URL || process.env.DATABASE_URL);
-const connectionString = process.env.POSTGRES_URL || process.env.DATABASE_URL;
-
-const pool = new Pool(isProduction ? {
-  connectionString,
-  ssl: { rejectUnauthorized: false }
-} : {
+const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'postgres',
-  password: String(process.env.DB_PASSWORD || ''),
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'das_receipts',
-  port: parseInt(process.env.DB_PORT || '5432'),
-  ssl: false
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
 module.exports = pool;

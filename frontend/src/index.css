@@ -1,18 +1,12 @@
 @import "tailwindcss";
 
 @layer base {
-  html {
-    font-size: 16px; /* Restored to default based on feedback */
-  }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased overflow-x-hidden;
+    @apply bg-slate-50 text-slate-900 antialiased;
   }
 }
 
 @layer utilities {
-  .text-size-sm {
-    font-size: 0.875rem;
-  }
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
   }
