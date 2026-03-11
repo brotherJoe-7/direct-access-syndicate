@@ -18,8 +18,7 @@ const Apply = () => {
   const handleLevelChange = (level) => {
       setFormData({ ...formData, level });
       setSelectedSubjects([]);
-      const stream = STREAMS.find(s => s.id === level);
-      setTotalFees(stream ? stream.basePrice : 0);
+      setTotalFees(0);
   };
 
   const toggleSubject = (subject) => {
@@ -30,7 +29,7 @@ const Apply = () => {
       
       setSelectedSubjects(newSubjects);
       if (currentStream) {
-          setTotalFees(currentStream.basePrice + (newSubjects.length * currentStream.pricePerSubject));
+          setTotalFees(newSubjects.length * currentStream.pricePerSubject);
       }
   };
 
@@ -129,7 +128,7 @@ const Apply = () => {
                         <div className="bg-green-600 rounded-2xl p-5 text-white shadow-lg shadow-green-500/20">
                             <p className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Total Fee Assessment</p>
                             <p className="text-2xl font-black">SLL {totalFees.toLocaleString()}</p>
-                            <p className="text-[10px] mt-2 opacity-70">Incl. base fee + {selectedSubjects.length} subjects</p>
+                            <p className="text-[10px] mt-2 opacity-70">Total for {selectedSubjects.length} selected subjects</p>
                         </div>
                     </div>
                 )}

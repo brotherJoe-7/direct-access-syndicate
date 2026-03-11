@@ -20,8 +20,7 @@ const Students = () => {
   const handleLevelChange = (level) => {
       setFormData({ ...formData, level });
       setSelectedSubjects([]);
-      const stream = STREAMS.find(s => s.id === level);
-      setTotalFees(stream ? stream.basePrice : 0);
+      setTotalFees(0);
   };
 
   const toggleSubject = (subject) => {
@@ -32,7 +31,7 @@ const Students = () => {
       
       setSelectedSubjects(newSubjects);
       if (currentStream) {
-          setTotalFees(currentStream.basePrice + (newSubjects.length * currentStream.pricePerSubject));
+          setTotalFees(newSubjects.length * currentStream.pricePerSubject);
       }
   };
 
