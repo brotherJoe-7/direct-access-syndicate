@@ -3,10 +3,13 @@ const pool = require('../config/db');
 const getGradesByStudent = async (req, res) => {
     try {
         const { student_id } = req.params;
-        const { rows } = await pool.query(
-            'SELECT * FROM student_grades WHERE student_id = $1 ORDER BY created_at DESC',
-            [student_id]
-        );
+        const { rows } = await pool.query(`
+            SELECT g.*, s.student_name 
+            FROM student_grades g 
+            JOIN students s ON g.student_id = s.id 
+            WHERE g.student_id = $1 
+            ORDER BY g.created_at DESC
+        `, [student_id]);
         res.json(rows);
     } catch (error) {
         console.error('Error fetching student grades:', error);

@@ -22,16 +22,36 @@ const getMaterials = async (req, res) => {
 
 const createMaterial = async (req, res) => {
     try {
-        const { title, description, content_link, level_target } = req.body;
+        const { title, description, content_link, level_target, material_type } = req.body;
         const created_by = req.user.name;
 
-        if (!title || !content_link || !level_target) {
-            return res.status(400).json({ message: 'Title, content link, and target level are required' });
+        if (!title || !level_target) {
+            return res.status(400).json({ message: 'Title and target level are required' });
+        }
+
+        let finalContentLink = content_link || '';
+        let finalMaterialType = material_type || 'link';
+        let filePath = null;
+
+        if (req.file) {
+            finalContentLink = `/uploads/learning/${req.file.filename}`;
+            filePath = finalContentLink;
+            // Infer type if not explicitly passed
+            if (!material_type) {
+                 finalMaterialType = req.file.mimetype.startsWith('video/') ? 'local_video' : 'document';
+            }
+        } else {
+            if (!finalContentLink) {
+                return res.status(400).json({ message: 'Either a file upload or a content link is required' });
+            }
+            if (finalContentLink.includes('youtube.com') || finalContentLink.includes('youtu.be')) {
+                finalMaterialType = 'youtube';
+            }
         }
 
         const { rows } = await pool.query(
-            'INSERT INTO learning_materials (title, description, content_link, level_target, created_by) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [title, description, content_link, level_target, created_by]
+            'INSERT INTO learning_materials (title, description, content_link, level_target, created_by, material_type, file_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [title, description, finalContentLink, level_target, created_by, finalMaterialType, filePath]
         );
 
         res.status(201).json(rows[0]);

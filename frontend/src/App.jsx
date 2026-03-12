@@ -18,6 +18,7 @@ import ParentGuide from './pages/ParentGuide';
 import Community from './pages/Community';
 import Learning from './pages/Learning';
 import Grades from './pages/Grades';
+import StaffPortal from './pages/StaffPortal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
@@ -52,6 +53,11 @@ function App() {
             <Route path="/admin/*" element={
               <ProtectedRoute roleRequired="admin">
                 <AdminDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/portal" element={
+              <ProtectedRoute roleRequired="admin">
+                <StaffPortal />
               </ProtectedRoute>
             } />
             <Route path="/admin/receipts" element={

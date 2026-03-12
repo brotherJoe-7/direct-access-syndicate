@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
-import { BookOpen, ExternalLink, Plus, Trash2, Search, Filter, Bookmark } from 'lucide-react';
+import { BookOpen, ExternalLink, Plus, Trash2, Search, Filter, Bookmark, Video, FileText, Download, PlayCircle, Link as LinkIcon, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Learning = () => {
@@ -10,6 +10,8 @@ const Learning = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [filterLevel, setFilterLevel] = useState('All');
+    const [uploadType, setUploadType] = useState('link'); // 'link' or 'file'
+    const [file, setFile] = useState(null);
     const [formData, setFormData] = useState({
         title: '', description: '', content_link: '', level_target: 'All'
     });
@@ -35,12 +37,24 @@ const Learning = () => {
     const handleCreate = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/learning', formData);
+            if (uploadType === 'file') {
+                const data = new FormData();
+                data.append('title', formData.title);
+                data.append('description', formData.description);
+                data.append('level_target', formData.level_target);
+                if (file) data.append('file', file);
+                await api.post('/learning', data, { headers: { 'Content-Type': 'multipart/form-data' }});
+            } else {
+                await api.post('/learning', formData);
+            }
+            
             setFormData({ title: '', description: '', content_link: '', level_target: 'All' });
+            setFile(null);
             setIsModalOpen(false);
             fetchMaterials();
         } catch (err) {
-            alert('Failed to add material');
+            console.error(err);
+            alert('Failed to add material. Check that all fields are filled properly.');
         }
     };
 
@@ -50,6 +64,7 @@ const Learning = () => {
             await api.delete(`/learning/${id}`);
             fetchMaterials();
         } catch (err) {
+            console.error('Delete failed:', err);
             alert('Failed to delete material');
         }
     };
@@ -103,49 +118,67 @@ const Learning = () => {
                         <p className="text-slate-500 font-medium">No resources found for the selected level.</p>
                     </div>
                 ) : (
-                    materials.map(mat => (
-                        <div key={mat.id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden">
-                           <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                               {role === 'admin' && (
-                                   <button 
-                                       onClick={() => handleDelete(mat.id)}
-                                       className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-                                   >
-                                       <Trash2 size={16} />
-                                   </button>
-                               )}
-                           </div>
-                           
-                           <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                               <Bookmark size={24} />
-                           </div>
-                           
-                           <div className="mb-4">
-                               <span className="text-[10px] font-black uppercase tracking-widest text-green-600 bg-green-50 px-2 py-0.5 rounded">
-                                   {mat.level_target}
-                               </span>
-                               <h3 className="text-xl font-bold text-slate-800 mt-2 line-clamp-1">{mat.title}</h3>
-                               <p className="text-slate-500 text-sm mt-2 line-clamp-2 h-10">{mat.description}</p>
+                    materials.map(mat => {
+                        let IconMarker = Bookmark;
+                        if (mat.material_type === 'local_video' || mat.material_type === 'youtube') IconMarker = Video;
+                        else if (mat.material_type === 'document') IconMarker = FileText;
+
+                        const fullLink = mat.file_path 
+                            ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${mat.file_path}` 
+                            : mat.content_link;
+
+                        return (
+                        <div key={mat.id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden flex flex-col justify-between">
+                           <div>
+                               <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                   {role === 'admin' && (
+                                       <button 
+                                           onClick={() => handleDelete(mat.id)}
+                                           className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+                                       >
+                                           <Trash2 size={16} />
+                                       </button>
+                                   )}
+                               </div>
+                               
+                               <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                   <IconMarker size={24} />
+                               </div>
+                               
+                               <div className="mb-4">
+                                   <div className="flex items-center gap-2">
+                                       <span className="text-[10px] font-black uppercase tracking-widest text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                                           {mat.level_target}
+                                       </span>
+                                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                                           {mat.material_type?.replace('_', ' ')}
+                                       </span>
+                                   </div>
+                                   <h3 className="text-xl font-bold text-slate-800 mt-2 line-clamp-1">{mat.title}</h3>
+                                   <p className="text-slate-500 text-sm mt-2 line-clamp-2 h-10">{mat.description}</p>
+                               </div>
                            </div>
 
                            <div className="flex items-center justify-between pt-4 border-t border-slate-50">
                                <div className="flex items-center gap-2">
                                    <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-500">
-                                       {mat.created_by?.charAt(0)}
+                                       {mat.created_by?.charAt(0) || '?'}
                                    </div>
-                                   <span className="text-xs text-slate-400 truncate w-24">{mat.created_by}</span>
+                                   <span className="text-xs text-slate-400 truncate w-24">{mat.created_by || 'Unknown'}</span>
                                </div>
                                <a 
-                                   href={mat.content_link} 
+                                   href={fullLink} 
                                    target="_blank" 
                                    rel="noopener noreferrer"
-                                   className="flex items-center gap-2 text-green-600 font-bold text-sm hover:underline"
+                                   className="flex items-center gap-1.5 text-green-600 font-bold text-sm hover:underline"
                                >
-                                   Open Link <ExternalLink size={14} />
+                                   {mat.material_type === 'document' ? (<>Download <Download size={14}/></>) :
+                                    mat.material_type === 'local_video' || mat.material_type === 'youtube' ? (<>Watch <PlayCircle size={14}/></>) : 
+                                    (<>Open Link <ExternalLink size={14}/></>)}
                                </a>
                            </div>
                         </div>
-                    ))
+                    )})
                 )}
             </div>
 
@@ -194,22 +227,49 @@ const Learning = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Resource Type</label>
-                                    <div className="flex items-center h-[50px] px-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 font-bold text-sm">
-                                        External URL
+                                    <div className="flex p-1 bg-slate-100 rounded-2xl border border-slate-200">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setUploadType('link')}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-colors ${uploadType === 'link' ? 'bg-white text-slate-800 shadow shadow-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            <LinkIcon size={16} /> URL
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            onClick={() => setUploadType('file')}
+                                            className={`flex-1 py-2 text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition-colors ${uploadType === 'file' ? 'bg-white text-slate-800 shadow shadow-slate-200' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            <Upload size={16} /> File
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Content Link (URL)</label>
-                                <input 
-                                    type="url" 
-                                    required
-                                    placeholder="https://drive.google.com/..."
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium"
-                                    value={formData.content_link}
-                                    onChange={(e) => setFormData({...formData, content_link: e.target.value})}
-                                />
-                            </div>
+                            
+                            {uploadType === 'link' ? (
+                                <div>
+                                    <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Content Link (URL or YouTube)</label>
+                                    <input 
+                                        type="url" 
+                                        required={uploadType === 'link'}
+                                        placeholder="https://drive.google.com/... or https://youtube.com/..."
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium"
+                                        value={formData.content_link}
+                                        onChange={(e) => setFormData({...formData, content_link: e.target.value})}
+                                    />
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Upload File (PDF, Video, etc.)</label>
+                                    <input 
+                                        type="file" 
+                                        required={uploadType === 'file'}
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer"
+                                    />
+                                    {file && <p className="text-xs text-slate-500 mt-2 ml-1">Selected: {file.name}</p>}
+                                </div>
+                            )}
                         </div>
                         <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-4">
                             <button 

@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import { jsPDF } from 'jspdf';
 import logoImg from '../assets/logo.png';
+import { formatDate } from '../utils/formatDate';
 
 const Receipts = () => {
   const [receipts, setReceipts] = useState([]);
@@ -82,7 +83,7 @@ const Receipts = () => {
     // Details
     const details = [
       ['Receipt No:', receipt.receipt_no],
-      ['Issue Date:', new Date(receipt.issue_date).toLocaleDateString()],
+      ['Issue Date:', formatDate(receipt.issue_date)],
       ['Student:', receipt.student_name],
       ['Parent / Guardian:', receipt.parent_name],
       ['Class Level:', receipt.level],
@@ -238,7 +239,7 @@ const Receipts = () => {
                     <div className="flex items-center gap-6">
                         <div className="hidden sm:block text-right">
                            <p className="font-black text-emerald-600 tracking-tight text-lg">SLL {Number(receipt.amount).toLocaleString()}</p>
-                           <p className="text-xs text-slate-500 font-medium">{new Date(receipt.issue_date).toLocaleDateString()}</p>
+                           <p className="text-xs text-slate-500 font-medium">{formatDate(receipt.issue_date)}</p>
                         </div>
                         <button className="text-slate-400 hover:text-green-600 transition-colors flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-xl font-bold text-sm">
                             {isExpanded ? 'Collapse' : 'View Receipt'} {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
@@ -270,7 +271,7 @@ const Receipts = () => {
                             </div>
                             <div className="text-right">
                                  <p className="text-sm font-bold text-slate-400 tracking-widest uppercase mb-1">Issue Date</p>
-                                 <p className="font-semibold text-slate-700">{new Date(receipt.issue_date).toLocaleDateString()}</p>
+                                 <p className="font-semibold text-slate-700">{formatDate(receipt.issue_date)}</p>
                             </div>
                          </div>
                          

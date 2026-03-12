@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import api from '../utils/api';
 import { Calendar, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { formatDate } from '../utils/formatDate';
 
 const Attendance = () => {
   const [records, setRecords] = useState([]);
@@ -99,15 +100,15 @@ const Attendance = () => {
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="border-b border-slate-200 bg-slate-50/50">
-                        <th className="px-4 py-3 text-sm font-semibold text-slate-500 uppercase">Date</th>
-                        <th className="px-4 py-3 text-sm font-semibold text-slate-500 uppercase">Student Name</th>
-                        <th className="px-4 py-3 text-sm font-semibold text-slate-500 uppercase">Status</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-widest">Date</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-widest">Student Name</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-widest">Status</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {records.map((record) => (
                         <tr key={record.id} className="hover:bg-slate-50/50">
-                            <td className="px-4 py-3 font-medium text-slate-700">{new Date(record.date).toLocaleDateString()}</td>
+                            <td className="px-4 py-3 font-medium text-slate-700">{formatDate(record.date)}</td>
                             <td className="px-4 py-3 font-bold text-slate-800">{record.student_name}</td>
                             <td className="px-4 py-3">
                                 <span className={`px-2.5 py-1 text-xs font-bold rounded-lg ${

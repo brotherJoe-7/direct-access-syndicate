@@ -3,6 +3,8 @@ import Layout from '../components/Layout';
 import api from '../utils/api';
 import { DollarSign, WalletCards, ArrowUpRight, TrendingUp, Activity, Users, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatDate } from '../utils/formatDate';
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const StatCard = ({ title, amount, icon, isCurrency = true, trend, subtitle, colorClass }) => {
   const IconComponent = icon;
@@ -11,9 +13,9 @@ const StatCard = ({ title, amount, icon, isCurrency = true, trend, subtitle, col
     <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full opacity-10 blur-2xl transition-transform group-hover:scale-150 ${colorClass}`}></div>
     <div className="flex items-start justify-between relative z-10">
       <div>
-        <p className="text-[13px] font-black tracking-widest text-slate-400 uppercase mb-2">{title}</p>
-        <h3 className="text-4xl font-black text-slate-800 tracking-tight">
-          {isCurrency && <span className="text-slate-300 text-2xl font-bold mr-1">SLL</span>}
+        <p className="text-[11px] font-black tracking-widest text-slate-400 uppercase mb-2">{title}</p>
+        <h3 className="text-3xl font-black text-slate-800 tracking-tight">
+          {isCurrency && <span className="text-slate-300 text-xl font-bold mr-1">SLL</span>}
           {typeof amount === 'number' && isCurrency ? amount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : amount}
         </h3>
         {subtitle && <p className="text-sm font-medium text-slate-500 mt-1">{subtitle}</p>}
@@ -67,26 +69,33 @@ const AdminDashboard = () => {
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Executive Overview</h1>
           <p className="text-slate-500 font-medium">Real-time financial and operational intelligence for DAS.</p>
         </div>
-        <div className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-full border border-slate-200 shadow-sm">
-            <Clock size={16} className="text-green-600" />
-            <span className="text-sm font-bold text-slate-700">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-full border border-slate-200 shadow-sm">
+            <Clock size={14} className="text-green-600" />
+            <span className="text-xs font-bold text-slate-700">{formatDate(new Date())}</span>
         </div>
       </div>
 
       {/* Premium KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard 
+            title="Annual Revenue (YTD)" 
+            amount={stats.annualRevenue || 0} 
+            icon={TrendingUp} 
+            trend="Current Year"
+            colorClass="bg-gradient-to-br from-green-500 to-emerald-600" 
+        />
         <StatCard 
             title="Total Revenue" 
             amount={stats.totalIncome} 
             icon={DollarSign} 
-            trend="+12.5% vs last month"
-            colorClass="bg-gradient-to-br from-green-500 to-emerald-600" 
+            trend="All Time"
+            colorClass="bg-gradient-to-br from-blue-500 to-indigo-600" 
         />
         <StatCard 
             title="Operational Expenses" 
             amount={stats.totalExpenses} 
             icon={WalletCards} 
-            trend="-2.1% optimized"
+            trend="All Time"
             colorClass="bg-gradient-to-br from-rose-500 to-red-600" 
         />
         <StatCard 
@@ -94,11 +103,27 @@ const AdminDashboard = () => {
             amount={stats.totalSavings} 
             icon={ArrowUpRight} 
             trend="Healthy trajectory"
-            colorClass="bg-gradient-to-br from-blue-500 to-indigo-600" 
+            colorClass="bg-gradient-to-br from-purple-500 to-fuchsia-600" 
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Monthly Revenue Chart */}
+        <div className="lg:col-span-3 bg-white rounded-3xl p-8 shadow-sm border border-slate-100/60 relative">
+           <h2 className="text-xl font-bold text-slate-800 mb-6">Monthly Revenue Trend (YTD)</h2>
+           <div className="h-[300px] w-full">
+             <ResponsiveContainer width="100%" height="100%">
+               <BarChart data={stats.monthlyRevenue || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12, fontWeight: 600}} dy={10} />
+                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12, fontWeight: 600}} tickFormatter={(value) => `SLL ${value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : value.toLocaleString()}`} />
+                 <RechartsTooltip cursor={{fill: '#f1f5f9'}} formatter={(value) => [`SLL ${value.toLocaleString()}`, 'Revenue']} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px 16px', fontWeight: 'bold'}} labelStyle={{color: '#64748b', marginBottom: '4px', fontWeight: 'bold'}} />
+                 <Bar dataKey="value" fill="#10b981" radius={[6, 6, 0, 0]} barSize={48} />
+               </BarChart>
+             </ResponsiveContainer>
+           </div>
+        </div>
+
         {/* Income Breakdown Table */}
         <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-slate-100/60 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-600"></div>
@@ -112,8 +137,8 @@ const AdminDashboard = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-100">
-                  <th className="pb-4 text-xs font-black text-slate-400 uppercase tracking-widest">Class Level</th>
-                  <th className="pb-4 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Total Income Generated</th>
+                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Class Level</th>
+                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total Income Generated</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -174,10 +199,10 @@ const AdminDashboard = () => {
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         </div>
                         <div className="w-[calc(100%-2.5rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm ml-4 md:ml-0 md:group-even:pr-6 md:group-even:text-right md:group-odd:pl-6 md:group-odd:text-left">
-                            <p className="text-sm font-bold text-slate-800 capitalize mb-1">{log.action.replace(/_/g, ' ')}</p>
+                            <p className="text-xs font-bold text-slate-800 capitalize mb-1">{log.action.replace(/_/g, ' ')}</p>
                             <p className="text-xs text-slate-500 mb-2 leading-relaxed">{log.details}</p>
                             <span className="text-[10px] uppercase font-black tracking-wider text-slate-400">
-                                {new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                {formatDate(log.timestamp)} • {new Date(log.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                         </div>
                     </div>

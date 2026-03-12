@@ -25,29 +25,20 @@ const Feedbacks = () => {
     }
   }, []);
 
-  const fetchGrades = async () => {
+  const fetchGrades = useCallback(async () => {
       try {
-          // If parent, we might need a different approach or fetch for all linked children
-          // For now, let's assume we can fetch by student_id if we have one, or a general endpoint
-          // But since the gradingController.js has getGradesByStudent, we'll use that if possible.
-          // If admin, we fetch when a student is selected (already in Grades.jsx)
-          // For this page, let's fetch ALL grades if admin, or relevant grades if parent.
-          
           if (role === 'parent') {
               const childrenRes = await api.get('/parents/children');
               const children = childrenRes.data || [];
               const allGrades = await Promise.all(children.map(c => api.get(`/grades/${c.id}`)));
               setGrades(allGrades.flatMap(r => r.data));
-          } else {
-              // Admin sees all grades here? Or maybe we just keep Grades.jsx for admin.
-              // Let's just fetch all if possible or leave empty for admin to manage in Grades.jsx
           }
       } catch (err) {
           console.error('Failed to fetch grades', err);
       }
-  };
+  }, [role]);
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     if (role === 'admin') {
         try {
             const { data } = await api.get('/students');
@@ -56,7 +47,7 @@ const Feedbacks = () => {
             console.error('Failed to fetch students', err);
         }
     }
-  };
+  }, [role]);
 
   useEffect(() => {
     const init = async () => {
@@ -119,7 +110,7 @@ const Feedbacks = () => {
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-slate-100 pb-px">
-          {['feedback', 'grades'].map(tab => (
+          {['feedback', ...(role === 'parent' ? ['grades'] : [])].map(tab => (
               <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}

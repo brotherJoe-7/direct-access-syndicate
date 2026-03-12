@@ -16,6 +16,23 @@ const getDashboardStats = async (req, res) => {
       // Breakdown by level
       const { rows: levels } = await pool.query('SELECT level, SUM(amount) AS total FROM receipts GROUP BY level');
       
+      // Monthly Revenue for current year
+      const { rows: monthlyRevenueRows } = await pool.query(`
+          SELECT TO_CHAR(issue_date, 'Mon') as month, SUM(amount) as total 
+          FROM receipts 
+          WHERE EXTRACT(YEAR FROM issue_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+          GROUP BY TO_CHAR(issue_date, 'Mon'), EXTRACT(MONTH FROM issue_date)
+          ORDER BY EXTRACT(MONTH FROM issue_date)
+      `);
+
+      // Annual Revenue
+      const { rows: annualRevenueRows } = await pool.query(`
+          SELECT SUM(amount) as total 
+          FROM receipts 
+          WHERE EXTRACT(YEAR FROM issue_date) = EXTRACT(YEAR FROM CURRENT_DATE)
+      `);
+      const annualRevenue = parseFloat(annualRevenueRows[0]?.total || 0);
+
       // Activity Logs
       const { rows: activityLogs } = await pool.query('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
 
@@ -23,6 +40,8 @@ const getDashboardStats = async (req, res) => {
         totalIncome,
         totalExpenses,
         totalSavings,
+        annualRevenue,
+        monthlyRevenue: monthlyRevenueRows.map(r => ({ name: r.month, value: parseFloat(r.total) })),
         monthlyByLevel: levels,
         activityLogs
       });

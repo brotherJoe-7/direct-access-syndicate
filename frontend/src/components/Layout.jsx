@@ -27,6 +27,7 @@ const Layout = ({ children }) => {
   
   const adminLinks = [
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/admin/portal', icon: FileText, label: 'Staff Portal' },
     { to: '/admin/receipts', icon: Receipt, label: 'Receipts' },
     { to: '/admin/students', icon: Users, label: 'Students' },
     { to: '/admin/parents', icon: Users, label: 'Parents' },
