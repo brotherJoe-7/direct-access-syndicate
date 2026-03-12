@@ -27,11 +27,11 @@
       "destination": "/frontend/assets/$1"
     },
     {
-      "source": "/(.*\\.(css|js|map|ico|svg|png|jpg|jpeg|gif|webp|ttf|woff|woff2))",
+      "source": "/(.*\\.[a-zA-Z0-9]+)$",
       "destination": "/frontend/$1"
     },
     {
-      "source": "/((?!api|uploads|assets).*)",
+      "source": "/(.*)",
       "destination": "/frontend/index.html"
     }
   ]
