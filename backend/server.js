@@ -1,6 +1,7 @@
 // backend/server.js
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -9,35 +10,48 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const authRoutes = require('./routes/auth');
-const studentsRoutes = require('./routes/students');
-const receiptsRoutes = require('./routes/receipts');
-const attendanceRoutes = require('./routes/attendance');
-const expensesRoutes = require('./routes/expenses');
-const dashboardRoutes = require('./routes/dashboard');
-const feedbacksRoutes = require('./routes/feedbacks');
-const whatsappRoutes = require('./routes/whatsapp');
-const parentsRoutes = require('./routes/parents');
-const communityRoutes = require('./routes/community');
-const learningRoutes = require('./routes/learning');
-const gradingRoutes = require('./routes/grading');
-const staffRoutes = require('./routes/staff');
-const path = require('path');
+// Health Check (Top Level, No Dependencies)
+app.get('/api/health', (req, res) => {
+    res.json({ 
+      status: 'ok', 
+      env: process.env.NODE_ENV,
+      vercel: !!process.env.VERCEL,
+      time: new Date().toISOString()
+    });
+});
 
-app.use('/api/auth', authRoutes);
-app.use('/api/students', studentsRoutes);
-app.use('/api/receipts', receiptsRoutes);
-app.use('/api/attendance', attendanceRoutes);
-app.use('/api/expenses', expensesRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/feedbacks', feedbacksRoutes);
-app.use('/api/whatsapp', whatsappRoutes);
-app.use('/api/parents', parentsRoutes);
-app.use('/api/community', communityRoutes);
-app.use('/api/learning', learningRoutes);
-app.use('/api/grades', gradingRoutes);
-app.use('/api/staff', staffRoutes);
+console.log('Server initializing...');
+
+// Fail-safe initialization
+try {
+    console.log('Registering routes...');
+    
+    // Lazy-load routes within the app.use to prevent top-level requirement crashes from taking down the whole app
+    app.use('/api/auth', (req, res, next) => require('./routes/auth')(req, res, next));
+    app.use('/api/students', (req, res, next) => require('./routes/students')(req, res, next));
+    app.use('/api/receipts', (req, res, next) => require('./routes/receipts')(req, res, next));
+    app.use('/api/attendance', (req, res, next) => require('./routes/attendance')(req, res, next));
+    app.use('/api/expenses', (req, res, next) => require('./routes/expenses')(req, res, next));
+    app.use('/api/dashboard', (req, res, next) => require('./routes/dashboard')(req, res, next));
+    app.use('/api/feedbacks', (req, res, next) => require('./routes/feedbacks')(req, res, next));
+    app.use('/api/whatsapp', (req, res, next) => require('./routes/whatsapp')(req, res, next));
+    app.use('/api/parents', (req, res, next) => require('./routes/parents')(req, res, next));
+    app.use('/api/community', (req, res, next) => require('./routes/community')(req, res, next));
+    app.use('/api/learning', (req, res, next) => require('./routes/learning')(req, res, next));
+    app.use('/api/grades', (req, res, next) => require('./routes/grading')(req, res, next));
+    app.use('/api/staff', (req, res, next) => require('./routes/staff')(req, res, next));
+    
+    console.log('Router registration complete.');
+} catch (error) {
+    console.error('SERVER INITIALIZATION ERROR:', error.message);
+    app.all('/api/(.*)', (req, res) => {
+        res.status(500).json({
+            error: 'Server failed to initialize',
+            message: error.message,
+            stack: error.stack
+        });
+    });
+}
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -47,9 +61,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Direct Access Syndicate API' });
 });
 
+app.get('/api/', (req, res) => {
+  res.json({ message: 'Express API is running' });
+});
 
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
