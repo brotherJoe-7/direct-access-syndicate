@@ -12,6 +12,14 @@ const Community = () => {
   const [filePreview, setFilePreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  
+  // Voice Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const timerIntervalRef = useRef(null);
+
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -81,6 +89,67 @@ const Community = () => {
     } finally {
       setSending(false);
     }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const audioFile = new File([audioBlob], `voice_note_${Date.now()}.webm`, { type: 'audio/webm' });
+        setFile(audioFile);
+        setFilePreview('audio');
+        
+        // Stop all audio tracks to release microphone access
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      timerIntervalRef.current = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      alert("Could not access microphone. Please check permissions.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      clearInterval(timerIntervalRef.current);
+    }
+  };
+
+  const cancelRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      audioChunksRef.current = []; // Clear chunks to destroy recording
+      setIsRecording(false);
+      clearInterval(timerIntervalRef.current);
+      setFile(null);
+      setFilePreview(null);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
   const showCallComingSoon = () => {
@@ -240,13 +309,12 @@ const Community = () => {
             
             <button 
                 type="button" 
-                onClick={() => {
-                    if (fileInputRef.current) {
-                        fileInputRef.current.accept = "audio/*";
-                        fileInputRef.current.click();
-                    }
-                }}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 hover:text-[#00A884] transition-colors rounded-full hover:bg-slate-200"
+                onClick={isRecording ? stopRecording : startRecording}
+                className={`w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center transition-colors rounded-full ${
+                  isRecording 
+                  ? 'bg-red-500 text-white animate-pulse' 
+                  : 'text-slate-500 hover:text-[#00A884] hover:bg-slate-200'
+                }`}
                 title="Send Audio / Voice"
             >
               <Mic size={22} />
@@ -259,22 +327,45 @@ const Community = () => {
               className="hidden" 
             />
             
-            <form onSubmit={handleSend} className="flex gap-1.5 sm:gap-2 w-full items-center">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type a message"
-                className="flex-1 px-4 sm:px-5 py-2.5 sm:py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[14px] sm:text-[15px] shadow-sm min-w-0"
-              />
-              <button
-                type="submit"
-                disabled={sending || (!message.trim() && !file)}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
-              >
-                {sending ? <Clock size={18} className="animate-spin" /> : <Send size={18} className="ml-0.5 sm:ml-1" />}
-              </button>
-            </form>
+            {isRecording ? (
+              <div className="flex gap-2 w-full items-center bg-white rounded-full px-4 py-2.5 sm:py-3.5 shadow-sm border border-red-100 flex-1">
+                 <div className="flex items-center gap-2 flex-1">
+                    <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></div>
+                    <span className="text-red-500 font-medium font-mono text-sm">{formatTime(recordingTime)}</span>
+                    <span className="text-sm text-slate-500 hidden sm:block">Recording Voice Note...</span>
+                 </div>
+                 <button 
+                   onClick={cancelRecording}
+                   className="text-slate-400 hover:text-red-500 font-medium text-sm px-2 transition-colors"
+                 >
+                   Cancel
+                 </button>
+                 <button 
+                   onClick={stopRecording}
+                   className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors"
+                   title="Stop Recording"
+                 >
+                   <div className="w-3 h-3 bg-red-500 rounded-sm"></div>
+                 </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSend} className="flex gap-1.5 sm:gap-2 w-full items-center">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Type a message"
+                  className="flex-1 px-4 sm:px-5 py-2.5 sm:py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[14px] sm:text-[15px] shadow-sm min-w-0"
+                />
+                <button
+                  type="submit"
+                  disabled={sending || (!message.trim() && !file)}
+                  className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
+                >
+                  {sending ? <Clock size={18} className="animate-spin" /> : <Send size={18} className="ml-0.5 sm:ml-1" />}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>

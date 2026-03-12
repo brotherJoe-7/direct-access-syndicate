@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Send, X, Bot, User, Clock, Loader2, Sparkles, MessageCircleCode } from 'lucide-react';
+import { MessageSquare, Send, X, Bot, User, Clock, Loader2, Sparkles, MessageCircleCode, ArrowLeft } from 'lucide-react';
 import api from '../utils/api';
 
 const AIChatbot = () => {
@@ -18,6 +18,7 @@ const AIChatbot = () => {
   }, [chatHistory, isOpen]);
 
   const handleSend = async (e) => {
+    // ... logic remains same
     e.preventDefault();
     if (!message.trim() || loading) return;
 
@@ -49,8 +50,8 @@ const AIChatbot = () => {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 z-50 animate-bounce-slow ${
-          isOpen ? 'bg-red-500 rotate-90' : 'bg-[#003B5C] hover:bg-[#002b44]'
+        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 z-[60] animate-bounce-slow sm:z-50 ${
+          isOpen ? 'bg-red-500 rotate-90 hidden sm:flex' : 'bg-[#003B5C] hover:bg-[#002b44] flex'
         }`}
       >
         {isOpen ? <X className="text-white" size={24} /> : <div className="relative"><Sparkles className="text-white absolute -top-1 -right-1" size={12} /><Bot className="text-white" size={28} /></div>}
@@ -58,13 +59,19 @@ const AIChatbot = () => {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-24 right-6 w-[90vw] sm:w-[400px] h-[500px] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 z-50 origin-bottom-right ${
+        className={`fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-6 w-full h-[100dvh] sm:w-[400px] sm:h-[500px] bg-white sm:rounded-3xl shadow-2xl sm:border border-slate-200 flex flex-col overflow-hidden transition-all duration-300 z-[70] sm:z-50 sm:origin-bottom-right ${
           isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-0 opacity-0 translate-y-10 pointer-events-none'
         }`}
       >
         {/* Header */}
         <div className="bg-[#003B5C] p-4 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
+             <button 
+               onClick={() => setIsOpen(false)} 
+               className="p-1 -ml-1 text-white hover:bg-white/20 rounded-full transition-colors sm:hidden"
+             >
+               <ArrowLeft size={24} />
+             </button>
              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <Bot size={22} className="text-blue-200" />
              </div>
@@ -73,7 +80,7 @@ const AIChatbot = () => {
                <p className="text-[10px] text-blue-200 uppercase font-bold tracking-widest">Powered by Gemini AI</p>
              </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="opacity-70 hover:opacity-100">
+          <button onClick={() => setIsOpen(false)} className="opacity-70 hover:opacity-100 hidden sm:block">
              <X size={18} />
           </button>
         </div>
