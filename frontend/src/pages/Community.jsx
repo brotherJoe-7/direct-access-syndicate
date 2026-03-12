@@ -210,37 +210,56 @@ const Community = () => {
             </div>
           )}
 
-          <div className="flex items-center gap-2 pr-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 pr-1 sm:pr-2">
             <button 
                 type="button" 
-                onClick={() => fileInputRef.current?.click()}
-                className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-[#00A884] transition-colors rounded-full hover:bg-slate-200"
-                title="Attach photo or audio"
+                onClick={() => {
+                    if (fileInputRef.current) {
+                        fileInputRef.current.accept = "image/*";
+                        fileInputRef.current.click();
+                    }
+                }}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 hover:text-[#00A884] transition-colors rounded-full hover:bg-slate-200"
+                title="Send Photo"
             >
-              <Image size={24} />
+              <Image size={22} />
             </button>
+            
+            <button 
+                type="button" 
+                onClick={() => {
+                    if (fileInputRef.current) {
+                        fileInputRef.current.accept = "audio/*";
+                        fileInputRef.current.click();
+                    }
+                }}
+                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-500 hover:text-[#00A884] transition-colors rounded-full hover:bg-slate-200"
+                title="Send Audio / Voice"
+            >
+              <Mic size={22} />
+            </button>
+
             <input 
               type="file" 
               ref={fileInputRef}
               onChange={handleFileChange}
-              accept="image/*,audio/*"
               className="hidden" 
             />
             
-            <form onSubmit={handleSend} className="flex gap-2 w-full items-center">
+            <form onSubmit={handleSend} className="flex gap-1.5 sm:gap-2 w-full items-center">
               <input
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Type a message"
-                className="flex-1 px-5 py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[15px] shadow-sm"
+                className="flex-1 px-4 sm:px-5 py-2.5 sm:py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[14px] sm:text-[15px] shadow-sm min-w-0"
               />
               <button
                 type="submit"
                 disabled={sending || (!message.trim() && !file)}
-                className="w-12 h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
+                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
               >
-                {sending ? <Clock size={20} className="animate-spin" /> : <Send size={20} className="ml-1" />}
+                {sending ? <Clock size={18} className="animate-spin" /> : <Send size={18} className="ml-0.5 sm:ml-1" />}
               </button>
             </form>
           </div>

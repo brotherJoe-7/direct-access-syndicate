@@ -45,6 +45,15 @@ const createPost = async (req, res) => {
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error creating community post:', error);
+        console.error('User Context:', req.user);
+        if (req.file) {
+            console.error('File context:', {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                path: req.file.path
+            });
+        }
         res.status(500).json({ message: 'Error creating community post', detail: error.message });
     }
 };
