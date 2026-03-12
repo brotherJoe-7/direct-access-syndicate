@@ -1,17 +1,21 @@
 {
   "version": 2,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "/backend/uploads/$1"
+      "src": "/uploads/(.*)",
+      "dest": "/backend/uploads/$1"
     },
     {
-      "source": "/((?!api|uploads|.*\\..*).*)",
-      "destination": "/index.html"
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/((?!api|uploads|assets).*)",
+      "dest": "/index.html"
     }
   ],
   "builds": [
