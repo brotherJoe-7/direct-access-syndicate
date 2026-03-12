@@ -23,8 +23,16 @@
       "destination": "/backend/uploads/$1"
     },
     {
-      "source": "/((?!api|uploads).*)",
-      "destination": "/index.html"
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
+    },
+    {
+      "source": "/(.*\\.(css|js|map|ico|svg|png|jpg|jpeg|gif|webp|ttf|woff|woff2))",
+      "destination": "/frontend/$1"
+    },
+    {
+      "source": "/((?!api|uploads|assets).*)",
+      "destination": "/frontend/index.html"
     }
   ]
 }
