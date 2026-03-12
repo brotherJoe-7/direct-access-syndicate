@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { Users, UserPlus, Trash2, Check } from 'lucide-react';
 import { STREAMS } from '../constants/streams';
@@ -80,7 +79,7 @@ const Students = () => {
   }
 
   return (
-    <Layout>
+    <>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 mb-1">Student Records</h1>
@@ -205,7 +204,7 @@ const Students = () => {
               </div>
           </div>
       )}
-    </Layout>
+    </>
   );
 };
 

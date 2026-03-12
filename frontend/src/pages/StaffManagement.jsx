@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { UserPlus, Shield, Trash2, ShieldAlert, CheckCircle2, XCircle } from 'lucide-react';
 import { formatDate } from '../utils/formatDate';
@@ -54,7 +53,7 @@ const StaffManagement = () => {
     };
 
     return (
-        <Layout>
+        <>
             <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Staff & Access Control</h1>
@@ -198,7 +197,7 @@ const StaffManagement = () => {
                     </div>
                 </div>
             )}
-        </Layout>
+        </>
     );
 };
 

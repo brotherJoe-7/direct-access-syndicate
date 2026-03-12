@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Printer, Share2, ReceiptText, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, X, Download, FileText } from 'lucide-react';
@@ -197,7 +196,7 @@ const Receipts = () => {
   const nextPage = () => { if (currentPage < totalPages) setCurrentPage(currentPage + 1); };
 
   return (
-    <Layout>
+    <>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 mb-1">Receipts History</h1>
@@ -407,7 +406,7 @@ const Receipts = () => {
               </div>
           </div>
       )}
-    </Layout>
+    </>
   );
 };
 

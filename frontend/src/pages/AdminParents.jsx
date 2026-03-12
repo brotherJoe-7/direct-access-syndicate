@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { Users, Edit, Trash2, Search, X, Save, UserPlus } from 'lucide-react';
 
@@ -44,7 +43,7 @@ const AdminParents = () => {
         try {
             await api.delete(`/parents/${id}`);
             fetchParents();
-        } catch (err) {
+        } catch {
             alert('Failed to delete parent');
         }
     };
@@ -56,7 +55,7 @@ const AdminParents = () => {
             await api.put(`/parents/${editingParent.id}`, editingParent);
             setEditingParent(null);
             fetchParents();
-        } catch (err) {
+        } catch {
             alert('Failed to update parent');
         } finally {
             setIsSaving(false);
@@ -90,15 +89,15 @@ const AdminParents = () => {
     );
 
     if (loading) return (
-        <Layout>
+        <>
             <div className="flex h-[80vh] items-center justify-center">
                 <div className="w-12 h-12 border-4 border-green-600/20 border-t-green-600 rounded-full animate-spin"></div>
             </div>
-        </Layout>
+        </>
     );
 
     return (
-        <Layout>
+        <>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight">Parent Management</h1>
@@ -315,7 +314,7 @@ const AdminParents = () => {
                     </form>
                 </div>
             )}
-        </Layout>
+        </>
     );
 };
 

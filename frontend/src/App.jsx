@@ -58,107 +58,32 @@ function App() {
             {/* Redirect / to dash based on role or login */}
             <Route path="/dashboard" element={<RoleBasedRedirect />} />
             
-            <Route path="/admin/*" element={
-              <ProtectedRoute roleRequired="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/portal" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <StaffPortal />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/receipts" element={
-              <ProtectedRoute roleRequired="admin">
-                <Receipts />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/receipts/new" element={
-              <ProtectedRoute roleRequired="admin">
-                <NewReceipt />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/students" element={
-              <ProtectedRoute roleRequired="admin">
-                <Students />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/parents" element={
-              <ProtectedRoute roleRequired="admin">
-                <AdminParents />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/attendance" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <Attendance />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/expenses" element={
-              <ProtectedRoute roleRequired="admin">
-                <Expenses />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/reports" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <Feedbacks />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/community" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <Community />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/learning" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <Learning />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/grades" element={
-              <ProtectedRoute roleRequired={['admin', 'teacher']}>
-                <Grades />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/staff" element={
-              <ProtectedRoute roleRequired="admin">
-                <StaffManagement />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="/parent/*" element={
-              <ProtectedRoute roleRequired="parent">
-                <ParentDashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/receipts" element={
-              <ProtectedRoute roleRequired="parent">
-                <Receipts />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/attendance" element={
-              <ProtectedRoute roleRequired="parent">
-                <Attendance />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/reports" element={
-              <ProtectedRoute roleRequired="parent">
-                <Feedbacks />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/guide" element={
-              <ProtectedRoute roleRequired="parent">
-                <ParentGuide />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/community" element={
-              <ProtectedRoute roleRequired="parent">
-                <Community />
-              </ProtectedRoute>
-            } />
-            <Route path="/parent/learning" element={
-              <ProtectedRoute roleRequired="parent">
-                <Learning />
-              </ProtectedRoute>
-            } />
+            {/* Protected Routes with Persistent Layout */}
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/portal" element={<StaffPortal />} />
+              <Route path="/admin/receipts" element={<Receipts />} />
+              <Route path="/admin/receipts/new" element={<NewReceipt />} />
+              <Route path="/admin/students" element={<Students />} />
+              <Route path="/admin/parents" element={<AdminParents />} />
+              <Route path="/admin/attendance" element={<Attendance />} />
+              <Route path="/admin/expenses" element={<Expenses />} />
+              <Route path="/admin/reports" element={<Feedbacks />} />
+              <Route path="/admin/community" element={<Community />} />
+              <Route path="/admin/learning" element={<Learning />} />
+              <Route path="/admin/grades" element={<Grades />} />
+              <Route path="/admin/staff" element={<StaffManagement />} />
+
+              {/* Parent Routes */}
+              <Route path="/parent" element={<ParentDashboard />} />
+              <Route path="/parent/receipts" element={<Receipts />} />
+              <Route path="/parent/attendance" element={<Attendance />} />
+              <Route path="/parent/reports" element={<Feedbacks />} />
+              <Route path="/parent/guide" element={<ParentGuide />} />
+              <Route path="/parent/community" element={<Community />} />
+              <Route path="/parent/learning" element={<Learning />} />
+            </Route>
             
           </Routes>
         </div>

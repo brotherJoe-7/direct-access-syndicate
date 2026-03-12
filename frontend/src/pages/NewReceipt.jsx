@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { Receipt, Save, Search, Check } from 'lucide-react';
@@ -77,7 +76,7 @@ const NewReceipt = () => {
   };
 
   return (
-    <Layout>
+    <>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-800 mb-1">Create New Receipt</h1>
         <p className="text-slate-500">Generate a new transaction receipt for a parent.</p>
@@ -169,7 +168,7 @@ const NewReceipt = () => {
             </div>
          </form>
       </div>
-    </Layout>
+    </>
   );
 };
 

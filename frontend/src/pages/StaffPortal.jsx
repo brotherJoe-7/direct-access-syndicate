@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { CalendarCheck, Edit3, MessageSquareText, BookUp, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
@@ -48,7 +47,7 @@ const StaffPortal = () => {
     ];
 
     return (
-        <Layout>
+        <>
             <div className="max-w-5xl mx-auto">
                 <div className="bg-slate-900 rounded-3xl p-8 md:p-12 mb-8 text-white relative overflow-hidden shadow-2xl shadow-slate-900/20">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
@@ -90,7 +89,7 @@ const StaffPortal = () => {
                     })}
                 </div>
             </div>
-        </Layout>
+        </>
     );
 };
 

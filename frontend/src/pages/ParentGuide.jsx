@@ -1,10 +1,9 @@
 import React from 'react';
-import Layout from '../components/Layout';
 import { BookOpen, LogIn, Receipt, Bell, MessageCircle, ShieldCheck, ArrowRight } from 'lucide-react';
 
 const ParentGuide = () => {
   return (
-    <Layout>
+    <>
       <div className="mb-8">
         <h1 className="text-3xl font-black text-slate-800 mb-2">Parent User Guide</h1>
         <p className="text-slate-500 font-medium">Learn how to navigate and use the Direct Access Syndicate portal.</p>
@@ -113,10 +112,10 @@ const ParentGuide = () => {
               <a href="tel:078003333" className="block w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors">
                 Call 078003333
               </a>
-           </div>
+          </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
-import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users, Image, Music, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users, Image, Music, X, Mic, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 
@@ -13,15 +13,22 @@ const Community = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
   const { user } = useAuth();
   const fileInputRef = useRef(null);
 
   const fetchPosts = async () => {
     try {
       const { data } = await api.get('/community');
-      setPosts(data);
+      if (Array.isArray(data)) {
+        setPosts(data);
+      } else {
+        console.error('API returned non-array data for community', data);
+        setPosts([]);
+      }
     } catch (err) {
       console.error('Failed to fetch community posts', err);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -81,13 +88,19 @@ const Community = () => {
   };
 
   return (
-    <Layout>
-      <div className="flex flex-col h-[calc(100vh-12rem)] max-w-4xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+    <>
+      <div className="flex flex-col fixed inset-0 z-[100] md:relative md:inset-auto md:z-auto h-[100dvh] md:h-[calc(100vh-12rem)] w-full max-w-4xl mx-auto bg-white md:rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#075E54] text-white flex items-center justify-between shadow-md relative z-10 w-full">
-          <div className="flex items-center gap-4">
+        <div className="px-4 md:px-6 py-3 md:py-4 bg-[#075E54] text-white flex items-center justify-between shadow-md relative z-10 w-full">
+          <div className="flex items-center gap-2 md:gap-4">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="p-1 -ml-1 text-white hover:bg-white/20 rounded-full transition-colors md:hidden"
+            >
+              <ArrowLeft size={24} />
+            </button>
             <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm">
+                <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 backdrop-blur-sm">
                     <Users className="text-white" size={20} />
                 </div>
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-[#075E54] rounded-full"></div>
@@ -146,11 +159,11 @@ const Community = () => {
                               <img 
                                 src={post.file_url} 
                                 alt="Shared" 
-                                className="max-w-full rounded-lg shadow-sm border border-black/5 hover:opacity-95 transition-opacity cursor-pointer"
+                                className="max-w-full max-h-64 object-contain rounded-lg shadow-sm border border-black/5 hover:opacity-95 transition-opacity cursor-pointer"
                                 onClick={() => window.open(post.file_url, '_blank')}
                               />
                             ) : (
-                              <div className="bg-black/5 p-2 rounded-lg flex flex-col gap-2 min-w-[200px]">
+                              <div className="bg-black/5 p-2 rounded-lg flex flex-col gap-2 min-w-[200px] max-w-full sm:max-w-xs">
                                 <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
                                    <Music size={14} /> Audio Message
                                 </div>
@@ -265,7 +278,7 @@ const Community = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

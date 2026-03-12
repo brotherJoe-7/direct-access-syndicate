@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { Calendar, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -47,7 +46,7 @@ const Attendance = () => {
   }
 
   return (
-    <Layout>
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800 mb-1">Attendance Tracker</h1>
         <p className="text-slate-500">Record and view student attendance.</p>
@@ -130,7 +129,7 @@ const Attendance = () => {
         </div>
 
       </div>
-    </Layout>
+    </>
   );
 };
 

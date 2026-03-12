@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { Banknote, PlusCircle } from 'lucide-react';
 
@@ -39,7 +38,7 @@ const Expenses = () => {
   }
 
   return (
-    <Layout>
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-800 mb-1">Expenses Management</h1>
         <p className="text-slate-500">Record and track school expenditures.</p>
@@ -111,7 +110,7 @@ const Expenses = () => {
         </div>
 
       </div>
-    </Layout>
+    </>
   );
 };
 

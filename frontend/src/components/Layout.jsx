@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useLocation, NavLink } from 'react-router-dom';
+import { useLocation, NavLink, Outlet } from 'react-router-dom';
 import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap, Shield } from 'lucide-react';
 import AIChatbot from './AIChatbot';
 
@@ -34,6 +34,21 @@ const SidebarItem = ({ to, icon, label }) => {
 const Layout = ({ children }) => {
   const { role, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const sidebarNavRef = React.useRef(null);
+  const { pathname } = useLocation();
+  
+  // Restore scroll position on mount and path change
+  useEffect(() => {
+    const savedScrollPos = sessionStorage.getItem('sidebar-scroll');
+    if (savedScrollPos && sidebarNavRef.current) {
+      sidebarNavRef.current.scrollTop = parseInt(savedScrollPos, 10);
+    }
+  }, [pathname]);
+
+  // Handle scroll and save position
+  const handleSidebarScroll = (e) => {
+    sessionStorage.setItem('sidebar-scroll', e.target.scrollTop.toString());
+  };
   
   const adminLinks = [
     { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -102,7 +117,11 @@ const Layout = ({ children }) => {
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto w-[calc(100%-8px)] custom-scrollbar">
+        <nav 
+          ref={sidebarNavRef}
+          onScroll={handleSidebarScroll}
+          className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto w-full custom-scrollbar"
+        >
           <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 mt-2">Menu</p>
           {links.map((link) => (
             <SidebarItem key={link.to} {...link} />
@@ -144,7 +163,7 @@ const Layout = ({ children }) => {
         <div id="main-content" className="flex-1 overflow-y-auto p-4 sm:p-8 scroll-smooth">
           <ScrollToTop />
           <div className="max-w-7xl mx-auto pb-24 animate-fade-in-up">
-            {children}
+            {children || <Outlet />}
           </div>
         </div>
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { PlusCircle, MessageSquare, Star, Share2, Award, Calendar } from 'lucide-react';
@@ -90,7 +89,7 @@ const Feedbacks = () => {
   };
 
   return (
-    <Layout>
+    <>
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Student Reports & Feedback</h1>
@@ -245,7 +244,7 @@ const Feedbacks = () => {
           </div>
         </div>
       )}
-    </Layout>
+    </>
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { useVoice } from '../hooks/useVoice';
 import {
@@ -48,7 +47,7 @@ const ParentDashboard = () => {
     try {
       await api.post('/parents/profile/image', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       fetchData();
-    } catch (err) {
+    } catch {
       alert('Failed to upload image. Please try again.');
     } finally { setUploading(false); }
   };
@@ -64,12 +63,12 @@ const ParentDashboard = () => {
   };
 
   if (loading) return (
-    <Layout>
+    <>
       <div className="flex h-[80vh] items-center justify-center flex-col gap-4">
         <div className="w-10 h-10 border-4 border-green-600/20 border-t-green-600 rounded-full animate-spin"></div>
         <p className="text-slate-500 text-sm">Loading Parent Portal...</p>
       </div>
-    </Layout>
+    </>
   );
 
   const profileImgSrc = parent?.profile_img
@@ -77,7 +76,7 @@ const ParentDashboard = () => {
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(parent?.parent_name || 'P')}&background=059669&color=fff&size=200`;
 
   return (
-    <Layout>
+    <>
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Header: Profile + Listen */}
         <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl p-5 mb-5 text-white relative overflow-hidden">
@@ -208,7 +207,7 @@ const ParentDashboard = () => {
           ))}
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

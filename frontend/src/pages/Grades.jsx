@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { GraduationCap, Search, Plus, Trash2, Award, ClipboardList } from 'lucide-react';
 
@@ -69,7 +68,7 @@ const Grades = () => {
     );
 
     return (
-        <Layout>
+        <>
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Student List Sidebar */}
                 <div className="w-full lg:w-80 space-y-4">
@@ -230,7 +229,7 @@ const Grades = () => {
                     </form>
                 </div>
             )}
-        </Layout>
+        </>
     );
 };
 

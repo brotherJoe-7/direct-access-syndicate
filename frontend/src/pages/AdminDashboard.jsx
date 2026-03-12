@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
 import api from '../utils/api';
 import { DollarSign, WalletCards, ArrowUpRight, TrendingUp, Activity, Users, Clock, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -52,18 +51,18 @@ const AdminDashboard = () => {
   }, []);
 
   if (loading) return (
-      <Layout>
+      <>
           <div className="flex h-[80vh] items-center justify-center flex-col gap-4">
               <div className="w-12 h-12 border-4 border-green-600/20 border-t-green-600 rounded-full animate-spin"></div>
               <p className="text-slate-500 font-medium animate-pulse">Loading DAS Intelligence...</p>
           </div>
-      </Layout>
+      </>
   );
 
-  if (!stats) return <Layout><div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 font-medium">System Error: Failed to load intelligence data.</div></Layout>;
+  if (!stats) return <><div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 font-medium">System Error: Failed to load intelligence data.</div></>;
 
   return (
-    <Layout>
+    <>
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-2">Executive Overview</h1>
@@ -214,7 +213,7 @@ const AdminDashboard = () => {
             </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
