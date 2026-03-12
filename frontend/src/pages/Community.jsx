@@ -94,7 +94,22 @@ const Community = () => {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      
+      // Determine the best lightweight audio format supported by the browser
+      let mimeType = 'audio/webm'; // Default for Android/Chrome/Firefox
+      let ext = 'webm';
+      
+      if (!MediaRecorder.isTypeSupported('audio/webm') && MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4'; // Fallback for iOS/Safari
+          ext = 'm4a';
+      }
+
+      // Restrict bitrate aggressively to ~16 kbps for tiny voice notes (well under 1MB per min)
+      const options = { mimeType, audioBitsPerSecond: 16000 };
+      
+      // Some browsers don't support bitrate setting, so we fallback safely
+      const mediaRecorder = new MediaRecorder(stream, MediaRecorder.isTypeSupported(mimeType) ? options : undefined);
+      
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -105,8 +120,8 @@ const Community = () => {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const audioFile = new File([audioBlob], `voice_note_${Date.now()}.webm`, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        const audioFile = new File([audioBlob], `voice_note_${Date.now()}.${ext}`, { type: mimeType });
         setFile(audioFile);
         setFilePreview('audio');
         
