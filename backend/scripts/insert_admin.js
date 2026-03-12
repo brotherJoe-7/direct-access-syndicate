@@ -11,7 +11,7 @@ async function createAdmin() {
 
     try {
         const username = 'admin';
-        const password = 'password123'; // Standard fallback, user can change later if needed or already changed in local
+        const password = 'admin123'; // Standard fallback, user can change later if needed or already changed in local
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Check if admin already exists
