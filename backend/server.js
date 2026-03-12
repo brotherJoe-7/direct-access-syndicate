@@ -22,6 +22,7 @@ const parentsRoutes = require('./routes/parents');
 const communityRoutes = require('./routes/community');
 const learningRoutes = require('./routes/learning');
 const gradingRoutes = require('./routes/grading');
+const staffRoutes = require('./routes/staff');
 const path = require('path');
 
 app.use('/api/auth', authRoutes);
@@ -36,6 +37,7 @@ app.use('/api/parents', parentsRoutes);
 app.use('/api/community', communityRoutes);
 app.use('/api/learning', learningRoutes);
 app.use('/api/grades', gradingRoutes);
+app.use('/api/staff', staffRoutes);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

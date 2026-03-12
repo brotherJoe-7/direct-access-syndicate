@@ -19,6 +19,7 @@ import Community from './pages/Community';
 import Learning from './pages/Learning';
 import Grades from './pages/Grades';
 import StaffPortal from './pages/StaffPortal';
+import StaffManagement from './pages/StaffManagement';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
@@ -115,6 +116,11 @@ function App() {
             <Route path="/admin/grades" element={
               <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Grades />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/staff" element={
+              <ProtectedRoute roleRequired="admin">
+                <StaffManagement />
               </ProtectedRoute>
             } />
             

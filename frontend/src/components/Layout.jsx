@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap, Shield } from 'lucide-react';
 
 const SidebarItem = ({ to, icon, label }) => {
   const IconComponent = icon;
@@ -37,6 +37,7 @@ const Layout = ({ children }) => {
     { to: '/admin/community', icon: MessageSquare, label: 'Community' },
     { to: '/admin/learning', icon: BookOpen, label: 'Learning Hub' },
     { to: '/admin/grades', icon: GraduationCap, label: 'Grading System' },
+    { to: '/admin/staff', icon: Shield, label: 'Staff Management' },
     { to: '/admin/logs', icon: Settings, label: 'Audit Logs' },
   ];
 
