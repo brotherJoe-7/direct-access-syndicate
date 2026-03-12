@@ -31,9 +31,12 @@ const createPost = async (req, res) => {
             admin_id = userId;
         }
 
-        const file_url = req.file ? `/uploads/${req.file.filename}` : null;
+        let file_url = null;
         let file_type = null;
+        
         if (req.file) {
+            const base64Data = req.file.buffer.toString('base64');
+            file_url = `data:${req.file.mimetype};base64,${base64Data}`;
             file_type = req.file.mimetype.startsWith('image/') ? 'image' : 'audio';
         }
 
@@ -50,8 +53,7 @@ const createPost = async (req, res) => {
             console.error('File context:', {
                 originalname: req.file.originalname,
                 mimetype: req.file.mimetype,
-                size: req.file.size,
-                path: req.file.path
+                size: req.file.size
             });
         }
         res.status(500).json({ message: 'Error creating community post', detail: error.message });
