@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { NavLink } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap, Shield } from 'lucide-react';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) mainContent.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
 const SidebarItem = ({ to, icon, label }) => {
   const IconComponent = icon;
@@ -131,7 +140,8 @@ const Layout = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+        <div id="main-content" className="flex-1 overflow-y-auto p-4 sm:p-8 scroll-smooth">
+          <ScrollToTop />
           <div className="max-w-7xl mx-auto pb-24 animate-fade-in-up">
             {children}
           </div>

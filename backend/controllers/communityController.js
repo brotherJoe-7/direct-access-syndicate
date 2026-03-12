@@ -17,8 +17,9 @@ const createPost = async (req, res) => {
         const author_role = req.user.role;
         const userId = req.user.id;
 
-        if (!message || message.trim() === '') {
-            return res.status(400).json({ message: 'Message content is required' });
+        // Message is optional if a file is uploaded
+        if ((!message || message.trim() === '') && !req.file) {
+            return res.status(400).json({ message: 'Message content or file is required' });
         }
 
         let parent_id = null;
@@ -30,15 +31,20 @@ const createPost = async (req, res) => {
             admin_id = userId;
         }
 
+        const file_url = req.file ? `/uploads/${req.file.filename}` : null;
+        let file_type = null;
+        if (req.file) {
+            file_type = req.file.mimetype.startsWith('image/') ? 'image' : 'audio';
+        }
+
         const { rows } = await pool.query(
-            'INSERT INTO community_posts (author_name, author_role, message, parent_id, admin_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [author_name, author_role, message, parent_id, admin_id]
+            'INSERT INTO community_posts (author_name, author_role, message, parent_id, admin_id, file_url, file_type) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [author_name, author_role, message || '', parent_id, admin_id, file_url, file_type]
         );
 
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error creating community post:', error);
-        console.error('User Context:', req.user);
         res.status(500).json({ message: 'Error creating community post', detail: error.message });
     }
 };

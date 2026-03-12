@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
-import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users } from 'lucide-react';
+import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users, Image, Music, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
   const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const scrollRef = useRef(null);
   const { user } = useAuth();
+  const fileInputRef = useRef(null);
 
   const fetchPosts = async () => {
     try {
@@ -26,34 +29,55 @@ const Community = () => {
 
   useEffect(() => {
     fetchPosts();
-    // Refresh every 30 seconds
     const interval = setInterval(fetchPosts, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-        // Since flex-col-reverse is used, scrolltop should be 0 or it automatically stays at bottom.
-        // If sorting isn't perfectly reverse, we explicitly scroll to bottom.
-        const scrollElement = scrollRef.current;
-        scrollElement.scrollTop = scrollElement.scrollHeight;
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      if (selectedFile.type.startsWith('image/')) {
+        setFilePreview(URL.createObjectURL(selectedFile));
+      } else {
+        setFilePreview('audio');
+      }
     }
-  }, [posts]);
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    setFilePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() && !file) return;
 
     setSending(true);
+    const formData = new FormData();
+    formData.append('message', message);
+    if (file) {
+      formData.append('file', file);
+    }
+
     try {
-      const { data } = await api.post('/community', { message });
+      const { data } = await api.post('/community', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setPosts([data, ...posts]);
       setMessage('');
+      removeFile();
     } catch (err) {
       alert(`Failed to send message: ${err.response?.data?.detail || err.message}`);
     } finally {
       setSending(false);
     }
+  };
+
+  const showCallComingSoon = () => {
+      alert("Calls are currently not available. This feature is coming soon to the Sierra Leone DAS platform!");
   };
 
   return (
@@ -74,8 +98,8 @@ const Community = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 text-white/90">
-             <Video size={20} className="cursor-pointer hover:text-white transition-colors hidden sm:block" />
-             <PhoneCall size={18} className="cursor-pointer hover:text-white transition-colors hidden sm:block" />
+             <Video size={20} className="cursor-pointer hover:text-white transition-colors hidden sm:block" onClick={showCallComingSoon} />
+             <PhoneCall size={18} className="cursor-pointer hover:text-white transition-colors hidden sm:block" onClick={showCallComingSoon} />
           </div>
         </div>
 
@@ -84,7 +108,6 @@ const Community = () => {
           ref={scrollRef}
           className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 flex flex-col-reverse bg-[#E5DDD5] relative"
         >
-          {/* subtle pattern background via CSS if needed, using generic color for now */}
           <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
           {loading ? (
             <div className="flex items-center justify-center h-full">
@@ -117,7 +140,29 @@ const Community = () => {
                         ? 'bg-[#DCF8C6] text-slate-800 rounded-tr-none' 
                         : 'bg-white text-slate-800 rounded-tl-none'
                     }`}>
-                        {post.message}
+                        {post.file_url && (
+                          <div className="mb-2">
+                            {post.file_type === 'image' ? (
+                              <img 
+                                src={post.file_url} 
+                                alt="Shared" 
+                                className="max-w-full rounded-lg shadow-sm border border-black/5 hover:opacity-95 transition-opacity cursor-pointer"
+                                onClick={() => window.open(post.file_url, '_blank')}
+                              />
+                            ) : (
+                              <div className="bg-black/5 p-2 rounded-lg flex flex-col gap-2 min-w-[200px]">
+                                <div className="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tighter">
+                                   <Music size={14} /> Audio Message
+                                </div>
+                                <audio controls className="w-full h-8 brightness-95 contrast-125">
+                                  <source src={post.file_url} />
+                                </audio>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {post.message && <div className="break-words whitespace-pre-wrap">{post.message}</div>}
                         
                         <div className={`flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
                             <span className="text-[10px] text-slate-400 font-medium uppercase">
@@ -138,24 +183,67 @@ const Community = () => {
           )}
         </div>
 
-        {/* Input */}
-        <div className="p-3 bg-[#f0f2f5] border-t border-slate-200 flex items-center pr-4 z-20 relative">
-          <form onSubmit={handleSend} className="flex gap-2 w-full items-center">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type a message"
-              className="flex-1 px-5 py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[15px] shadow-sm"
-            />
-            <button
-              type="submit"
-              disabled={sending || !message.trim()}
-              className="w-12 h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
+        {/* Input area */}
+        <div className="bg-[#f0f2f5] border-t border-slate-200 z-20 relative px-4 py-3 flex flex-col gap-2">
+          {filePreview && (
+            <div className="bg-white p-2 rounded-xl flex items-center justify-between border border-slate-200 shadow-sm animate-slide-up">
+              <div className="flex items-center gap-3">
+                {filePreview === 'audio' ? (
+                   <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center">
+                     <Music size={24} />
+                   </div>
+                ) : (
+                   <img src={filePreview} className="w-12 h-12 rounded-lg object-cover border border-slate-100" />
+                )}
+                <div>
+                   <p className="text-xs font-bold text-slate-700">{file.name}</p>
+                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Selected {file.type.split('/')[0]}</p>
+                </div>
+              </div>
+              <button 
+                onClick={removeFile}
+                className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                title="Remove attachment"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 pr-2">
+            <button 
+                type="button" 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-[#00A884] transition-colors rounded-full hover:bg-slate-200"
+                title="Attach photo or audio"
             >
-              {sending ? <Clock size={20} className="animate-spin" /> : <Send size={20} className="ml-1" />}
+              <Image size={24} />
             </button>
-          </form>
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*,audio/*"
+              className="hidden" 
+            />
+            
+            <form onSubmit={handleSend} className="flex gap-2 w-full items-center">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Type a message"
+                className="flex-1 px-5 py-3.5 bg-white border-none rounded-full outline-none focus:ring-1 focus:ring-green-500/30 transition-shadow font-medium text-[15px] shadow-sm"
+              />
+              <button
+                type="submit"
+                disabled={sending || (!message.trim() && !file)}
+                className="w-12 h-12 flex items-center justify-center bg-[#00A884] text-white rounded-full shadow-md hover:bg-[#008f6f] transition-all active:scale-95 disabled:opacity-50 disabled:active:scale-100 flex-shrink-0"
+              >
+                {sending ? <Clock size={20} className="animate-spin" /> : <Send size={20} className="ml-1" />}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </Layout>

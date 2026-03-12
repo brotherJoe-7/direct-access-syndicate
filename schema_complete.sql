@@ -125,6 +125,8 @@ CREATE TABLE community_posts (
   message TEXT NOT NULL,
   parent_id INT REFERENCES parents(id) ON DELETE SET NULL,
   admin_id INT REFERENCES admins(id) ON DELETE SET NULL,
+  file_url VARCHAR(500),
+  file_type VARCHAR(50),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
