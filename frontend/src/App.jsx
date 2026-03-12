@@ -21,6 +21,7 @@ import Grades from './pages/Grades';
 import StaffPortal from './pages/StaffPortal';
 import StaffManagement from './pages/StaffManagement';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import Layout from './components/Layout';
 
 const ProtectedRoute = ({ children, roleRequired }) => {
   const { user, role } = useAuth();
