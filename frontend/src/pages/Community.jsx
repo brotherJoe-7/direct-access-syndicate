@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
-import { Send, MessageSquare, Clock, User, PhoneCall, Video } from 'lucide-react';
+import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 

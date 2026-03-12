@@ -15,14 +15,24 @@ const createPost = async (req, res) => {
         const { message } = req.body;
         const author_name = req.user.name;
         const author_role = req.user.role;
+        const userId = req.user.id;
 
         if (!message || message.trim() === '') {
             return res.status(400).json({ message: 'Message content is required' });
         }
 
+        let parent_id = null;
+        let admin_id = null;
+
+        if (author_role === 'parent') {
+            parent_id = userId;
+        } else {
+            admin_id = userId;
+        }
+
         const { rows } = await pool.query(
-            'INSERT INTO community_posts (author_name, author_role, message) VALUES ($1, $2, $3) RETURNING *',
-            [author_name, author_role, message]
+            'INSERT INTO community_posts (author_name, author_role, message, parent_id, admin_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [author_name, author_role, message, parent_id, admin_id]
         );
 
         res.status(201).json(rows[0]);
