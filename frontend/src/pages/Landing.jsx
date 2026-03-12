@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PublicNav from '../components/PublicNav';
+import VisitorChatbot from '../components/VisitorChatbot';
 import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
@@ -199,6 +200,9 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      {/* AI Visitor Chatbot — floating widget for all visitors */}
+      <VisitorChatbot />
     </div>
   );
 };
