@@ -34,11 +34,14 @@ const createMaterial = async (req, res) => {
         let filePath = null;
 
         if (req.file) {
-            finalContentLink = `/uploads/learning/${req.file.filename}`;
+            // Convert buffer to base64 data URI (Vercel-compatible)
+            const base64Data = req.file.buffer.toString('base64');
+            finalContentLink = `data:${req.file.mimetype};base64,${base64Data}`;
             filePath = finalContentLink;
-            // Infer type if not explicitly passed
             if (!material_type) {
-                 finalMaterialType = req.file.mimetype.startsWith('video/') ? 'local_video' : 'document';
+                if (req.file.mimetype.startsWith('video/')) finalMaterialType = 'local_video';
+                else if (req.file.mimetype.startsWith('image/')) finalMaterialType = 'image';
+                else finalMaterialType = 'document';
             }
         } else {
             if (!finalContentLink) {
@@ -51,13 +54,13 @@ const createMaterial = async (req, res) => {
 
         const { rows } = await pool.query(
             'INSERT INTO learning_materials (title, description, content_link, level_target, created_by, material_type, file_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [title, description, finalContentLink, level_target, created_by, finalMaterialType, filePath]
+            [title, description || '', finalContentLink, level_target, created_by, finalMaterialType, filePath]
         );
 
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error creating learning material:', error);
-        res.status(500).json({ message: 'Error creating learning material' });
+        res.status(500).json({ message: 'Error creating learning material', detail: error.message });
     }
 };
 

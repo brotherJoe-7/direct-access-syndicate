@@ -1,26 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const { getMaterials, createMaterial, deleteMaterial } = require('../controllers/learningController');
 const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
 
-const uploadDir = path.join(__dirname, '../uploads/learning');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, `learning_${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
-const upload = multer({ storage });
+// Use memory storage to avoid Vercel read-only filesystem crash
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/', verifyToken, getMaterials);
 router.post('/', verifyAdmin, upload.single('file'), createMaterial);
