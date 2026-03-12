@@ -20,12 +20,12 @@ import Learning from './pages/Learning';
 import Grades from './pages/Grades';
 import StaffPortal from './pages/StaffPortal';
 import StaffManagement from './pages/StaffManagement';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { CallProvider } from './context/CallContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
-import VideoRoom from './pages/VideoRoom'; // Will create this next
-import IncomingCall from './components/IncomingCall'; // Will create this next
+import VideoRoom from './pages/VideoRoom';
+import IncomingCall from './components/IncomingCall';
 
 const RoleBasedRedirect = () => {
     const { user, role } = useAuth();
@@ -43,6 +43,7 @@ function App() {
           <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
             <IncomingCall />
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/apply" element={<Apply />} />
@@ -51,8 +52,17 @@ function App() {
               <Route path="/about" element={<About />} />
               
               <Route path="/dashboard" element={<RoleBasedRedirect />} />
+
+              {/* Secure Full Screen Routes (No Sidebar) */}
+              <Route path="/video-call/:roomName" element={
+                <ProtectedRoute>
+                  <VideoRoom />
+                </ProtectedRoute>
+              } />
               
+              {/* Protected Routes with Sidebar Layout */}
               <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                {/* Admin/Teacher Routes */}
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/portal" element={<StaffPortal />} />
                 <Route path="/admin/receipts" element={<Receipts />} />
@@ -66,8 +76,8 @@ function App() {
                 <Route path="/admin/learning" element={<Learning />} />
                 <Route path="/admin/grades" element={<Grades />} />
                 <Route path="/admin/staff" element={<StaffManagement />} />
-                <Route path="/video-call/:roomName" element={<VideoRoom />} />
 
+                {/* Parent Routes */}
                 <Route path="/parent" element={<ParentDashboard />} />
                 <Route path="/parent/receipts" element={<Receipts />} />
                 <Route path="/parent/attendance" element={<Attendance />} />
@@ -75,7 +85,6 @@ function App() {
                 <Route path="/parent/guide" element={<ParentGuide />} />
                 <Route path="/parent/community" element={<Community />} />
                 <Route path="/parent/learning" element={<Learning />} />
-                <Route path="/video-call/:roomName" element={<VideoRoom />} />
               </Route>
               
               <Route path="*" element={<Navigate to="/" replace />} />
