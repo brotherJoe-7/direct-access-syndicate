@@ -1,6 +1,6 @@
 // backend/controllers/authController.js
 const pool = require('../config/db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const login = async (req, res) => {
@@ -59,7 +59,11 @@ const login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid username/email or password' });
   } catch (error) {
     console.error('Login Error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ 
+      message: 'Server error during login', 
+      debug: error.message,
+      stack: error.stack
+    });
   }
 };
 
