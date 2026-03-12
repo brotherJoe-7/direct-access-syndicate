@@ -20,74 +20,68 @@ import Learning from './pages/Learning';
 import Grades from './pages/Grades';
 import StaffPortal from './pages/StaffPortal';
 import StaffManagement from './pages/StaffManagement';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { CallProvider } from './context/CallContext';
 import Layout from './components/Layout';
-
-const ProtectedRoute = ({ children, roleRequired }) => {
-  const { user, role } = useAuth();
-  if (!user) return <Navigate to="/login" />;
-  
-  if (roleRequired) {
-    const roles = Array.isArray(roleRequired) ? roleRequired : [roleRequired];
-    if (!roles.includes(role)) return <Navigate to="/" />;
-  }
-  
-  return children;
-};
+import ProtectedRoute from './components/ProtectedRoute';
+import VideoRoom from './pages/VideoRoom'; // Will create this next
+import IncomingCall from './components/IncomingCall'; // Will create this next
 
 const RoleBasedRedirect = () => {
-  const { user, role } = useAuth();
-  if (!user) return <Navigate to="/login" />;
-  if (role === 'admin') return <Navigate to="/admin" />;
-  if (role === 'teacher') return <Navigate to="/admin/portal" />;
-  return <Navigate to="/parent" />;
+    const { user, role } = useAuth();
+    if (!user) return <Navigate to="/login" />;
+    if (role === 'admin') return <Navigate to="/admin" />;
+    if (role === 'teacher') return <Navigate to="/admin/portal" />;
+    return <Navigate to="/parent" />;
 };
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/apply" element={<Apply />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/about" element={<About />} />
-            
-            {/* Redirect / to dash based on role or login */}
-            <Route path="/dashboard" element={<RoleBasedRedirect />} />
-            
-            {/* Protected Routes with Persistent Layout */}
-            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/portal" element={<StaffPortal />} />
-              <Route path="/admin/receipts" element={<Receipts />} />
-              <Route path="/admin/receipts/new" element={<NewReceipt />} />
-              <Route path="/admin/students" element={<Students />} />
-              <Route path="/admin/parents" element={<AdminParents />} />
-              <Route path="/admin/attendance" element={<Attendance />} />
-              <Route path="/admin/expenses" element={<Expenses />} />
-              <Route path="/admin/reports" element={<Feedbacks />} />
-              <Route path="/admin/community" element={<Community />} />
-              <Route path="/admin/learning" element={<Learning />} />
-              <Route path="/admin/grades" element={<Grades />} />
-              <Route path="/admin/staff" element={<StaffManagement />} />
+        <CallProvider>
+          <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+            <IncomingCall />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/apply" element={<Apply />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/about" element={<About />} />
+              
+              <Route path="/dashboard" element={<RoleBasedRedirect />} />
+              
+              <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/portal" element={<StaffPortal />} />
+                <Route path="/admin/receipts" element={<Receipts />} />
+                <Route path="/admin/receipts/new" element={<NewReceipt />} />
+                <Route path="/admin/students" element={<Students />} />
+                <Route path="/admin/parents" element={<AdminParents />} />
+                <Route path="/admin/attendance" element={<Attendance />} />
+                <Route path="/admin/expenses" element={<Expenses />} />
+                <Route path="/admin/reports" element={<Feedbacks />} />
+                <Route path="/admin/community" element={<Community />} />
+                <Route path="/admin/learning" element={<Learning />} />
+                <Route path="/admin/grades" element={<Grades />} />
+                <Route path="/admin/staff" element={<StaffManagement />} />
+                <Route path="/video-call/:roomName" element={<VideoRoom />} />
 
-              {/* Parent Routes */}
-              <Route path="/parent" element={<ParentDashboard />} />
-              <Route path="/parent/receipts" element={<Receipts />} />
-              <Route path="/parent/attendance" element={<Attendance />} />
-              <Route path="/parent/reports" element={<Feedbacks />} />
-              <Route path="/parent/guide" element={<ParentGuide />} />
-              <Route path="/parent/community" element={<Community />} />
-              <Route path="/parent/learning" element={<Learning />} />
-            </Route>
-            
-          </Routes>
-        </div>
+                <Route path="/parent" element={<ParentDashboard />} />
+                <Route path="/parent/receipts" element={<Receipts />} />
+                <Route path="/parent/attendance" element={<Attendance />} />
+                <Route path="/parent/reports" element={<Feedbacks />} />
+                <Route path="/parent/guide" element={<ParentGuide />} />
+                <Route path="/parent/community" element={<Community />} />
+                <Route path="/parent/learning" element={<Learning />} />
+                <Route path="/video-call/:roomName" element={<VideoRoom />} />
+              </Route>
+              
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </CallProvider>
       </AuthProvider>
     </Router>
   );

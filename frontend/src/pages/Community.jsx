@@ -3,6 +3,7 @@ import api from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { Send, MessageSquare, Clock, User, PhoneCall, Video, Users, Image, Music, X, Mic, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCall } from '../context/CallContext';
 import { formatDate } from '../utils/formatDate';
 
 const Community = () => {
@@ -23,6 +24,7 @@ const Community = () => {
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { startCall } = useCall();
   const fileInputRef = useRef(null);
 
   const fetchPosts = async () => {
@@ -167,8 +169,14 @@ const Community = () => {
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
   };
 
-  const showCallComingSoon = () => {
-      alert("Calls are currently not available. This feature is coming soon to the Sierra Leone DAS platform!");
+  const initiateGroupCall = async (type = 'video') => {
+      const roomName = `das-community-${Date.now()}`;
+      const success = await startCall(roomName, type);
+      if (success) {
+          navigate(`/video-call/${roomName}`);
+      } else {
+          alert("Failed to initiate call. Please check your connection.");
+      }
   };
 
   return (
@@ -194,9 +202,17 @@ const Community = () => {
               <p className="text-xs text-white/80 font-medium">Admins, Teachers, Parents</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-white/90">
-             <Video size={20} className="cursor-pointer hover:text-white transition-colors hidden sm:block" onClick={showCallComingSoon} />
-             <PhoneCall size={18} className="cursor-pointer hover:text-white transition-colors hidden sm:block" onClick={showCallComingSoon} />
+          <div className="flex items-center gap-3 md:gap-4 text-white/90">
+             <Video 
+                size={22} 
+                className="cursor-pointer hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full" 
+                onClick={() => initiateGroupCall('video')} 
+             />
+             <PhoneCall 
+                size={20} 
+                className="cursor-pointer hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full" 
+                onClick={() => initiateGroupCall('audio')} 
+             />
           </div>
         </div>
 
