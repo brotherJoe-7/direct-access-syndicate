@@ -48,6 +48,7 @@ try {
     app.use('/api/learning', (req, res, next) => require('./routes/learning')(req, res, next));
     app.use('/api/grades', (req, res, next) => require('./routes/grading')(req, res, next));
     app.use('/api/staff', (req, res, next) => require('./routes/staff')(req, res, next));
+    app.use('/api/ai', (req, res, next) => require('./routes/ai')(req, res, next));
     
     console.log('Router registration complete.');
 } catch (error) {

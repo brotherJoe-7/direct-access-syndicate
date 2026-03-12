@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, NavLink } from 'react-router-dom';
 import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap, Shield } from 'lucide-react';
+import AIChatbot from './AIChatbot';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -146,6 +147,9 @@ const Layout = ({ children }) => {
             {children}
           </div>
         </div>
+
+        {/* AI Assistant */}
+        <AIChatbot />
       </main>
     </div>
   );
