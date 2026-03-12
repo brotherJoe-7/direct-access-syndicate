@@ -40,6 +40,15 @@ const Layout = ({ children }) => {
     { to: '/admin/logs', icon: Settings, label: 'Audit Logs' },
   ];
 
+  const teacherLinks = [
+    { to: '/admin/portal', icon: FileText, label: 'Staff Portal' },
+    { to: '/admin/attendance', icon: Calendar, label: 'Attendance' },
+    { to: '/admin/reports', icon: FileText, label: 'Reports' },
+    { to: '/admin/community', icon: MessageSquare, label: 'Community' },
+    { to: '/admin/learning', icon: BookOpen, label: 'Learning Hub' },
+    { to: '/admin/grades', icon: GraduationCap, label: 'Grading System' },
+  ];
+
   const parentLinks = [
     { to: '/parent', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/parent/receipts', icon: Receipt, label: 'Receipts' },
@@ -51,7 +60,7 @@ const Layout = ({ children }) => {
     { to: '/parent/guide', icon: BookOpen, label: 'Parent Guide' },
   ];
 
-  const links = role === 'admin' ? adminLinks : parentLinks;
+  const links = role === 'admin' ? adminLinks : (role === 'teacher' ? teacherLinks : parentLinks);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans relative">

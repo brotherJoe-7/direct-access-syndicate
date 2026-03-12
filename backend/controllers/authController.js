@@ -13,9 +13,11 @@ const login = async (req, res) => {
       const admin = admins[0];
       const isMatch = await bcrypt.compare(password, admin.password);
       if (isMatch) {
+        const userRole = admin.role || 'admin';
+        
         // Create JWT Token
         const token = jwt.sign(
-          { id: admin.id, role: 'admin', name: admin.username },
+          { id: admin.id, role: userRole, name: admin.username },
           process.env.JWT_SECRET,
           { expiresIn: '1d' }
         );
@@ -23,10 +25,10 @@ const login = async (req, res) => {
         // Log the activity
         await pool.query(
           'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
-          [admin.id, 'admin', 'login', `Admin ${admin.username} logged in`]
+          [admin.id, userRole, 'login', `${userRole} ${admin.username} logged in`]
         );
 
-        return res.json({ token, role: 'admin', user: { id: admin.id, name: admin.username } });
+        return res.json({ token, role: userRole, user: { id: admin.id, name: admin.username } });
       }
     }
 

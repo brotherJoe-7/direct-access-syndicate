@@ -24,14 +24,21 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 const ProtectedRoute = ({ children, roleRequired }) => {
   const { user, role } = useAuth();
   if (!user) return <Navigate to="/login" />;
-  if (roleRequired && role !== roleRequired) return <Navigate to="/" />;
+  
+  if (roleRequired) {
+    const roles = Array.isArray(roleRequired) ? roleRequired : [roleRequired];
+    if (!roles.includes(role)) return <Navigate to="/" />;
+  }
+  
   return children;
 };
 
 const RoleBasedRedirect = () => {
   const { user, role } = useAuth();
   if (!user) return <Navigate to="/login" />;
-  return role === 'admin' ? <Navigate to="/admin" /> : <Navigate to="/parent" />;
+  if (role === 'admin') return <Navigate to="/admin" />;
+  if (role === 'teacher') return <Navigate to="/admin/portal" />;
+  return <Navigate to="/parent" />;
 };
 
 function App() {
@@ -56,7 +63,7 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/admin/portal" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <StaffPortal />
               </ProtectedRoute>
             } />
@@ -81,7 +88,7 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/admin/attendance" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Attendance />
               </ProtectedRoute>
             } />
@@ -91,22 +98,22 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/admin/reports" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Feedbacks />
               </ProtectedRoute>
             } />
             <Route path="/admin/community" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Community />
               </ProtectedRoute>
             } />
             <Route path="/admin/learning" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Learning />
               </ProtectedRoute>
             } />
             <Route path="/admin/grades" element={
-              <ProtectedRoute roleRequired="admin">
+              <ProtectedRoute roleRequired={['admin', 'teacher']}>
                 <Grades />
               </ProtectedRoute>
             } />
