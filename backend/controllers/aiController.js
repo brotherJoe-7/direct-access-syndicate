@@ -12,8 +12,7 @@ const chatWithAI = async (req, res) => {
         if (!message) {
             return res.status(400).json({ message: 'Message is required' });
         }
-
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const systemPrompt = `
 You are the Official AI Assistant for the "Direct Access Syndicate" (DAS) platform in Sierra Leone. 
