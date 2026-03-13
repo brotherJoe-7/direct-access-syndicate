@@ -58,7 +58,7 @@ const About = () => {
 
           <div className="mt-10">
               <h2 className="text-2xl font-black text-center text-slate-800 mb-8">Our Leadership</h2>
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                   {/* Proprietor */}
                   <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
                       <div className="w-32 h-32 mx-auto rounded-full bg-slate-100 mb-6 overflow-hidden border-4 border-white shadow-lg">
@@ -66,7 +66,7 @@ const About = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-1">Alpha Amadu Bah</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Founder & Proprietor</p>
-                      <p className="text-slate-600 leading-relaxed">Alpha Amadu Bah founded DAS with the vision of creating an Africa-centric educational hub powered by world-class technology. He continues to steer the academy's growth with unwavering dedication to excellence.</p>
+                      <p className="text-slate-600 leading-relaxed text-sm">Alpha Amadu Bah founded DAS with the vision of creating an Africa-centric educational hub powered by world-class technology. He steers the academy's growth.</p>
                   </div>
 
                   {/* Manager/Finance */}
@@ -74,9 +74,21 @@ const About = () => {
                       <div className="w-32 h-32 mx-auto rounded-full bg-slate-100 mb-6 overflow-hidden border-4 border-white shadow-lg">
                           <img src={managerImg} alt="Financial Manager" className="w-full h-full object-cover" />
                       </div>
-                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Joseph Nimneh</h3>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Pastor Pratt</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Financial Manager</p>
-                      <p className="text-slate-600 leading-relaxed">Joseph Nimneh oversees the digital transition of our financial pipeline. His implementation of Direct Access Syndicate has achieved 100% transparency in school fee tracking for our parent community.</p>
+                      <p className="text-slate-600 leading-relaxed text-sm">Pastor Pratt oversees the financial pipeline of our academy. Their stewardship has achieved 100% transparency in school fee tracking for our parent community.</p>
+                  </div>
+
+                  {/* Web Developer */}
+                  <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
+                      <div className="w-32 h-32 mx-auto rounded-full border-slate-200 mb-6 overflow-hidden border-4 border-white shadow-lg bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                          <svg className="w-16 h-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                          </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-1">Joseph Nimneh</h3>
+                      <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Lead Web Developer</p>
+                      <p className="text-slate-600 leading-relaxed text-sm">Joseph Nimneh engineered the Direct Access Syndicate platform. He architected the digital infrastructure that powers our modern parent, student, and staff ecosystem.</p>
                   </div>
               </div>
           </div>

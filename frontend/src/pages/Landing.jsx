@@ -25,10 +25,16 @@ const Landing = () => {
       desc: 'Visionary leader dedicated to educational excellence and community development in Sierra Leone.'
     },
     {
-      name: 'Joseph Nimneh',
+      name: 'Pastor Pratt',
       role: 'Financial Manager',
       image: managerImg,
       desc: 'Expert in financial stewardship, ensuring the Syndicate\'s resources are managed with integrity.'
+    },
+    {
+      name: 'Joseph Nimneh',
+      role: 'Lead Web Developer',
+      image: 'https://api.dicebear.com/7.x/initials/svg?seed=JN&backgroundColor=0ea5e9',
+      desc: 'Architect of the digital infrastructure powering DAS, bringing modern tech solutions to education.'
     }
   ];
 
