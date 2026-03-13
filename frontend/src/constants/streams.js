@@ -37,8 +37,8 @@ export const STREAMS = [
     {
         name: 'Primary 6 National',
         id: 'Primary',
-        pricePerSubject: 30,
-        basePrice: 150,
+        pricePerSubject: 0,
+        basePrice: 200,
         subjects: ['Mathematics', 'English Language', 'Quantitative', 'Verbal Aptitude', 'General Science', 'Social Studies']
     }
 ];

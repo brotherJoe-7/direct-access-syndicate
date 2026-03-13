@@ -109,8 +109,8 @@ const Apply = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-bold tracking-wide text-slate-700 mb-2 uppercase">Previous School (Optional)</label>
-                            <input type="text" value={formData.previous_school} onChange={(e) => setFormData({...formData, previous_school: e.target.value})} placeholder="Name of last school attended" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all placeholder:text-slate-400" />
+                            <label className="block text-sm font-bold tracking-wide text-slate-700 mb-2 uppercase">School (Optional)</label>
+                            <input type="text" value={formData.previous_school} onChange={(e) => setFormData({...formData, previous_school: e.target.value})} placeholder="Name of school attended" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition-all placeholder:text-slate-400" />
                         </div>
                         
                         <div className="sm:col-span-2">
