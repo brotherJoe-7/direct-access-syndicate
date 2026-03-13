@@ -13,6 +13,7 @@ import gallery5 from '../assets/gallery_5.jpeg';
 import gallery6 from '../assets/gallery_6.jpeg';
 import proprietorImg from '../assets/proprietor.jpeg';
 import managerImg from '../assets/financial_manager.jpeg';
+import developerImg from '../assets/developer.jpeg';
 
 const Landing = () => {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ const Landing = () => {
     {
       name: 'Joseph Nimneh',
       role: 'Lead Web Developer',
-      image: 'https://api.dicebear.com/7.x/initials/svg?seed=JN&backgroundColor=0ea5e9',
+      image: developerImg,
       desc: 'Architect of the digital infrastructure powering DAS, bringing modern tech solutions to education.'
     }
   ];

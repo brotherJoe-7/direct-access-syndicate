@@ -6,6 +6,7 @@ import logo from '../assets/logo.png';
 import gallery4 from '../assets/gallery_4.jpeg';
 import proprietorImg from '../assets/proprietor.jpeg';
 import managerImg from '../assets/financial_manager.jpeg';
+import developerImg from '../assets/developer.jpeg';
 
 const About = () => {
   return (
@@ -81,10 +82,8 @@ const About = () => {
 
                   {/* Web Developer */}
                   <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl shadow-slate-200/50 text-center hover:-translate-y-1 transition-transform">
-                      <div className="w-32 h-32 mx-auto rounded-full border-slate-200 mb-6 overflow-hidden border-4 border-white shadow-lg bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                          <svg className="w-16 h-16 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                          </svg>
+                      <div className="w-32 h-32 mx-auto rounded-full bg-slate-100 mb-6 overflow-hidden border-4 border-white shadow-lg">
+                          <img src={developerImg} alt="Lead Web Developer" className="w-full h-full object-cover" />
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-1">Joseph Nimneh</h3>
                       <p className="text-green-600 font-medium tracking-wide text-sm uppercase mb-4">Lead Web Developer</p>
