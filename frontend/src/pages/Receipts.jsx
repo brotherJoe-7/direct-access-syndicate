@@ -167,9 +167,17 @@ const Receipts = () => {
         });
         setSharingReceipt(null);
       } else {
-        // Fallback for Desktop: Download the minimal PDF, then open WhatsApp Web text
+        // Fallback for Desktop: Download the PDF, alert user, open WhatsApp Web
         doc.save(filename);
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg + '\n\n*Note: The PDF receipt has been downloaded to your device.*')}`, '_blank', 'noopener,noreferrer');
+        alert(`Your PDF Receipt (${filename}) has been downloaded!\n\nWhatsApp Web will now open. Please paste the message and DRAG AND DROP the downloaded PDF into the chat to send it.`);
+        
+        // Detect if it's likely a desktop (coarse check)
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const waUrl = isMobile 
+            ? `whatsapp://send?text=${encodeURIComponent(msg)}` 
+            : `https://web.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
         setSharingReceipt(null);
       }
     } catch (err) {

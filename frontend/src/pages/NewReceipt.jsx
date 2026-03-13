@@ -13,6 +13,7 @@ const NewReceipt = () => {
     method: 'Cash',
     amount: ''
   });
+  const [isAutoFilled, setIsAutoFilled] = useState(false);
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,8 +53,14 @@ const NewReceipt = () => {
       level: student.level,
       amount: student.total_fees_assessed || ''
     });
+    setIsAutoFilled(true);
     setSearchQuery('');
     setFilteredStudents([]);
+  };
+
+  const clearSelection = () => {
+    setFormData({ ...formData, student_name: '', parent_name: '', level: '', amount: '' });
+    setIsAutoFilled(false);
   };
 
   const handleChange = (e) => {
@@ -127,15 +134,20 @@ const NewReceipt = () => {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
                 <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Parent/Guardian Name</label>
-                    <input type="text" name="parent_name" required placeholder="Full Name" value={formData.parent_name} onChange={handleChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" name="parent_name" required placeholder="Full Name" value={formData.parent_name} onChange={handleChange} readOnly={isAutoFilled} className={`w-full px-4 py-3 border rounded-xl focus:outline-none transition-all ${isAutoFilled ? 'bg-green-50 border-green-200 text-green-900 font-bold cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-green-500'}`} />
                 </div>
                 <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Student Name</label>
-                    <input type="text" name="student_name" required placeholder="Full Name" value={formData.student_name} onChange={handleChange} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
+                    <input type="text" name="student_name" required placeholder="Full Name" value={formData.student_name} onChange={handleChange} readOnly={isAutoFilled} className={`w-full px-4 py-3 border rounded-xl focus:outline-none transition-all ${isAutoFilled ? 'bg-green-50 border-green-200 text-green-900 font-bold cursor-not-allowed' : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-green-500'}`} />
                 </div>
+                {isAutoFilled && (
+                    <button type="button" onClick={clearSelection} className="absolute -top-6 right-0 text-xs font-bold text-red-500 hover:text-red-700 underline underline-offset-2">
+                        Clear Selection & Type Manually
+                    </button>
+                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

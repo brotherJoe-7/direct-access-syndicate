@@ -97,11 +97,20 @@ const getAllParents = async (req, res) => {
 const updateParentAdmin = async (req, res) => {
     try {
         const { id } = req.params;
-        const { parent_name, email, student_id } = req.body;
+        // Update main parent record
         await pool.query(
             'UPDATE parents SET parent_name = $1, email = $2, student_id = $3 WHERE id = $4',
             [parent_name, email, student_id, id]
         );
+
+        // If a student was assigned, ensure mapping table and student record are also synced
+        if (student_id) {
+            await pool.query(
+                'INSERT INTO parent_students (parent_id, student_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+                [id, student_id]
+            );
+            await pool.query('UPDATE students SET parent_name = $1 WHERE id = $2', [parent_name, student_id]);
+        }
         res.json({ message: 'Parent updated successfully' });
     } catch (error) {
         console.error('Error updating parent:', error);
@@ -142,10 +151,17 @@ const createParent = async (req, res) => {
         // If admin provided students to link immediately
         if (student_ids && Array.isArray(student_ids) && student_ids.length > 0) {
             for (const studentId of student_ids) {
+                // Insert into mapping table
                 await pool.query(
                     'INSERT INTO parent_students (parent_id, student_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
                     [newParentId, studentId]
                 );
+                // Update the main parent record's student_id if it's the first student
+                if (studentId === student_ids[0]) {
+                    await pool.query('UPDATE parents SET student_id = $1 WHERE id = $2', [studentId, newParentId]);
+                    // Update the student record's parent_name
+                    await pool.query('UPDATE students SET parent_name = $1 WHERE id = $2', [parent_name, studentId]);
+                }
             }
         }
 

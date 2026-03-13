@@ -4,21 +4,21 @@ export const STREAMS = [
         id: 'SSS Science',
         pricePerSubject: 100,
         basePrice: 500,
-        subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'English Language', 'Further Maths', 'Geography']
+        subjects: ['Mathematics (Core)', 'English Language (Core)', 'Biology', 'Chemistry', 'Physics', 'Further Mathematics', 'Agricultural Science', 'Geography', 'Economics', 'Health Education', 'Civic Education']
     },
     {
         name: 'Commercial Stream',
         id: 'SSS Commercial',
         pricePerSubject: 100,
         basePrice: 500,
-        subjects: ['Commerce', 'Accounting', 'Economics', 'Mathematics', 'English Language', 'Business Management', 'Financial Accounting']
+        subjects: ['Mathematics (Core)', 'English Language (Core)', 'Financial Accounting', 'Commerce', 'Economics', 'Business Management', 'Cost Accounting', 'Geography', 'Government', 'Civic Education', 'IT / Data Processing']
     },
     {
         name: 'Arts Stream',
         id: 'SSS Arts',
         pricePerSubject: 100,
         basePrice: 500,
-        subjects: ['Government', 'Literature', 'History', 'CRS/Arabic', 'English Language', 'Economics', 'French']
+        subjects: ['Mathematics (Core)', 'English Language (Core)', 'Literature in English', 'Government', 'History', 'CRS / Islamic Studies', 'Economics', 'Geography', 'French', 'Civic Education']
     },
     {
         name: 'IGCSE International',
