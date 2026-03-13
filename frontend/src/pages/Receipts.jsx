@@ -67,7 +67,7 @@ const Receipts = () => {
     doc.setFontSize(13); doc.setFont('helvetica', 'bold');
     doc.text('Direct Access Syndicate', 32, 13);
     doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-    doc.text('Syke street at arthodox school near flaming church | 078003333 / 073573032', 32, 19);
+    doc.text('Syke street at arthodox school near flaming church | 078003333 / 077227754', 32, 19);
     doc.text('Freetown, Sierra Leone', 32, 24);
 
     // Title
@@ -267,7 +267,7 @@ const Receipts = () => {
                              <div>
                                  <h2 className="text-xl font-black text-slate-800 tracking-tight">Direct Access Syndicate</h2>
                                  <p className="text-xs text-slate-500">Syke street at arthodox school near flaming church</p>
-                                 <p className="text-xs text-slate-500">Call (Prop): 078003333 | Call (Mgr): 073573032</p>
+                                 <p className="text-xs text-slate-500">Call (Prop): 078003333 | Call (Mgr): 077227754</p>
                              </div>
                          </div>
 

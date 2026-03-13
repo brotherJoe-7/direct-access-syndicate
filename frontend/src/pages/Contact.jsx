@@ -37,7 +37,7 @@ const Contact = () => {
                       <div>
                           <h3 className="text-base font-bold text-slate-800 mb-1">Call Financial Manager</h3>
                           <p className="text-slate-500 text-xs mb-2">Available Mon-Fri, 8 AM to 5 PM GMT.</p>
-                          <a href="tel:073573032" className="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 transition-colors text-sm">073573032</a>
+                          <a href="tel:077227754" className="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-700 transition-colors text-sm">077227754</a>
                       </div>
                   </div>
 
