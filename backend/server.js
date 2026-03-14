@@ -66,7 +66,6 @@ app.get('/api/health', async (req, res) => {
 
     res.json({ 
       status: 'ok', 
-      v: 'v1.0.4-standardized',
       database: dbStatus,
       auth: authStatus,
       env: process.env.NODE_ENV,
