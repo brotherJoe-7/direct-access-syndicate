@@ -111,9 +111,7 @@ const attendanceMod = require('./routes/attendance');
 const expenseMod = require('./routes/expenses');
 const dashboardMod = require('./routes/dashboard');
 const feedbackMod = require('./routes/feedbacks');
-/*
 const whatsappMod = require('./routes/whatsapp');
-*/
 const parentMod = require('./routes/parents');
 const communityMod = require('./routes/community');
 const learningMod = require('./routes/learning');
@@ -121,8 +119,8 @@ const gradingMod = require('./routes/grading');
 const staffMod = require('./routes/staff');
 /*
 const aiMod = require('./routes/ai');
-const callMod = require('./routes/calls');
 */
+const callMod = require('./routes/calls');
 
 const registerSafe = (path, routerInstance) => {
     app.use(path, (req, res, next) => {
@@ -146,9 +144,7 @@ registerSafe('/api/attendance', attendanceMod);
 registerSafe('/api/expenses', expenseMod);
 registerSafe('/api/dashboard', dashboardMod);
 registerSafe('/api/feedbacks', feedbackMod);
-/*
 registerSafe('/api/whatsapp', whatsappMod);
-*/
 registerSafe('/api/parents', parentMod);
 registerSafe('/api/community', communityMod);
 registerSafe('/api/learning', learningMod);
@@ -156,8 +152,8 @@ registerSafe('/api/grades', gradingMod);
 registerSafe('/api/staff', staffMod);
 /*
 registerSafe('/api/ai', aiMod);
-registerSafe('/api/calls', callMod);
 */
+registerSafe('/api/calls', callMod);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
