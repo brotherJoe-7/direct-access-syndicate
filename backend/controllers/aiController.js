@@ -1,7 +1,16 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Lazy initialize genAI to prevent crashes if API key is missing
+let _genAI;
+const getGenAI = () => {
+    if (!_genAI) {
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error('GEMINI_API_KEY is missing from environment variables.');
+        }
+        _genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    }
+    return _genAI;
+};
 
 const chatWithAI = async (req, res) => {
     try {
@@ -12,7 +21,8 @@ const chatWithAI = async (req, res) => {
         if (!message) {
             return res.status(400).json({ message: 'Message is required' });
         }
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const genAI = getGenAI();
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 const systemPrompt = `
 You are the Official AI Assistant & Academic Tutor for the "Direct Access Syndicate" (DAS) platform in Sierra Leone. 
@@ -82,7 +92,8 @@ const chatWithVisitor = async (req, res) => {
         const { message, history } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const genAI = getGenAI();
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const systemPrompt = `
 You are the friendly, all-knowing AI guide & Academic Tutor for Direct Access Syndicate (DAS), a school in Sierra Leone.

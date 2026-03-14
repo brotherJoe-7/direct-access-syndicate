@@ -117,9 +117,7 @@ const communityMod = require('./routes/community');
 const learningMod = require('./routes/learning');
 const gradingMod = require('./routes/grading');
 const staffMod = require('./routes/staff');
-/*
 const aiMod = require('./routes/ai');
-*/
 const callMod = require('./routes/calls');
 
 const registerSafe = (path, routerInstance) => {
@@ -150,9 +148,7 @@ registerSafe('/api/community', communityMod);
 registerSafe('/api/learning', learningMod);
 registerSafe('/api/grades', gradingMod);
 registerSafe('/api/staff', staffMod);
-/*
 registerSafe('/api/ai', aiMod);
-*/
 registerSafe('/api/calls', callMod);
 
 // Static uploads folder
