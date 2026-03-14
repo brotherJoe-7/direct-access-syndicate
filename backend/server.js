@@ -108,19 +108,21 @@ console.log('Server initializing...');
 // can correctly identify and include the route files in the bundle.
 const safeLoad = (modulePath) => {
     try {
-        return require(modulePath);
+        const mod = require(modulePath);
+        return { module: mod };
     } catch (e) {
         console.error(`Module Load Error (${modulePath}):`, e.message);
-        return null;
+        return { error: e.message };
     }
 };
 
-const registerSafe = (path, routerInstance) => {
-    if (!routerInstance) {
+const registerSafe = (path, result) => {
+    if (!result || result.error) {
         app.use(path, (req, res) => {
             res.status(500).json({
                 error: 'Service temporarily unavailable.',
-                code: 'MODULE_INITIALIZATION_FAILED'
+                code: 'MODULE_INITIALIZATION_FAILED',
+                detail: result?.error || 'Unknown initialization error'
             });
         });
         return;
@@ -128,7 +130,7 @@ const registerSafe = (path, routerInstance) => {
     
     app.use(path, (req, res, next) => {
         try {
-            routerInstance(req, res, next);
+            result.module(req, res, next);
         } catch (err) {
             console.error(`Runtime failure at ${path}:`, err.message);
             res.status(500).json({
