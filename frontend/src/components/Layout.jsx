@@ -80,7 +80,7 @@ const Layout = ({ children }) => {
     { to: '/parent/receipts', icon: Receipt, label: 'Receipts' },
     { to: '/parent/attendance', icon: Calendar, label: 'Attendance' },
     { to: '/parent/reports', icon: FileText, label: 'Reports' },
-    { to: '/parent/settings', icon: Settings, label: 'Profile' },
+    { to: '/parent', icon: Settings, label: 'Profile' },
     { to: '/parent/community', icon: MessageSquare, label: 'Community Forum' },
     { to: '/parent/learning', icon: BookOpen, label: 'Learning Hub' },
     { to: '/parent/guide', icon: BookOpen, label: 'Parent Guide' },

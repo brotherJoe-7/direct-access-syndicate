@@ -20,6 +20,7 @@ import Learning from './pages/Learning';
 import Grades from './pages/Grades';
 import StaffPortal from './pages/StaffPortal';
 import StaffManagement from './pages/StaffManagement';
+import AdminLogs from './pages/AdminLogs';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CallProvider } from './context/CallContext';
 import Layout from './components/Layout';
@@ -76,6 +77,7 @@ function App() {
                 <Route path="/admin/learning" element={<Learning />} />
                 <Route path="/admin/grades" element={<Grades />} />
                 <Route path="/admin/staff" element={<StaffManagement />} />
+                <Route path="/admin/logs" element={<AdminLogs />} />
 
                 {/* Parent Routes */}
                 <Route path="/parent" element={<ParentDashboard />} />
