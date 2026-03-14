@@ -46,12 +46,45 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check (Top Level, No Dependencies)
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+    let dbStatus = 'testing';
+    try {
+        const pool = require('./config/db');
+        await pool.query('SELECT 1');
+        dbStatus = 'connected';
+    } catch (e) {
+        dbStatus = 'error: ' + e.message;
+    }
+
     res.json({ 
       status: 'ok', 
+      database: dbStatus,
       env: process.env.NODE_ENV,
       vercel: !!process.env.VERCEL,
       time: new Date().toISOString()
+    });
+});
+
+// Environment Audit (Sanitized)
+app.get('/api/audit', (req, res) => {
+    const vars = [
+        'POSTGRES_URL',
+        'JWT_SECRET',
+        'TWILIO_ACCOUNT_SID',
+        'TWILIO_AUTH_TOKEN',
+        'TWILIO_WHATSAPP_NUMBER'
+    ];
+    
+    const report = {};
+    vars.forEach(v => {
+        const val = process.env[v];
+        report[v] = val ? `Set (Length: ${val.length})` : 'MISSING';
+    });
+
+    res.json({
+        message: 'Environment Audit Results',
+        timestamp: new Date().toISOString(),
+        results: report
     });
 });
 

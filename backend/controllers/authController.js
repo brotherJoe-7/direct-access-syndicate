@@ -19,6 +19,15 @@ const login = async (req, res) => {
       if (isMatch) {
         const userRole = admin.role || 'admin';
         
+        // Check for JWT_SECRET
+        if (!process.env.JWT_SECRET) {
+          console.error('CRITICAL ERROR: JWT_SECRET is missing from environment variables.');
+          return res.status(500).json({ 
+            message: 'Server configuration error (Secret Missing)',
+            details: 'Please ensure JWT_SECRET is set in Vercel settings.'
+          });
+        }
+
         // Create JWT Token
         const token = jwt.sign(
           { id: admin.id, role: userRole, name: admin.username },
