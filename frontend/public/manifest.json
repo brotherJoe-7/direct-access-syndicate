@@ -1,0 +1,18 @@
+{
+  "short_name": "DAS",
+  "name": "Direct Access Syndicate",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#16a34a",
+  "display": "standalone",
+  "scope": "/",
+  "description": "Premium School Management & Syndicate Portal"
+}
