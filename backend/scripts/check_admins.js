@@ -1,25 +1,27 @@
-const { Pool } = require('pg');
-require('dotenv').config({ path: '../.env' });
+const { createPool } = require('@vercel/postgres');
+require('dotenv').config();
 
-const pool = new Pool({
+const pool = createPool({
   connectionString: process.env.POSTGRES_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
 });
 
-async function checkAdmin() {
+async function checkAdmins() {
   try {
-    const res = await pool.query('SELECT username, role, password FROM admins');
-    console.log('Admins in table:');
-    res.rows.forEach(row => {
-      console.log(`Username: ${row.username}, Role: ${row.role}, Password Hash exists: ${!!row.password}`);
-    });
+    const { rows } = await pool.query('SELECT id, username, role, password FROM admins');
+    console.log('Admins in database:', JSON.stringify(rows, null, 2));
+    
+    // Check for specifically 'admin'
+    const adminUser = rows.find(u => u.username === 'admin');
+    if (!adminUser) {
+      console.log('CRITICAL: No user with username "admin" found!');
+    } else {
+      console.log('Found "admin" user. Password hash starts with:', adminUser.password.substring(0, 10));
+    }
   } catch (err) {
-    console.error('Error querying database:', err);
+    console.error('Error checking admins:', err);
   } finally {
-    await pool.end();
+    process.exit();
   }
 }
 
-checkAdmin();
+checkAdmins();
