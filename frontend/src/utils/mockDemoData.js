@@ -38,3 +38,10 @@ export const mockChildren = [
   { id: 'child-1', student_name: 'Alhaji Nimneh', level: 'Primary 6', reg_code: 'DAS-2024-001' },
   { id: 'child-2', student_name: 'Fanta Nimneh', level: 'Primary 4', reg_code: 'DAS-2024-042' }
 ];
+
+export const mockTeacherData = {
+    name: 'Demo Teacher',
+    username: 'teacher_demo',
+    subjects: ['Mathematics', 'Science'],
+    assignedClass: 'Primary 6'
+};

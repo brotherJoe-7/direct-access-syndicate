@@ -21,7 +21,9 @@ const Landing = () => {
 
   const handleDemo = (role) => {
     enterDemoMode(role);
-    window.location.href = role === 'admin' ? '/admin' : '/parent';
+    if (role === 'admin') window.location.href = '/admin';
+    else if (role === 'teacher') window.location.href = '/admin/portal';
+    else window.location.href = '/parent';
   };
 
   const leadership = [
@@ -119,13 +121,32 @@ const Landing = () => {
           <Link to="/services" className="border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold hover:border-slate-300 transition-all text-sm">
             Learn More
           </Link>
-          <button 
-            onClick={() => handleDemo('admin')}
-            className="bg-slate-900 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-sm"
-          >
-            Experience the Portal <ArrowRight size={16} />
-          </button>
-          <InstallButton />
+          <div className="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/20">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Experience the Full Ecosystem</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button 
+                onClick={() => handleDemo('admin')}
+                className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-xs"
+              >
+                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><Shield size={12} /></div> Admin View
+              </button>
+              <button 
+                onClick={() => handleDemo('teacher')}
+                className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-green-500/10 hover:bg-green-700 transition-all flex items-center gap-2 text-xs"
+              >
+                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><BookOpen size={12} /></div> Teacher Portal
+              </button>
+              <button 
+                onClick={() => handleDemo('parent')}
+                className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/10 hover:bg-blue-700 transition-all flex items-center gap-2 text-xs"
+              >
+                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><Users size={12} /></div> Parent Portal
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-center mt-4">
+            <InstallButton />
+          </div>
         </div>
       </section>
 
