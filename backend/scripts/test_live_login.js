@@ -15,7 +15,7 @@ async function testLiveLogin() {
     console.error('Login Failed:');
     if (error.response) {
       console.error('Status:', error.response.status);
-      console.error('Data:', error.response.data);
+      console.error('Data:', JSON.stringify(error.response.data, null, 2));
     } else {
       console.error('Error:', error.message);
     }
