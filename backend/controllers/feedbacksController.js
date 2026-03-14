@@ -57,6 +57,28 @@ const createFeedback = async (req, res) => {
     );
 
     res.status(201).json({ id: rows[0].id, message: 'Feedback submitted successfully' });
+
+    // Emit live notification to linked parents
+    try {
+      const { rows: parentLinks } = await pool.query(`
+        SELECT parent_id FROM parent_students WHERE student_id = $1
+        UNION
+        SELECT id as parent_id FROM parents WHERE student_id = $1
+      `, [student_id]);
+      
+      parentLinks.forEach(p => {
+        if (global.io) {
+          global.io.to(`parent_${p.parent_id}`).emit('new_notification', {
+            type: 'feedback',
+            title: 'New Feedback Published',
+            message: `A teacher just uploaded a new feedback/report for ${subject}.`,
+            student_id
+          });
+        }
+      });
+    } catch (ioErr) {
+      console.error('Socket notification error:', ioErr);
+    }
   } catch (error) {
     console.error('Error creating feedback:', error);
     res.status(500).json({ message: 'Server error adding feedback' });

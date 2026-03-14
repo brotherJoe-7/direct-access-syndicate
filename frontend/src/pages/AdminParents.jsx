@@ -10,7 +10,7 @@ const AdminParents = () => {
     const [isSaving, setIsSaving] = useState(false);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [newParentData, setNewParentData] = useState({ parent_name: '', email: '', password: '', student_ids: [] });
+    const [newParentData, setNewParentData] = useState({ parent_name: '', email: '', password: '', phone: '', student_ids: [] });
     const [students, setStudents] = useState([]);
 
     const fetchParents = async () => {
@@ -73,7 +73,7 @@ const AdminParents = () => {
             }
             await api.post('/parents', payload);
             setIsAddModalOpen(false);
-            setNewParentData({ parent_name: '', email: '', password: '', student_ids: [] });
+            setNewParentData({ parent_name: '', email: '', password: '', phone: '', student_ids: [] });
             fetchParents();
         } catch (err) {
             alert(err.response?.data?.message || 'Failed to create parent account');
@@ -129,7 +129,7 @@ const AdminParents = () => {
                         <thead>
                             <tr className="bg-slate-50 border-b border-slate-100">
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Parent Details</th>
-                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Email Address</th>
+                                <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Email Address / Phone</th>
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Assigned Student</th>
                                 <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
@@ -149,8 +149,9 @@ const AdminParents = () => {
                                             <span className="font-bold text-slate-700">{parent.parent_name}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-slate-600 font-medium">
-                                        {parent.email}
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-slate-600 font-medium">{parent.email}</div>
+                                        <div className="text-xs text-green-600 font-bold">{parent.phone || 'No Phone'}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-black uppercase tracking-tight">
@@ -211,7 +212,16 @@ const AdminParents = () => {
                                     onChange={(e) => setEditingParent({...editingParent, email: e.target.value})}
                                 />
                             </div>
-                            {/* Note: In a real app we'd fetch students for a dropdown here */}
+                            <div>
+                                <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">WhatsApp Phone (WhatsApp Login)</label>
+                                <input 
+                                    type="text" 
+                                    placeholder="+232..."
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium"
+                                    value={editingParent.phone || ''}
+                                    onChange={(e) => setEditingParent({...editingParent, phone: e.target.value})}
+                                />
+                            </div>
                         </div>
                         <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-4">
                             <button 
@@ -259,14 +269,13 @@ const AdminParents = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">Email Address (Login ID)</label>
+                                <label className="block text-sm font-black text-slate-400 uppercase tracking-widest mb-2">WhatsApp Phone (for Login)</label>
                                 <input 
-                                    type="email" 
-                                    required
-                                    placeholder="parent@example.com"
+                                    type="text" 
+                                    placeholder="+232..."
                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 transition-all font-medium"
-                                    value={newParentData.email}
-                                    onChange={(e) => setNewParentData({...newParentData, email: e.target.value})}
+                                    value={newParentData.phone}
+                                    onChange={(e) => setNewParentData({...newParentData, phone: e.target.value})}
                                 />
                             </div>
                             <div>

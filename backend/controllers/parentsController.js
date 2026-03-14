@@ -99,8 +99,8 @@ const updateParentAdmin = async (req, res) => {
         const { id } = req.params;
         // Update main parent record
         await pool.query(
-            'UPDATE parents SET parent_name = $1, email = $2, student_id = $3 WHERE id = $4',
-            [parent_name, email, student_id, id]
+            'UPDATE parents SET parent_name = $1, email = $2, student_id = $3, phone = $4 WHERE id = $5',
+            [parent_name, email, student_id, phone, id]
         );
 
         // If a student was assigned, ensure mapping table and student record are also synced
@@ -142,8 +142,8 @@ const createParent = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         
         const { rows } = await pool.query(
-            'INSERT INTO parents (parent_name, email, password) VALUES ($1, $2, $3) RETURNING id',
-            [parent_name, email, hashedPassword]
+            'INSERT INTO parents (parent_name, email, password, phone) VALUES ($1, $2, $3, $4) RETURNING id',
+            [parent_name, email, hashedPassword, phone]
         );
         
         const newParentId = rows[0].id;

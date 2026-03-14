@@ -17,15 +17,38 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const { data } = await api.post('/auth/login', { username, password });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('role', data.role);
-      setUser(data.user);
-      setRole(data.role);
+      saveSession(data);
       return data;
     } catch (error) {
       throw error.response?.data?.message || 'Login failed';
     }
+  };
+
+  const requestOTP = async (phone) => {
+    try {
+      const { data } = await api.post('/auth/request-otp', { phone });
+      return data;
+    } catch (error) {
+      throw error.response?.data?.message || 'Failed to send OTP';
+    }
+  };
+
+  const verifyOTP = async (phone, otp) => {
+    try {
+      const { data } = await api.post('/auth/verify-otp', { phone, otp });
+      saveSession(data);
+      return data;
+    } catch (error) {
+      throw error.response?.data?.message || 'Invalid OTP code';
+    }
+  };
+
+  const saveSession = (data) => {
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('role', data.role);
+    setUser(data.user);
+    setRole(data.role);
   };
 
   const logout = () => {
@@ -37,7 +60,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout }}>
+    <AuthContext.Provider value={{ user, role, login, logout, requestOTP, verifyOTP }}>
       {children}
     </AuthContext.Provider>
   );

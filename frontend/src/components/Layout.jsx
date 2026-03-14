@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLocation, NavLink, Outlet } from 'react-router-dom';
 import { LayoutDashboard, Receipt, Users, Calendar, Banknote, LogOut, FileText, Settings, User, Menu, X, BookOpen, MessageSquare, GraduationCap, Shield } from 'lucide-react';
 import AIChatbot from './AIChatbot';
+import SocketListener from './SocketListener';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -167,8 +168,9 @@ const Layout = ({ children }) => {
           </div>
         </div>
 
-        {/* AI Assistant */}
+        {/* AI Assistant & Socket Notifications */}
         <AIChatbot />
+        <SocketListener />
       </main>
     </div>
   );

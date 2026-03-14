@@ -13,6 +13,33 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require('socket.io');
+
+const io = new Server(server, {
+    cors: {
+        origin: "*", // Adjust this in production
+        methods: ["GET", "POST"]
+    }
+});
+
+// Store io in global to access from controllers
+global.io = io;
+
+io.on('connection', (socket) => {
+    console.log('New client connected:', socket.id);
+    
+    socket.on('join_parent_room', (parentId) => {
+        socket.join(`parent_${parentId}`);
+        console.log(`Socket ${socket.id} joined room parent_${parentId}`);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+});
+
 
 // Middleware
 app.use(cors());
@@ -77,7 +104,7 @@ app.get('/api/', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
 module.exports = app;
