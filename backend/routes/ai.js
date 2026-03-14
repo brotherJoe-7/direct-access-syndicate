@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { chatWithAI, chatWithVisitor } = require('../controllers/aiController');
+const { chatWithAI, chatWithVisitor, generateAcademicAssistant } = require('../controllers/aiController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { sql } = require('@vercel/postgres');
 

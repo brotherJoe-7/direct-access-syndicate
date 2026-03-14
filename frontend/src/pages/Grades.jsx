@@ -12,6 +12,7 @@ const Grades = () => {
     const [formData, setFormData] = useState({
         subject: '', score: '', term: 'First Term', remark: ''
     });
+    const [aiLoading, setAiLoading] = useState(false);
 
     const terms = ['First Term', 'Second Term', 'Third Term', 'Annual Exam'];
 
@@ -28,6 +29,28 @@ const Grades = () => {
             fetchGrades();
         }
     }, [selectedStudent]);
+
+    const handleAiSuggest = async () => {
+        if (!formData.subject || formData.score === '') {
+            alert('Please enter a subject and score first');
+            return;
+        }
+        setAiLoading(true);
+        try {
+            const { data } = await api.post('/ai/academic-assistant', {
+                type: 'grade_remark',
+                studentName: selectedStudent?.student_name || 'the student',
+                subject: formData.subject,
+                score: formData.score
+            });
+            setFormData({ ...formData, remark: data.text });
+        } catch (err) {
+            console.error('AI Suggest Error:', err);
+            alert('AI Assistant is busy, please try again.');
+        } finally {
+            setAiLoading(false);
+        }
+    };
 
     const fetchGrades = async () => {
         setLoading(true);
@@ -213,10 +236,20 @@ const Grades = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Remarks</label>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest">Remarks</label>
+                                    <button 
+                                        type="button"
+                                        onClick={handleAiSuggest}
+                                        disabled={aiLoading}
+                                        className="text-[10px] font-black uppercase tracking-widest text-green-600 hover:text-green-700 flex items-center gap-1"
+                                    >
+                                        {aiLoading ? 'Thinking...' : '✨ AI Suggest'}
+                                    </button>
+                                </div>
                                 <textarea 
                                     rows="3" placeholder="Excellent performance this term..."
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 font-bold resize-none"
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-green-500/20 font-bold resize-none font-sans"
                                     value={formData.remark}
                                     onChange={(e) => setFormData({...formData, remark: e.target.value})}
                                 />

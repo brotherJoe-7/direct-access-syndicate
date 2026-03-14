@@ -143,4 +143,48 @@ Always encourage visitors to click "Apply Now" if they're interested in joining 
     }
 };
 
-module.exports = { chatWithAI, chatWithVisitor };
+const generateAcademicAssistant = async (req, res) => {
+    try {
+        const { type, studentName, subject, score } = req.body;
+        
+        if (!type || !studentName || !subject) {
+            return res.status(400).json({ message: 'Type, Student Name, and Subject are required' });
+        }
+
+        const genAI = getGenAI();
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+        let prompt = '';
+        if (type === 'feedback') {
+            prompt = `
+            You are a professional teacher at "Direct Access Syndicate" (DAS). 
+            Write a detailed, professional, and encouraging performance report for a student named "${studentName}" in the category/subject "${subject}".
+            The report should:
+            1. Highlight potential strengths.
+            2. Mention areas for improvement in a constructive way.
+            3. End with a motivational sentence.
+            Keep it between 2-3 sentences. Do NOT use placeholders. Write the final text ready to be saved.
+            `;
+        } else if (type === 'grade_remark') {
+            prompt = `
+            You are a professional teacher at "Direct Access Syndicate" (DAS).
+            Generate a concise academic remark for a student named "${studentName}" who scored ${score}/100 in "${subject}".
+            The remark should be appropriate for the score (Excellent for 90+, Good for 70-89, Encouraging for 50-69, and Constructive/Action-oriented for below 50).
+            Keep it to one sentence. Do NOT use placeholders. Write the final text ready to be saved.
+            `;
+        } else {
+            return res.status(400).json({ message: 'Invalid assistant type' });
+        }
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text().trim().replace(/^"|"$/g, ''); // Clean quotes if AI adds them
+
+        res.json({ text });
+    } catch (error) {
+        console.error('Academic Assistant Error:', error);
+        res.status(500).json({ message: 'AI Assistant is currently unavailable', detail: error.message });
+    }
+};
+
+module.exports = { chatWithAI, chatWithVisitor, generateAcademicAssistant };

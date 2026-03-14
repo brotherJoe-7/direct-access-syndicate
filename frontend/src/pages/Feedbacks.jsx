@@ -14,6 +14,7 @@ const Feedbacks = () => {
   const [formData, setFormData] = useState({
      student_id: '', subject: '', feedback_text: '', credibility_score: 5
   });
+  const [aiLoading, setAiLoading] = useState(false);
 
   const fetchFeedbacks = useCallback(async () => {
     try {
@@ -56,6 +57,28 @@ const Feedbacks = () => {
     };
     init();
   }, [role, fetchFeedbacks, fetchGrades, fetchStudents]);
+
+  const handleAiAssist = async () => {
+    if (!formData.student_id || !formData.subject) {
+        alert('Please select a student and subject first');
+        return;
+    }
+    setAiLoading(true);
+    try {
+        const student = students.find(s => s.id === parseInt(formData.student_id));
+        const { data } = await api.post('/ai/academic-assistant', {
+            type: 'feedback',
+            studentName: student?.student_name || 'the student',
+            subject: formData.subject
+        });
+        setFormData({ ...formData, feedback_text: data.text });
+    } catch (err) {
+        console.error('AI Assist Error:', err);
+        alert('AI Assistant is busy, please try again.');
+    } finally {
+        setAiLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
       e.preventDefault();
@@ -234,7 +257,17 @@ const Feedbacks = () => {
                   <input type="number" min="1" max="10" required value={formData.credibility_score} onChange={(e) => setFormData({...formData, credibility_score: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none" />
               </div>
               <div className="space-y-1.5">
-                  <label className="text-sm font-semibold text-slate-700">Detailed Feedback</label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-slate-700">Detailed Feedback</label>
+                    <button 
+                        type="button"
+                        onClick={handleAiAssist}
+                        disabled={aiLoading}
+                        className="text-[10px] font-black uppercase tracking-widest text-green-600 hover:text-green-700 flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg border border-green-100 disabled:opacity-50"
+                    >
+                        {aiLoading ? 'Generating...' : '✨ AI Assist'}
+                    </button>
+                  </div>
                   <textarea rows="4" required placeholder="Observations, remarks, next steps..." value={formData.feedback_text} onChange={(e) => setFormData({...formData, feedback_text: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none custom-scrollbar"></textarea>
               </div>
 
