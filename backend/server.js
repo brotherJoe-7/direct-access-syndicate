@@ -104,8 +104,8 @@ app.get('/api/audit', (req, res) => {
 console.log('Server initializing...');
 
 // Explicitly require all modules at top level for Vercel NFT bundling
-/*
 const authMod = require('./routes/auth');
+/*
 const studentMod = require('./routes/students');
 const receiptMod = require('./routes/receipts');
 const attendanceMod = require('./routes/attendance');
@@ -115,9 +115,13 @@ const feedbackMod = require('./routes/feedbacks');
 const whatsappMod = require('./routes/whatsapp');
 const parentMod = require('./routes/parents');
 const communityMod = require('./routes/community');
+*/
 const learningMod = require('./routes/learning');
+/*
 const gradingMod = require('./routes/grading');
+*/
 const staffMod = require('./routes/staff');
+/*
 const aiMod = require('./routes/ai');
 const callMod = require('./routes/calls');
 */
@@ -137,8 +141,8 @@ const registerSafe = (path, routerInstance) => {
 };
 
 // Register them safely
-/*
 registerSafe('/api/auth', authMod);
+/*
 registerSafe('/api/students', studentMod);
 registerSafe('/api/receipts', receiptMod);
 registerSafe('/api/attendance', attendanceMod);
@@ -148,12 +152,12 @@ registerSafe('/api/feedbacks', feedbackMod);
 registerSafe('/api/whatsapp', whatsappMod);
 registerSafe('/api/parents', parentMod);
 registerSafe('/api/community', communityMod);
-registerSafe('/api/learning', learningMod);
-registerSafe('/api/grades', gradingMod);
-registerSafe('/api/staff', staffMod);
-registerSafe('/api/ai', aiMod);
-registerSafe('/api/calls', callMod);
 */
+registerSafe('/api/learning', learningMod);
+/*
+registerSafe('/api/grades', gradingMod);
+*/
+registerSafe('/api/staff', staffMod);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
