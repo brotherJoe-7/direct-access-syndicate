@@ -129,7 +129,6 @@ const Login = () => {
                   required
                 />
               </div>
-              <p className="text-[10px] text-slate-500 mt-1 ml-1 font-medium">Hint: Default admin password is <span className="text-green-500/50">admin123</span></p>
             </div>
 
             <button
