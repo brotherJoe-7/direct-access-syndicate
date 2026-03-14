@@ -105,13 +105,13 @@ console.log('Server initializing...');
 
 // Explicitly require all modules at top level for Vercel NFT bundling
 const authMod = require('./routes/auth');
-/*
 const studentMod = require('./routes/students');
 const receiptMod = require('./routes/receipts');
 const attendanceMod = require('./routes/attendance');
 const expenseMod = require('./routes/expenses');
 const dashboardMod = require('./routes/dashboard');
 const feedbackMod = require('./routes/feedbacks');
+/*
 const whatsappMod = require('./routes/whatsapp');
 const parentMod = require('./routes/parents');
 const communityMod = require('./routes/community');
@@ -142,13 +142,13 @@ const registerSafe = (path, routerInstance) => {
 
 // Register them safely
 registerSafe('/api/auth', authMod);
-/*
 registerSafe('/api/students', studentMod);
 registerSafe('/api/receipts', receiptMod);
 registerSafe('/api/attendance', attendanceMod);
 registerSafe('/api/expenses', expenseMod);
 registerSafe('/api/dashboard', dashboardMod);
 registerSafe('/api/feedbacks', feedbackMod);
+/*
 registerSafe('/api/whatsapp', whatsappMod);
 registerSafe('/api/parents', parentMod);
 registerSafe('/api/community', communityMod);
