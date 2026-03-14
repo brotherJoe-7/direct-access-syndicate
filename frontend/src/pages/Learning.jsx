@@ -88,15 +88,25 @@ const Learning = () => {
             const { data } = await api.get(`/learning/view-token/${mat.id}`);
             const token = data.viewToken;
             
-            // Generate a clean filename for Microsoft compatibility
+            // Unified Extension Detection Logic
             const titleSlug = mat.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'document';
-            let extension = '.docx'; // Default fallback
+            let extension = '.docx'; // Smart fallback
             
-            if (mat.file_path?.startsWith('data:application/pdf')) {
+            const sourceUrl = mat.file_path || mat.content_link || '';
+            
+            if (sourceUrl.startsWith('data:application/pdf')) {
                 extension = '.pdf';
-            } else if (mat.file_path && !mat.file_path.startsWith('data:')) {
-                const parts = mat.file_path.split('.');
-                if (parts.length > 1) extension = `.${parts.pop().split(/[?#]/)[0]}`;
+            } else if (sourceUrl.includes('.pdf')) {
+                extension = '.pdf';
+            } else if (sourceUrl.includes('.xlsx')) {
+                extension = '.xlsx';
+            } else if (sourceUrl.includes('.pptx')) {
+                extension = '.pptx';
+            } else if (sourceUrl.includes('.doc')) {
+                extension = '.docx';
+            } else if (mat.material_type === 'document' && !sourceUrl.includes('.')) {
+                // If explicitly marked as document but no extension found in URL
+                extension = '.docx';
             }
             
             const fileName = `${titleSlug}${extension}`;
@@ -105,6 +115,7 @@ const Learning = () => {
             const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}/${fileName}?token=${token}`;
 
             const isPDF = extension.toLowerCase() === '.pdf';
+            console.log(`[Viewer] Detected extension: ${extension}, Mode: ${isPDF ? 'PDF' : 'Office'}`);
 
             if (isPDF) {
                 const pdfUrl = mat.file_path?.startsWith('data:') 

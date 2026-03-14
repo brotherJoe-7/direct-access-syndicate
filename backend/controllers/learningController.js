@@ -114,6 +114,9 @@ const viewSecure = async (req, res) => {
     try {
         const { id, filename } = req.params;
         const { token } = req.query;
+        const userAgent = req.headers['user-agent'] || 'Unknown';
+
+        console.log(`[SecureView] Request for ID: ${id}, Filename: ${filename}, UA: ${userAgent}`);
 
         if (!token) return res.status(401).send('Access Denied: No Token');
 
@@ -130,13 +133,20 @@ const viewSecure = async (req, res) => {
         
         if (material.content_link.startsWith('data:')) {
             const matches = material.content_link.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            if (!matches || matches.length !== 3) return res.status(400).send('Invalid Content');
+            if (!matches || matches.length !== 3) {
+                console.error(`[SecureView] Invalid Data URI format for ID: ${id}`);
+                return res.status(400).send('Invalid Content Format');
+            }
 
             const type = matches[1];
             const buffer = Buffer.from(matches[2], 'base64');
 
             res.set('Content-Type', type);
+            res.set('Content-Length', buffer.length);
             res.set('Content-Disposition', `inline; filename="${displayName}"`);
+            res.set('Cache-Control', 'public, max-age=3600'); // Optimize for external viewers
+            
+            console.log(`[SecureView] Serving Data URI: ${type}, Size: ${buffer.length} bytes`);
             return res.send(buffer);
         }
 
@@ -148,6 +158,7 @@ const viewSecure = async (req, res) => {
             targetUrl = `${protocol}://${host}${targetUrl}`;
         }
 
+        console.log(`[SecureView] Redirecting to: ${targetUrl}`);
         res.redirect(targetUrl);
     } catch (error) {
         console.error('Secure View Error:', error);
