@@ -46,10 +46,28 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check (Top Level, No Dependencies)
-// Health Check (Top Level, No Dependencies)
 app.get('/api/health', async (req, res) => {
+    let dbStatus = 'unloaded';
+    let authStatus = 'unloaded';
+    
+    try {
+        const testPool = require('./config/db');
+        dbStatus = testPool ? 'loaded' : 'null';
+    } catch (e) {
+        dbStatus = 'error';
+    }
+
+    try {
+        const testAuth = require('./routes/auth');
+        authStatus = testAuth ? 'loaded' : 'null';
+    } catch (e) {
+        authStatus = 'error';
+    }
+
     res.json({ 
       status: 'ok', 
+      database: dbStatus,
+      auth: authStatus,
       env: process.env.NODE_ENV,
       vercel: !!process.env.VERCEL,
       time: new Date().toISOString()

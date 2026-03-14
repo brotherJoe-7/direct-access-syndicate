@@ -1,10 +1,9 @@
-// backend/config/db.js
-const { createPool } = require('@vercel/postgres');
-
 let pool;
 try {
+  const { createPool } = require('@vercel/postgres');
+  
   if (!process.env.POSTGRES_URL) {
-    console.warn('WARNING: POSTGRES_URL is not defined. Database will be unavailable.');
+    console.warn('WARNING: POSTGRES_URL is not defined.');
   }
   pool = createPool({
     connectionString: process.env.POSTGRES_URL,
