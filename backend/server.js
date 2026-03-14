@@ -46,27 +46,22 @@ app.use(cors());
 app.use(express.json());
 
 // Health Check (Top Level, No Dependencies)
+// Health Check (Top Level, No Dependencies)
 app.get('/api/health', async (req, res) => {
-    let dbStatus = 'testing';
-    try {
-        const pool = require('./config/db');
-        await pool.query('SELECT 1');
-        dbStatus = 'connected';
-    } catch (e) {
-        dbStatus = 'error: ' + e.message;
-    }
-
     res.json({ 
       status: 'ok', 
-      database: dbStatus,
       env: process.env.NODE_ENV,
       vercel: !!process.env.VERCEL,
       time: new Date().toISOString()
     });
 });
 
-// Environment Audit (Sanitized)
+// Environment Audit (Sanitized - only allowed in development)
 app.get('/api/audit', (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ error: 'Audit disabled in production for security.' });
+    }
+    
     const vars = [
         'POSTGRES_URL',
         'JWT_SECRET',
@@ -90,45 +85,57 @@ app.get('/api/audit', (req, res) => {
 
 console.log('Server initializing...');
 
-// Comprehensive Route Registration with Error Handling
-const routes = [
-    { path: '/api/auth', module: './routes/auth' },
-    { path: '/api/students', module: './routes/students' },
-    { path: '/api/receipts', module: './routes/receipts' },
-    { path: '/api/attendance', module: './routes/attendance' },
-    { path: '/api/expenses', module: './routes/expenses' },
-    { path: '/api/dashboard', module: './routes/dashboard' },
-    { path: '/api/feedbacks', module: './routes/feedbacks' },
-    { path: '/api/whatsapp', module: './routes/whatsapp' },
-    { path: '/api/parents', module: './routes/parents' },
-    { path: '/api/community', module: './routes/community' },
-    { path: '/api/learning', module: './routes/learning' },
-    { path: '/api/grades', module: './routes/grading' },
-    { path: '/api/staff', module: './routes/staff' },
-    { path: '/api/ai', module: './routes/ai' },
-    { path: '/api/calls', module: './routes/calls' }
-];
-
-routes.forEach(route => {
-    app.use(route.path, (req, res, next) => {
+// --- SECURE ROUTE REGISTRATION ---
+// We use static imports here so Vercel's bundler can reliably find the files.
+// Also, we use a wrapper to catch crashes and return generic error messages.
+const registerSafeRoute = (path, routerModule) => {
+    app.use(path, (req, res, next) => {
         try {
-            // Lazy load to catch requirement errors at request time
-            const router = require(route.module);
-            if (typeof router !== 'function') {
-                throw new Error(`Module ${route.module} did not export a router function/object.`);
-            }
-            router(req, res, next);
+            routerModule(req, res, next);
         } catch (error) {
-            console.error(`CRASH in route ${route.path}:`, error);
+            console.error(`CRASH in route ${path}:`, error.message);
+            // Professional generic error for the end user
             res.status(500).json({
-                error: 'Route Handler Failed',
-                path: route.path,
-                message: error.message,
-                stack: process.env.NODE_ENV === 'production' ? null : error.stack
+                error: 'An internal error occurred. Please try again later.',
+                code: 'SERVER_ERROR'
             });
         }
     });
-});
+};
+
+// Import all routers statically
+const authRoutes = require('./routes/auth');
+const studentRoutes = require('./routes/students');
+const receiptRoutes = require('./routes/receipts');
+const attendanceRoutes = require('./routes/attendance');
+const expenseRoutes = require('./routes/expenses');
+const dashboardRoutes = require('./routes/dashboard');
+const feedbackRoutes = require('./routes/feedbacks');
+const whatsappRoutes = require('./routes/whatsapp');
+const parentRoutes = require('./routes/parents');
+const communityRoutes = require('./routes/community');
+const learningRoutes = require('./routes/learning');
+const gradingRoutes = require('./routes/grading');
+const staffRoutes = require('./routes/staff');
+const aiRoutes = require('./routes/ai');
+const callRoutes = require('./routes/calls');
+
+// Register them safely
+registerSafeRoute('/api/auth', authRoutes);
+registerSafeRoute('/api/students', studentRoutes);
+registerSafeRoute('/api/receipts', receiptRoutes);
+registerSafeRoute('/api/attendance', attendanceRoutes);
+registerSafeRoute('/api/expenses', expenseRoutes);
+registerSafeRoute('/api/dashboard', dashboardRoutes);
+registerSafeRoute('/api/feedbacks', feedbackRoutes);
+registerSafeRoute('/api/whatsapp', whatsappRoutes);
+registerSafeRoute('/api/parents', parentRoutes);
+registerSafeRoute('/api/community', communityRoutes);
+registerSafeRoute('/api/learning', learningRoutes);
+registerSafeRoute('/api/grades', gradingRoutes);
+registerSafeRoute('/api/staff', staffRoutes);
+registerSafeRoute('/api/ai', aiRoutes);
+registerSafeRoute('/api/calls', callRoutes);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
