@@ -132,15 +132,15 @@ CREATE TABLE community_posts (
 
 -- 12. Learning Materials (Includes Phase 18 types)
 CREATE TABLE learning_materials (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  description TEXT,
-  content_link VARCHAR(500) NOT NULL,
-  file_path VARCHAR(500),
-  material_type VARCHAR(50) DEFAULT 'link',
-  level_target VARCHAR(100) NOT NULL,
-  created_by VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    content_link TEXT,
+    file_path TEXT,
+    level_target VARCHAR(100) DEFAULT 'All',
+    material_type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(100)
 );
 
 -- 13. Student Grades (Phase 17)

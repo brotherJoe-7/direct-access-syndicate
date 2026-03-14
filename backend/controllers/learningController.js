@@ -48,34 +48,6 @@ const createMaterial = async (req, res) => {
             } else {
                 finalMaterialType = material_type;
             }
-        } else {
-            if (!finalContentLink) {
-                return res.status(400).json({ message: 'Either a file upload or a content link is required' });
-            }
-            // Auto-detect YouTube if type not provided
-            if (!material_type && (finalContentLink.includes('youtube.com') || finalContentLink.includes('youtu.be'))) {
-                finalMaterialType = 'youtube';
-            } else if (material_type) {
-                finalMaterialType = material_type;
-            }
-        }
-
-        const { rows } = await pool.query(
-            'INSERT INTO learning_materials (title, description, content_link, level_target, created_by, material_type, file_path) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [title, description || '', finalContentLink, level_target, created_by, finalMaterialType, filePath]
-        );
-
-        res.status(201).json(rows[0]);
-    } catch (error) {
-        console.error('SERVER ERROR [createMaterial]:', {
-            message: error.message,
-            stack: error.stack,
-            body: req.body,
-            file: req.file ? { size: req.file.size, type: req.file.mimetype } : 'none'
-        });
-        res.status(500).json({ 
-            message: 'Error creating learning material', 
-            detail: error.message,
             hint: 'If you are uploading a file, ensure it is small (under 4MB) for serverless stability.' 
         });
     }
