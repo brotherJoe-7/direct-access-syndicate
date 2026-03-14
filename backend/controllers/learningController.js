@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const jwt = require('jsonwebtoken');
 
 const getMaterials = async (req, res) => {
     try {
@@ -91,8 +92,66 @@ const deleteMaterial = async (req, res) => {
     }
 };
 
+const generateViewToken = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rows } = await pool.query('SELECT id FROM learning_materials WHERE id = $1', [id]);
+        
+        if (rows.length === 0) return res.status(404).json({ message: 'Material not found' });
+        
+        const viewToken = jwt.sign(
+            { materialId: id, purpose: 'view_secure' },
+            process.env.JWT_SECRET,
+            { expiresIn: '5m' }
+        );
+        
+        res.json({ viewToken });
+    } catch (error) {
+        console.error('Error generating view token:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+const viewSecure = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { token } = req.query;
+
+        if (!token) return res.status(401).send('Access Denied: No Token');
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (String(decoded.materialId) !== String(id) || decoded.purpose !== 'view_secure') {
+            return res.status(401).send('Access Denied: Invalid Token');
+        }
+
+        const { rows } = await pool.query('SELECT content_link, title FROM learning_materials WHERE id = $1', [id]);
+        if (rows.length === 0) return res.status(404).send('Not Found');
+
+        const material = rows[0];
+        
+        if (material.content_link.startsWith('data:')) {
+            const matches = material.content_link.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+            if (!matches || matches.length !== 3) return res.status(400).send('Invalid Content');
+
+            const type = matches[1];
+            const buffer = Buffer.from(matches[2], 'base64');
+
+            res.set('Content-Type', type);
+            res.set('Content-Disposition', `inline; filename="${material.title}"`);
+            return res.send(buffer);
+        }
+
+        res.redirect(material.content_link);
+    } catch (error) {
+        console.error('Secure View Error:', error);
+        res.status(401).send('Session Expired or Invalid');
+    }
+};
+
 module.exports = {
     getMaterials,
     createMaterial,
-    deleteMaterial
+    deleteMaterial,
+    generateViewToken,
+    viewSecure
 };

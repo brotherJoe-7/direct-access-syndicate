@@ -46,9 +46,16 @@ const Learning = () => {
                 // Explicitly signal material type for better backend handling
                 if (file) {
                     data.append('file', file);
-                    if (file.type === 'application/pdf') {
+                    const type = file.type;
+                    const name = file.name.toLowerCase();
+                    
+                    // Categorize as document for Read Mode support
+                    if (type === 'application/pdf' || name.endsWith('.pdf') || 
+                        type.includes('word') || name.endsWith('.doc') || name.endsWith('.docx') ||
+                        type.includes('excel') || name.endsWith('.xls') || name.endsWith('.xlsx') ||
+                        type.includes('powerpoint') || name.endsWith('.ppt') || name.endsWith('.pptx')) {
                         data.append('material_type', 'document');
-                    } else if (file.type.startsWith('video/')) {
+                    } else if (type.startsWith('video/')) {
                         data.append('material_type', 'local_video');
                     }
                 }
@@ -71,6 +78,38 @@ const Learning = () => {
             console.error(err);
             const errorMsg = err.response?.data?.detail || 'Check that all fields are filled properly and file size is small.';
             alert(`Failed to add material: ${errorMsg}`);
+        }
+    };
+
+    const handleReadMode = async (mat) => {
+        try {
+            // 1. Get a short-lived view token
+            const { data } = await api.get(`/learning/view-token/${mat.id}`);
+            const token = data.viewToken;
+            
+            const backendBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5000`;
+            const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}?token=${token}`;
+
+            // 2. Identify file type
+            const isPDF = mat.content_link?.includes('application/pdf') || 
+                          mat.title?.toLowerCase().endsWith('.pdf') || 
+                          (file && file.type === 'application/pdf');
+
+            if (isPDF) {
+                // Use native iframe with protection for PDFs
+                const pdfUrl = mat.file_path?.startsWith('data:') 
+                    ? mat.file_path 
+                    : `${resolveLink(mat)}#toolbar=0&navpanes=0&scrollbar=1`;
+                setSelectedFile(pdfUrl);
+            } else {
+                // Use Microsoft Office Online Viewer for Word, Excel, PPT
+                // This requires a public URL, which our view-secure proxy provides
+                const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(secureUrl)}`;
+                setSelectedFile(officeViewerUrl);
+            }
+        } catch (err) {
+            console.error('Read Mode Error:', err);
+            alert('Could not open document in Read Mode. Please ensure you are online.');
         }
     };
 
@@ -193,7 +232,7 @@ const Learning = () => {
                                </div>
                                {mat.material_type === 'document' ? (
                                    <button 
-                                       onClick={() => setSelectedFile(fullLink)}
+                                       onClick={() => handleReadMode(mat)}
                                        className="flex items-center gap-1.5 text-green-600 font-bold text-sm hover:underline"
                                    >
                                        Read Only <BookOpen size={14}/>
@@ -235,7 +274,7 @@ const Learning = () => {
                         </div>
                         <div className="flex-1 bg-slate-200 relative overflow-hidden" onContextMenu={(e) => e.preventDefault()}>
                             <iframe 
-                                src={selectedFile.startsWith('data:') ? selectedFile : `${selectedFile}#toolbar=0&navpanes=0&scrollbar=1`} 
+                                src={selectedFile} 
                                 className="w-full h-full border-none pointer-events-auto"
                                 title="Protected Content"
                             ></iframe>
