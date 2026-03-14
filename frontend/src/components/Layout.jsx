@@ -132,8 +132,9 @@ const Layout = ({ children }) => {
         <div className="p-4 border-t border-slate-800/50">
           <button
             onClick={() => {
+              const isDemo = user?.isDemo;
               logout();
-              window.location.href = '/';
+              window.location.href = isDemo ? '/' : '/login';
             }}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all font-medium"
           >

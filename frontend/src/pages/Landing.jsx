@@ -111,56 +111,55 @@ const Landing = () => {
             </Link>
           ) : (
             <>
-              <Link to="/login" className="bg-green-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-green-500/20 hover:bg-green-700 transition-all flex items-center gap-2 text-sm">
-                Sign In <ArrowRight size={16} />
+              <Link to="/login" className="bg-green-600 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg shadow-green-500/20 hover:bg-green-700 transition-all flex items-center gap-2 text-sm scale-110">
+                Sign In to Portal <Shield size={16} />
               </Link>
-              <Link to="/apply" className="bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-all text-sm">
-                Apply Now
+              <Link to="/apply" className="bg-slate-100 text-slate-700 px-6 py-3.5 rounded-xl font-semibold hover:bg-slate-200 transition-all text-sm">
+                Apply for Enrollment
               </Link>
             </>
           )}
-          <Link to="/services" className="border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold hover:border-slate-300 transition-all text-sm">
-            Learn More
-          </Link>
           
-          <div className="relative">
-            <button 
-              onClick={() => setShowDemoSelector(!showDemoSelector)}
-              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-sm"
-            >
-              Experience the Portal <ChevronDown size={16} className={`transition-transform ${showDemoSelector ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {showDemoSelector && (
-              <div className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 animate-fade-in-up">
-                <p className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Select Trial Role</p>
-                <button onClick={() => handleDemo('admin')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center"><Shield size={16} /></div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">School Admin</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Full oversight & finances</p>
-                  </div>
+          <div className="w-full mt-10 opacity-50 hover:opacity-100 transition-opacity">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Developer & Evaluator Access</p>
+            <div className="flex justify-center gap-4">
+               <div className="relative">
+                <button 
+                  onClick={() => setShowDemoSelector(!showDemoSelector)}
+                  className="bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-slate-900/10 hover:bg-slate-700 transition-all flex items-center gap-2 text-xs"
+                >
+                  Launch Interactive Demo <ChevronDown size={14} className={`transition-transform ${showDemoSelector ? 'rotate-180' : ''}`} />
                 </button>
-                <button onClick={() => handleDemo('teacher')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-green-600 text-white flex items-center justify-center"><BookOpen size={16} /></div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">Teacher Portal</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Grades & Attendance</p>
+                
+                {showDemoSelector && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 animate-fade-in-up">
+                    <p className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Select Trial Role</p>
+                    <button onClick={() => handleDemo('admin')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center"><Shield size={16} /></div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">School Admin</p>
+                        <p className="text-[10px] text-slate-500 font-medium">Full oversight & finances</p>
+                      </div>
+                    </button>
+                    <button onClick={() => handleDemo('teacher')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-green-600 text-white flex items-center justify-center"><BookOpen size={16} /></div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">Teacher Portal</p>
+                        <p className="text-[10px] text-slate-500 font-medium">Grades & Attendance</p>
+                      </div>
+                    </button>
+                    <button onClick={() => handleDemo('parent')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center"><Users size={16} /></div>
+                      <div>
+                        <p className="text-sm font-bold text-slate-800">Parent Dashboard</p>
+                        <p className="text-[10px] text-slate-500 font-medium">Track child's data</p>
+                      </div>
+                    </button>
                   </div>
-                </button>
-                <button onClick={() => handleDemo('parent')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center"><Users size={16} /></div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">Parent Dashboard</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Track child's data</p>
-                  </div>
-                </button>
+                )}
               </div>
-            )}
-          </div>
-          
-          <div className="flex justify-center mt-2">
-            <InstallButton />
+              <InstallButton />
+            </div>
           </div>
         </div>
       </section>

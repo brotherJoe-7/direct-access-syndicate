@@ -33,8 +33,8 @@ const getDashboardStats = async (req, res) => {
       `);
       const annualRevenue = parseFloat(annualRevenueRows[0]?.total || 0);
 
-      // Activity Logs
-      const { rows: activityLogs } = await pool.query('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 10');
+      // Activity Logs - Pulling from activity_logs which has the 'details' field
+      const { rows: activityLogs } = await pool.query('SELECT * FROM activity_logs ORDER BY timestamp DESC LIMIT 10');
 
       return res.json({
         totalIncome,
