@@ -54,8 +54,8 @@ const Attendance = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Form Section - ADMIN ONLY */}
-        {role === 'admin' && (
+        {/* Form Section - STAFF ONLY */}
+        {(role === 'admin' || role === 'teacher') && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-fit">
             <div className="flex items-center gap-2 mb-6">
                 <UserCheck className="text-green-500" size={20} />
@@ -89,7 +89,7 @@ const Attendance = () => {
         )}
 
         {/* History Section */}
-        <div className={`${role === 'admin' ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white rounded-2xl shadow-sm border border-slate-100 p-6`}>
+        <div className={`${(role === 'admin' || role === 'teacher') ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white rounded-2xl shadow-sm border border-slate-100 p-6`}>
             <div className="flex items-center gap-2 mb-6">
                 <Calendar className="text-emerald-500" size={20} />
                 <h2 className="text-lg font-bold text-slate-800">Recent Records</h2>

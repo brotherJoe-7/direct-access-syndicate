@@ -38,7 +38,7 @@ const Feedbacks = () => {
   }, [role]);
 
   const fetchStudents = useCallback(async () => {
-    if (role === 'admin') {
+    if (role === 'admin' || role === 'teacher') {
         try {
             const { data } = await api.get('/students');
             setStudents(data);
@@ -93,11 +93,17 @@ const Feedbacks = () => {
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Student Reports & Feedback</h1>
+        {(role === 'admin' || role === 'teacher') ? (
           <p className="text-slate-500 mt-1">
-              {role === 'admin' ? "Manage and issue credibility reports for students." : "View performance and behavioral reports from teachers."}
+              Manage and issue credibility reports for students.
           </p>
-        </div>
-        {role === 'admin' && (
+        ) : (
+          <p className="text-slate-500 mt-1">
+              View performance and behavioral reports from teachers.
+          </p>
+        )}
+      </div>
+      {(role === 'admin' || role === 'teacher') && (
           <button
             onClick={() => setShowModal(true)}
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg shadow-green-500/20 transition-all active:scale-95 whitespace-nowrap"
@@ -206,8 +212,8 @@ const Feedbacks = () => {
         </div>
       )}
 
-      {/* Admin Modal */}
-      {showModal && role === 'admin' && (
+      {/* Modal */}
+      {showModal && (role === 'admin' || role === 'teacher') && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl p-8 w-full max-w-lg shadow-2xl border border-slate-100 animate-fade-in-up">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">Issue Student Report</h2>

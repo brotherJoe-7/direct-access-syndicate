@@ -27,4 +27,24 @@ const verifyAdmin = (req, res, next) => {
   });
 };
 
-module.exports = { verifyToken, verifyAdmin };
+const verifyTeacher = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.role === 'teacher') {
+      next();
+    } else {
+      res.status(403).json({ message: 'Access denied. Teacher only.' });
+    }
+  });
+};
+
+const verifyAdminOrTeacher = (req, res, next) => {
+  verifyToken(req, res, () => {
+    if (req.user.role === 'admin' || req.user.role === 'teacher') {
+      next();
+    } else {
+      res.status(403).json({ message: 'Access denied. Staff only.' });
+    }
+  });
+};
+
+module.exports = { verifyToken, verifyAdmin, verifyTeacher, verifyAdminOrTeacher };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import { BookOpen, ExternalLink, Plus, Trash2, Search, Filter, Bookmark, Video, FileText, Download, PlayCircle, Link as LinkIcon, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -8,6 +8,7 @@ const Learning = () => {
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null); // Enhanced: Read-only viewer state
     const [filterLevel, setFilterLevel] = useState('All');
     const [uploadType, setUploadType] = useState('link'); // 'link' or 'file'
     const [file, setFile] = useState(null);
@@ -17,7 +18,7 @@ const Learning = () => {
 
     const levels = ['All', 'Nursery', 'Primary', 'JSS', 'SSS Arts', 'SSS Science', 'SSS Commercial', 'IGCSE'];
 
-    const fetchMaterials = async () => {
+    const fetchMaterials = useCallback(async () => {
         setLoading(true);
         try {
             const { data } = await api.get(`/learning?level=${filterLevel}`);
@@ -27,7 +28,7 @@ const Learning = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filterLevel]);
 
     useEffect(() => {
         fetchMaterials();
@@ -75,7 +76,7 @@ const Learning = () => {
                     <h1 className="text-3xl font-black text-slate-800 tracking-tight">Learning Hub</h1>
                     <p className="text-slate-500 font-medium">Extra study materials, notes, and educational resources.</p>
                 </div>
-                {role === 'admin' && (
+                {(role === 'admin' || role === 'teacher') && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
                         className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-2xl font-bold shadow-lg shadow-green-500/20 transition-all active:scale-95"
@@ -130,7 +131,7 @@ const Learning = () => {
                         <div key={mat.id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden flex flex-col justify-between">
                            <div>
                                <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                   {role === 'admin' && (
+                                   {(role === 'admin' || role === 'teacher') && (
                                        <button 
                                            onClick={() => handleDelete(mat.id)}
                                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
@@ -165,21 +166,65 @@ const Learning = () => {
                                    </div>
                                    <span className="text-xs text-slate-400 truncate w-24">{mat.created_by || 'Unknown'}</span>
                                </div>
-                               <a 
-                                   href={fullLink} 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   className="flex items-center gap-1.5 text-green-600 font-bold text-sm hover:underline"
-                               >
-                                   {mat.material_type === 'document' ? (<>Download <Download size={14}/></>) :
-                                    mat.material_type === 'local_video' || mat.material_type === 'youtube' ? (<>Watch <PlayCircle size={14}/></>) : 
-                                    (<>Open Link <ExternalLink size={14}/></>)}
-                               </a>
+                               {mat.material_type === 'document' ? (
+                                   <button 
+                                       onClick={() => setSelectedFile(fullLink)}
+                                       className="flex items-center gap-1.5 text-green-600 font-bold text-sm hover:underline"
+                                   >
+                                       Read Only <BookOpen size={14}/>
+                                   </button>
+                               ) : (
+                                   <a 
+                                       href={fullLink} 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       className="flex items-center gap-1.5 text-green-600 font-bold text-sm hover:underline"
+                                   >
+                                       {mat.material_type === 'local_video' || mat.material_type === 'youtube' ? (<>Watch <PlayCircle size={14}/></>) : 
+                                        (<>Open Link <ExternalLink size={14}/></>)}
+                                   </a>
+                               )}
                            </div>
                         </div>
                     )})
                 )}
             </div>
+
+            {/* Read-Only Viewer Modal (Copyright Protection) */}
+            {selectedFile && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/95 backdrop-blur-xl p-4 md:p-10 animate-in fade-in duration-300">
+                    <div className="relative w-full h-full max-w-7xl bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+                        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
+                                    <FileText size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-800 tracking-tight">Protected Document Viewer</h3>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Copyright © Direct Access Syndicate</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setSelectedFile(null)} className="p-2 hover:bg-slate-100 rounded-full transition-colors flex items-center gap-2 text-slate-500 font-bold text-sm">
+                                CLOSE <Plus size={24} className="rotate-45" />
+                            </button>
+                        </div>
+                        <div className="flex-1 bg-slate-200 relative overflow-hidden" onContextMenu={(e) => e.preventDefault()}>
+                            <iframe 
+                                src={`${selectedFile}#toolbar=0&navpanes=0&scrollbar=1`} 
+                                className="w-full h-full border-none pointer-events-auto"
+                                title="Protected Content"
+                            ></iframe>
+                            {/* Decorative blocking overlay for the header area of common PDF viewers */}
+                            <div className="absolute top-0 left-0 right-0 h-12 bg-transparent pointer-events-none z-50"></div>
+                        </div>
+                        <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-center text-center">
+                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <Bookmark size={14} className="text-green-500" /> This document is restricted for on-site reading only to protect intellectual property.
+                             </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Add Resource Modal */}
             {isModalOpen && (
