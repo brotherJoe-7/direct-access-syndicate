@@ -155,7 +155,7 @@ const generateAcademicAssistant = async (req, res) => {
         console.log(`[AcademicAI] Starting ${type} generation for ${studentName}. Context length: ${context?.length || 0}`);
 
         const genAI = getGenAI();
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); 
 
         let prompt = '';
         if (type === 'feedback') {
@@ -185,7 +185,12 @@ const generateAcademicAssistant = async (req, res) => {
             return res.status(400).json({ message: 'Invalid assistant type' });
         }
 
-        const result = await model.generateContent(prompt);
+        const aiPromise = model.generateContent(prompt);
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('AI_TIMEOUT')), 9000)
+        );
+
+        const result = await Promise.race([aiPromise, timeoutPromise]);
         const response = await result.response;
         const text = response.text().trim().replace(/^["']|["']$/g, ''); 
 

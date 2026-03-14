@@ -4,6 +4,7 @@ import { mockStats, mockParentProfile, mockChildren, mockTeacherData } from './m
 
 const api = axios.create({
   baseURL: '/api',
+  timeout: 30000, // 30 seconds for AI and large uploads
 });
 
 // Mock Interceptor for Demo Mode

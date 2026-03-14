@@ -36,15 +36,30 @@ const Grades = () => {
             return;
         }
         setAiLoading(true);
+
+        const callAi = async (isRetry = false) => {
+            try {
+                const { data } = await api.post('/ai/academic-assistant', {
+                    type: 'grade_remark',
+                    studentName: selectedStudent?.student_name || 'the student',
+                    subject: formData.subject,
+                    score: formData.score,
+                    context: formData.remark 
+                });
+                setFormData({ ...formData, remark: data.text });
+                return true;
+            } catch (err) {
+                if (!isRetry) {
+                    console.log('AI busy, retrying once...');
+                    await new Promise(r => setTimeout(r, 1500));
+                    return await callAi(true);
+                }
+                throw err;
+            }
+        };
+
         try {
-            const { data } = await api.post('/ai/academic-assistant', {
-                type: 'grade_remark',
-                studentName: selectedStudent?.student_name || 'the student',
-                subject: formData.subject,
-                score: formData.score,
-                context: formData.remark // Pass current remark as context
-            });
-            setFormData({ ...formData, remark: data.text });
+            await callAi();
         } catch (err) {
             console.error('AI Suggest Error:', err);
             const msg = err.response?.data?.message || 'AI Assistant is busy';

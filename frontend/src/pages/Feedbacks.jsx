@@ -64,15 +64,30 @@ const Feedbacks = () => {
         return;
     }
     setAiLoading(true);
+    
+    const callAi = async (isRetry = false) => {
+        try {
+            const student = students.find(s => s.id === parseInt(formData.student_id));
+            const { data } = await api.post('/ai/academic-assistant', {
+                type: 'feedback',
+                studentName: student?.student_name || 'the student',
+                subject: formData.subject,
+                context: formData.feedback_text 
+            });
+            setFormData({ ...formData, feedback_text: data.text });
+            return true;
+        } catch (err) {
+            if (!isRetry) {
+                console.log('AI busy, retrying once...');
+                await new Promise(r => setTimeout(r, 1500));
+                return await callAi(true);
+            }
+            throw err;
+        }
+    };
+
     try {
-        const student = students.find(s => s.id === parseInt(formData.student_id));
-        const { data } = await api.post('/ai/academic-assistant', {
-            type: 'feedback',
-            studentName: student?.student_name || 'the student',
-            subject: formData.subject,
-            context: formData.feedback_text // Pass current text as context
-        });
-        setFormData({ ...formData, feedback_text: data.text });
+        await callAi();
     } catch (err) {
         console.error('AI Assist Error:', err);
         const msg = err.response?.data?.message || 'AI Assistant is busy';
