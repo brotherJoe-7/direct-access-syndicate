@@ -89,10 +89,12 @@ const Learning = () => {
             const token = data.viewToken;
             
             // Generate a clean filename for Microsoft compatibility
-            const titleSlug = mat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            let extension = '.docx'; // Default
+            const titleSlug = mat.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'document';
+            let extension = '.docx'; // Default fallback
             
-            if (mat.file_path) {
+            if (mat.file_path?.startsWith('data:application/pdf')) {
+                extension = '.pdf';
+            } else if (mat.file_path && !mat.file_path.startsWith('data:')) {
                 const parts = mat.file_path.split('.');
                 if (parts.length > 1) extension = `.${parts.pop().split(/[?#]/)[0]}`;
             }
