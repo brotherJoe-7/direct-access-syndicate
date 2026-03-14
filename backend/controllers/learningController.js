@@ -112,7 +112,7 @@ const generateViewToken = async (req, res) => {
 
 const viewSecure = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id, filename } = req.params;
         const { token } = req.query;
 
         if (!token) return res.status(401).send('Access Denied: No Token');
@@ -126,6 +126,7 @@ const viewSecure = async (req, res) => {
         if (rows.length === 0) return res.status(404).send('Not Found');
 
         const material = rows[0];
+        const displayName = filename || material.title || 'document';
         
         if (material.content_link.startsWith('data:')) {
             const matches = material.content_link.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
@@ -135,11 +136,19 @@ const viewSecure = async (req, res) => {
             const buffer = Buffer.from(matches[2], 'base64');
 
             res.set('Content-Type', type);
-            res.set('Content-Disposition', `inline; filename="${material.title}"`);
+            res.set('Content-Disposition', `inline; filename="${displayName}"`);
             return res.send(buffer);
         }
 
-        res.redirect(material.content_link);
+        // If it's a direct link, redirect but try to ensure it's absolute if it's an /uploads/ path
+        let targetUrl = material.content_link;
+        if (targetUrl.startsWith('/uploads/')) {
+            const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+            const host = req.get('host');
+            targetUrl = `${protocol}://${host}${targetUrl}`;
+        }
+
+        res.redirect(targetUrl);
     } catch (error) {
         console.error('Secure View Error:', error);
         res.status(401).send('Session Expired or Invalid');

@@ -88,11 +88,21 @@ const Learning = () => {
             const { data } = await api.get(`/learning/view-token/${mat.id}`);
             const token = data.viewToken;
             
+            // Generate a clean filename for Microsoft compatibility
+            const titleSlug = mat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            let extension = '.docx'; // Default
+            
+            if (mat.file_path) {
+                const parts = mat.file_path.split('.');
+                if (parts.length > 1) extension = `.${parts.pop().split(/[?#]/)[0]}`;
+            }
+            
+            const fileName = `${titleSlug}${extension}`;
             const backendBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5000`;
-            const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}?token=${token}`;
+            // Append /filename to the URL to hint Microsoft about the extension
+            const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}/${fileName}?token=${token}`;
 
-            const name = mat.title?.toLowerCase() || '';
-            const isPDF = name.endsWith('.pdf');
+            const isPDF = extension.toLowerCase() === '.pdf';
 
             if (isPDF) {
                 const pdfUrl = mat.file_path?.startsWith('data:') 

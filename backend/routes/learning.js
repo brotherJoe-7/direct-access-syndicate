@@ -14,6 +14,6 @@ router.delete('/:id', verifyAdminOrTeacher, deleteMaterial);
 
 // Universal Doc Support
 router.get('/view-token/:id', verifyToken, generateViewToken);
-router.get('/view-secure/:id', viewSecure); // Public guarded by token in controller
+router.get('/view-secure/:id/:filename?', viewSecure); // Public guarded by token in controller
 
 module.exports = router;
