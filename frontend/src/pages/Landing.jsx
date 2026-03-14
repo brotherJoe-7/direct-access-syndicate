@@ -129,50 +129,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Efficiency / ROI Section */}
-      <section className="py-20 px-4 max-w-6xl mx-auto">
-        <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-[3rem] p-8 sm:p-16 text-white overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-            <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-                <div>
-                    <h2 className="text-3xl sm:text-4xl font-black mb-6 leading-tight">Built to Save You Time and Money</h2>
-                    <p className="text-green-50 text-base sm:text-lg mb-8 leading-relaxed">
-                        Say goodbye to manual filing and paper records. Our digital infrastructure automates your school's most tedious tasks so you can focus on education.
-                    </p>
-                    <div className="space-y-4">
-                        {[
-                            '80% Faster Fee Processing',
-                            'Zero Cost for Paper Receipts',
-                            'Instant Parent Communication',
-                            'Error-Free Attendance Records'
-                        ].map((stat, i) => (
-                            <div key={i} className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                                    <CheckCircle size={14} />
-                                </div>
-                                <span className="font-bold">{stat}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center">
-                        <div className="text-3xl font-black mb-1">100%</div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">Digital</div>
-                    </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center">
-                        <div className="text-3xl font-black mb-1">Zero</div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">Paper Waste</div>
-                    </div>
-                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center col-span-2">
-                        <div className="text-3xl font-black mb-1">Real-Time</div>
-                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">WhatsApp Sync</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </section>
-
       {/* Why Choose DAS */}
       <section className="py-16 px-4 bg-slate-900 text-white">
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
@@ -264,6 +220,70 @@ const Landing = () => {
               <p className="text-slate-500 text-xs leading-relaxed">{f.desc}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Premium ROI Redesign - Located near bottom */}
+      <section className="py-24 px-4 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-slate-900 rounded-[3.5rem] p-10 sm:p-20 text-white relative overflow-hidden shadow-2xl">
+            {/* Background elements */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-600/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-600/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+            
+            <div className="relative z-10">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 font-bold text-xs uppercase tracking-widest mb-8">
+                    <Zap size={14} /> Efficiency Index
+                  </div>
+                  <h2 className="text-4xl sm:text-5xl font-black mb-8 leading-[1.1] tracking-tight">
+                    Built to Save You <span className="text-green-500">Time and Money</span>
+                  </h2>
+                  <p className="text-slate-400 text-lg mb-10 leading-relaxed max-w-lg">
+                    Say goodbye to manual filing and paper records. Our digital infrastructure automates your school's most tedious tasks so you can focus on education and financial stewardship.
+                  </p>
+                  
+                  <div className="space-y-6">
+                    {[
+                      { title: '80% Faster Fee Processing', detail: 'Instant digital verification' },
+                      { title: 'Zero Cost for Paper Receipts', detail: 'Save millions on printing annually' },
+                      { title: 'Real-Time Parent Comm', detail: 'Automated WhatsApp synchronization' }
+                    ].map((item, i) => (
+                      <div key={i} className="flex gap-4 group">
+                        <div className="mt-1 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 shrink-0 group-hover:scale-110 transition-transform">
+                          <CheckCircle size={14} />
+                        </div>
+                        <div>
+                          <p className="font-bold text-white text-lg">{item.title}</p>
+                          <p className="text-slate-500 text-sm font-medium">{item.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 relative">
+                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all">
+                    <div className="text-5xl font-black mb-2 text-green-500">100%</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Digital Archive</div>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all mt-8">
+                    <div className="text-5xl font-black mb-2 text-white">0%</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Paper Waste</div>
+                  </div>
+                  <div className="bg-green-600 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center shadow-lg shadow-green-600/20 group hover:scale-105 transition-all">
+                    <div className="text-3xl font-black mb-1">REAL-TIME</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-green-100">WhatsApp Sync</div>
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all mt-8">
+                    <div className="text-4xl font-black mb-2">AUTO</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Audit Trails</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
