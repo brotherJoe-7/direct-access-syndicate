@@ -3,9 +3,19 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const twilio = require('twilio');
 
-// Twilio Config
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886'; // Default sandbox number
+// Twilio Config (Lazy Initialization to prevent server crashes if env vars are missing)
+let _twilioClient;
+const getTwilioClient = () => {
+  if (!_twilioClient) {
+    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
+      throw new Error('TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN is missing');
+    }
+    _twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  }
+  return _twilioClient;
+};
+
+const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886'; 
 
 const login = async (req, res) => {
   const { username, password } = req.body;
@@ -140,6 +150,7 @@ const requestOTP = async (req, res) => {
     // 3. Send via Twilio
     const toPhone = searchPhone.startsWith('whatsapp:') ? searchPhone : `whatsapp:${searchPhone}`;
     
+    const client = getTwilioClient();
     await client.messages.create({
       body: `🛡️ *Direct Access Syndicate Security Code*\n\nYour login code is: *${otp}*\n\nThis code expires in 5 minutes. Do not share it with anyone.`,
       from: TWILIO_WHATSAPP_NUMBER,
