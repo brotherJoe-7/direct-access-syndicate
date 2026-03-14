@@ -86,56 +86,53 @@ app.get('/api/audit', (req, res) => {
 console.log('Server initializing...');
 
 // --- SECURE ROUTE REGISTRATION ---
-// We use static imports here so Vercel's bundler can reliably find the files.
-// Also, we use a wrapper to catch crashes and return generic error messages.
-const registerSafeRoute = (path, routerModule) => {
-    app.use(path, (req, res, next) => {
-        try {
-            routerModule(req, res, next);
-        } catch (error) {
-            console.error(`CRASH in route ${path}:`, error.message);
-            // Professional generic error for the end user
+// We use path.join and static imports for Vercel stability.
+// We also wrap everything in a try-catch to hide technical details from "hackers".
+
+const registerSafeRoute = (routePath, moduleRelativePath) => {
+    try {
+        const absolutePath = path.join(__dirname, moduleRelativePath);
+        const routerModule = require(absolutePath);
+        
+        app.use(routePath, (req, res, next) => {
+            try {
+                routerModule(req, res, next);
+            } catch (routeError) {
+                console.error(`Runtime crash in ${routePath}:`, routeError.message);
+                res.status(500).json({
+                    error: 'An internal server error occurred.',
+                    code: 'ROUTE_ERROR'
+                });
+            }
+        });
+    } catch (importError) {
+        console.error(`Failed to load module for ${routePath}:`, importError.message);
+        // We don't want the server to die, but we won't show the path to the user
+        app.use(routePath, (req, res) => {
             res.status(500).json({
-                error: 'An internal error occurred. Please try again later.',
-                code: 'SERVER_ERROR'
+                error: 'Service temporarily unavailable.',
+                code: 'MODULE_MISSING'
             });
-        }
-    });
+        });
+    }
 };
 
-// Import all routers statically
-const authRoutes = require('./routes/auth');
-const studentRoutes = require('./routes/students');
-const receiptRoutes = require('./routes/receipts');
-const attendanceRoutes = require('./routes/attendance');
-const expenseRoutes = require('./routes/expenses');
-const dashboardRoutes = require('./routes/dashboard');
-const feedbackRoutes = require('./routes/feedbacks');
-const whatsappRoutes = require('./routes/whatsapp');
-const parentRoutes = require('./routes/parents');
-const communityRoutes = require('./routes/community');
-const learningRoutes = require('./routes/learning');
-const gradingRoutes = require('./routes/grading');
-const staffRoutes = require('./routes/staff');
-const aiRoutes = require('./routes/ai');
-const callRoutes = require('./routes/calls');
-
-// Register them safely
-registerSafeRoute('/api/auth', authRoutes);
-registerSafeRoute('/api/students', studentRoutes);
-registerSafeRoute('/api/receipts', receiptRoutes);
-registerSafeRoute('/api/attendance', attendanceRoutes);
-registerSafeRoute('/api/expenses', expenseRoutes);
-registerSafeRoute('/api/dashboard', dashboardRoutes);
-registerSafeRoute('/api/feedbacks', feedbackRoutes);
-registerSafeRoute('/api/whatsapp', whatsappRoutes);
-registerSafeRoute('/api/parents', parentRoutes);
-registerSafeRoute('/api/community', communityRoutes);
-registerSafeRoute('/api/learning', learningRoutes);
-registerSafeRoute('/api/grades', gradingRoutes);
-registerSafeRoute('/api/staff', staffRoutes);
-registerSafeRoute('/api/ai', aiRoutes);
-registerSafeRoute('/api/calls', callRoutes);
+// Register all routes with the security-hardened loader
+registerSafeRoute('/api/auth', './routes/auth');
+registerSafeRoute('/api/students', './routes/students');
+registerSafeRoute('/api/receipts', './routes/receipts');
+registerSafeRoute('/api/attendance', './routes/attendance');
+registerSafeRoute('/api/expenses', './routes/expenses');
+registerSafeRoute('/api/dashboard', './routes/dashboard');
+registerSafeRoute('/api/feedbacks', './routes/feedbacks');
+registerSafeRoute('/api/whatsapp', './routes/whatsapp');
+registerSafeRoute('/api/parents', './routes/parents');
+registerSafeRoute('/api/community', './routes/community');
+registerSafeRoute('/api/learning', './routes/learning');
+registerSafeRoute('/api/grades', './routes/grading');
+registerSafeRoute('/api/staff', './routes/staff');
+registerSafeRoute('/api/ai', './routes/ai');
+registerSafeRoute('/api/calls', './routes/calls');
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
