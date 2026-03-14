@@ -2,8 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PublicNav from '../components/PublicNav';
 import VisitorChatbot from '../components/VisitorChatbot';
-import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight } from 'lucide-react';
+import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight, Zap, Smartphone, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import InstallButton from '../components/InstallButton';
 import logo from '../assets/logo.png';
 import gallery1 from '../assets/gallery_1.jpeg';
 import gallery2 from '../assets/gallery_2.jpeg';
@@ -16,7 +17,12 @@ import managerImg from '../assets/financial_manager.jpeg';
 import developerImg from '../assets/developer.jpeg';
 
 const Landing = () => {
-  const { user } = useAuth();
+  const { user, enterDemoMode } = useAuth();
+
+  const handleDemo = (role) => {
+    enterDemoMode(role);
+    window.location.href = role === 'admin' ? '/admin' : '/parent';
+  };
 
   const leadership = [
     {
@@ -53,7 +59,12 @@ const Landing = () => {
     {
       icon: <Users size={22} className="text-green-600" />,
       title: 'Parent Portal',
-      desc: 'Parents access their child\'s status, fees, and reports from any device — anywhere.'
+      desc: 'Parents access their child\'s status, fees, and reports via secure WhatsApp Passwordless login.'
+    },
+    {
+      icon: <Zap size={22} className="text-green-600" />,
+      title: 'Real-Time Alerts',
+      desc: 'Parents receive instant live notifications the moment a report or fee receipt is published.'
     },
     {
       icon: <MessageCircle size={22} className="text-green-600" />,
@@ -108,6 +119,84 @@ const Landing = () => {
           <Link to="/services" className="border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold hover:border-slate-300 transition-all text-sm">
             Learn More
           </Link>
+          <button 
+            onClick={() => handleDemo('admin')}
+            className="bg-slate-900 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-sm"
+          >
+            Experience the Portal <ArrowRight size={16} />
+          </button>
+          <InstallButton />
+        </div>
+      </section>
+
+      {/* Efficiency / ROI Section */}
+      <section className="py-20 px-4 max-w-6xl mx-auto">
+        <div className="bg-gradient-to-br from-green-600 to-emerald-700 rounded-[3rem] p-8 sm:p-16 text-white overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+            <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 className="text-3xl sm:text-4xl font-black mb-6 leading-tight">Built to Save You Time and Money</h2>
+                    <p className="text-green-50 text-base sm:text-lg mb-8 leading-relaxed">
+                        Say goodbye to manual filing and paper records. Our digital infrastructure automates your school's most tedious tasks so you can focus on education.
+                    </p>
+                    <div className="space-y-4">
+                        {[
+                            '80% Faster Fee Processing',
+                            'Zero Cost for Paper Receipts',
+                            'Instant Parent Communication',
+                            'Error-Free Attendance Records'
+                        ].map((stat, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                                    <CheckCircle size={14} />
+                                </div>
+                                <span className="font-bold">{stat}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center">
+                        <div className="text-3xl font-black mb-1">100%</div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">Digital</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center">
+                        <div className="text-3xl font-black mb-1">Zero</div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">Paper Waste</div>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center col-span-2">
+                        <div className="text-3xl font-black mb-1">Real-Time</div>
+                        <div className="text-xs font-bold uppercase tracking-widest text-green-200">WhatsApp Sync</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      {/* Why Choose DAS */}
+      <section className="py-16 px-4 bg-slate-900 text-white">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+            <div className="space-y-4">
+                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <Smartphone className="text-white" size={24} />
+                </div>
+                <h3 className="text-xl font-black italic tracking-tight">Mobile First</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Designed to work perfectly on your phone. No complex app store downloads needed—install directly from your browser.</p>
+            </div>
+            <div className="space-y-4">
+                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <Shield className="text-white" size={24} />
+                </div>
+                <h3 className="text-xl font-black italic tracking-tight">Ultra Secure</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Bank-grade data privacy. Parents only see their own children’s data, protected by WhatsApp 2FA verification.</p>
+            </div>
+            <div className="space-y-4">
+                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
+                    <Heart className="text-white" size={24} />
+                </div>
+                <h3 className="text-xl font-black italic tracking-tight">Built for SL</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">Tailored specifically for Sierra Leonean schools, handling local fee structures and parent communication habits.</p>
+            </div>
         </div>
       </section>
 
@@ -199,7 +288,10 @@ const Landing = () => {
             <img src={logo} alt="DAS Logo" className="h-7 w-7 rounded object-cover" />
             <span className="text-white font-bold text-sm">Direct Access Syndicate</span>
           </div>
-          <p className="text-slate-500 text-xs">© {new Date().getFullYear()} Direct Access Syndicate. All rights reserved.</p>
+          <div className="flex flex-col items-center sm:items-end gap-1">
+            <p className="text-slate-500 text-xs">© {new Date().getFullYear()} Direct Access Syndicate. All rights reserved.</p>
+            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-tighter">Developed with ❤️ by Joseph Nimneh</p>
+          </div>
           <div className="flex gap-4">
             <Link to="/services" className="text-slate-400 hover:text-white text-xs transition-colors">Services</Link>
             <Link to="/about" className="text-slate-400 hover:text-white text-xs transition-colors">About</Link>

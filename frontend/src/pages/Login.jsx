@@ -191,6 +191,13 @@ const Login = () => {
             </button>
           </form>
         )}
+        
+        <div className="mt-8 pt-6 border-t border-slate-700/30 flex items-center justify-center gap-2 opacity-50">
+          <Lock size={12} className="text-green-500" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            Secured by Joseph Nimneh Encryption
+          </p>
+        </div>
       </div>
     </div>
   );

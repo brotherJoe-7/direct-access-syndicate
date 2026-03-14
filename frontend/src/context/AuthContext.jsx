@@ -44,11 +44,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   const saveSession = (data) => {
-    localStorage.setItem('token', data.token);
+    localStorage.setItem('token', data.token || 'demo-token');
     localStorage.setItem('user', JSON.stringify(data.user));
     localStorage.setItem('role', data.role);
     setUser(data.user);
     setRole(data.role);
+  };
+
+  const enterDemoMode = (targetRole = 'admin') => {
+    const demoData = {
+      token: 'demo-token-' + Date.now(),
+      role: targetRole,
+      user: {
+        id: 'demo-123',
+        name: `Demo ${targetRole.charAt(0).toUpperCase() + targetRole.slice(1)}`,
+        username: 'demo_user',
+        isDemo: true
+      }
+    };
+    saveSession(demoData);
   };
 
   const logout = () => {
@@ -60,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, requestOTP, verifyOTP }}>
+    <AuthContext.Provider value={{ user, role, login, logout, requestOTP, verifyOTP, enterDemoMode }}>
       {children}
     </AuthContext.Provider>
   );

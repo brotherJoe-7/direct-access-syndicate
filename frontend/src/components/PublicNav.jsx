@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.png';
+import InstallButton from './InstallButton';
 
 const PublicNav = () => {
   const { user } = useAuth();
@@ -58,6 +59,7 @@ const PublicNav = () => {
                 Sign In
               </Link>
             )}
+            <InstallButton className="py-2 text-xs" />
           </div>
 
           {/* Mobile Hamburger */}
@@ -104,6 +106,7 @@ const PublicNav = () => {
               Sign In
             </Link>
           )}
+          <InstallButton className="mt-2 w-full justify-center" />
         </div>
       )}
     </nav>
