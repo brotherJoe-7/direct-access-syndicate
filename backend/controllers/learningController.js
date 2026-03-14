@@ -100,7 +100,7 @@ const generateViewToken = async (req, res) => {
         const viewToken = jwt.sign(
             { materialId: id, purpose: 'view_secure' },
             process.env.JWT_SECRET,
-            { expiresIn: '5m' }
+            { expiresIn: '1h' } // Increased to 1h for Microsoft viewer latency
         );
         
         res.json({ viewToken });
@@ -132,21 +132,23 @@ const viewSecure = async (req, res) => {
         const displayName = filename || material.title || 'document';
         
         if (material.content_link.startsWith('data:')) {
-            const matches = material.content_link.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-            if (!matches || matches.length !== 3) {
-                console.error(`[SecureView] Invalid Data URI format for ID: ${id}`);
-                return res.status(400).send('Invalid Content Format');
-            }
-
-            const type = matches[1];
-            const buffer = Buffer.from(matches[2], 'base64');
+            // High-performance string splitting (much faster than regex for large files on Vercel)
+            const parts = material.content_link.split(',');
+            if (parts.length < 2) return res.status(400).send('Malformed Data URI');
+            
+            const header = parts[0];
+            const base64Data = parts[1];
+            
+            const typeMatch = header.match(/data:(.*?);/);
+            const type = typeMatch ? typeMatch[1] : 'application/octet-stream';
+            const buffer = Buffer.from(base64Data, 'base64');
 
             res.set('Content-Type', type);
             res.set('Content-Length', buffer.length);
             res.set('Content-Disposition', `inline; filename="${displayName}"`);
-            res.set('Cache-Control', 'public, max-age=3600'); // Optimize for external viewers
+            res.set('Cache-Control', 'public, max-age=3600'); 
             
-            console.log(`[SecureView] Serving Data URI: ${type}, Size: ${buffer.length} bytes`);
+            console.log(`[SecureView] Served optimized Data URI. Type: ${type}, Size: ${buffer.length} bytes`);
             return res.send(buffer);
         }
 

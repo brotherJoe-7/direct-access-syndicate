@@ -32,7 +32,7 @@ const Learning = () => {
 
     useEffect(() => {
         fetchMaterials();
-    }, [filterLevel]);
+    }, [fetchMaterials]);
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -115,15 +115,16 @@ const Learning = () => {
             const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}/${fileName}?token=${token}`;
 
             const isPDF = extension.toLowerCase() === '.pdf';
-            console.log(`[Viewer] Detected extension: ${extension}, Mode: ${isPDF ? 'PDF' : 'Office'}`);
+            console.log(`[UniversalViewer] ID: ${mat.id}, Extension: ${extension}, Base64: ${sourceUrl.startsWith('data:')}`);
 
             if (isPDF) {
-                const pdfUrl = mat.file_path?.startsWith('data:') 
-                    ? mat.file_path 
+                const pdfUrl = sourceUrl.startsWith('data:') 
+                    ? sourceUrl 
                     : `${resolveLink(mat)}#toolbar=0&navpanes=0&scrollbar=1`;
                 setSelectedFile(pdfUrl);
             } else {
                 const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(secureUrl)}`;
+                console.log(`[UniversalViewer] Opening Office: ${officeViewerUrl}`);
                 setSelectedFile(officeViewerUrl);
             }
         } catch (err) {
