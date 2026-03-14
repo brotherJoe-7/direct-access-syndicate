@@ -90,38 +90,45 @@ app.get('/api/audit', (req, res) => {
 
 console.log('Server initializing...');
 
-// Fail-safe initialization
-try {
-    console.log('Registering routes...');
-    
-    // Lazy-load routes within the app.use to prevent top-level requirement crashes from taking down the whole app
-    app.use('/api/auth', (req, res, next) => require('./routes/auth')(req, res, next));
-    app.use('/api/students', (req, res, next) => require('./routes/students')(req, res, next));
-    app.use('/api/receipts', (req, res, next) => require('./routes/receipts')(req, res, next));
-    app.use('/api/attendance', (req, res, next) => require('./routes/attendance')(req, res, next));
-    app.use('/api/expenses', (req, res, next) => require('./routes/expenses')(req, res, next));
-    app.use('/api/dashboard', (req, res, next) => require('./routes/dashboard')(req, res, next));
-    app.use('/api/feedbacks', (req, res, next) => require('./routes/feedbacks')(req, res, next));
-    app.use('/api/whatsapp', (req, res, next) => require('./routes/whatsapp')(req, res, next));
-    app.use('/api/parents', (req, res, next) => require('./routes/parents')(req, res, next));
-    app.use('/api/community', (req, res, next) => require('./routes/community')(req, res, next));
-    app.use('/api/learning', (req, res, next) => require('./routes/learning')(req, res, next));
-    app.use('/api/grades', (req, res, next) => require('./routes/grading')(req, res, next));
-    app.use('/api/staff', (req, res, next) => require('./routes/staff')(req, res, next));
-    app.use('/api/ai', (req, res, next) => require('./routes/ai')(req, res, next));
-    app.use('/api/calls', (req, res, next) => require('./routes/calls')(req, res, next));
-    
-    console.log('Router registration complete.');
-} catch (error) {
-    console.error('SERVER INITIALIZATION ERROR:', error.message);
-    app.all('/api/(.*)', (req, res) => {
-        res.status(500).json({
-            error: 'Server failed to initialize',
-            message: error.message,
-            stack: error.stack
-        });
+// Comprehensive Route Registration with Error Handling
+const routes = [
+    { path: '/api/auth', module: './routes/auth' },
+    { path: '/api/students', module: './routes/students' },
+    { path: '/api/receipts', module: './routes/receipts' },
+    { path: '/api/attendance', module: './routes/attendance' },
+    { path: '/api/expenses', module: './routes/expenses' },
+    { path: '/api/dashboard', module: './routes/dashboard' },
+    { path: '/api/feedbacks', module: './routes/feedbacks' },
+    { path: '/api/whatsapp', module: './routes/whatsapp' },
+    { path: '/api/parents', module: './routes/parents' },
+    { path: '/api/community', module: './routes/community' },
+    { path: '/api/learning', module: './routes/learning' },
+    { path: '/api/grades', module: './routes/grading' },
+    { path: '/api/staff', module: './routes/staff' },
+    { path: '/api/ai', module: './routes/ai' },
+    { path: '/api/calls', module: './routes/calls' }
+];
+
+routes.forEach(route => {
+    app.use(route.path, (req, res, next) => {
+        try {
+            // Lazy load to catch requirement errors at request time
+            const router = require(route.module);
+            if (typeof router !== 'function') {
+                throw new Error(`Module ${route.module} did not export a router function/object.`);
+            }
+            router(req, res, next);
+        } catch (error) {
+            console.error(`CRASH in route ${route.path}:`, error);
+            res.status(500).json({
+                error: 'Route Handler Failed',
+                path: route.path,
+                message: error.message,
+                stack: process.env.NODE_ENV === 'production' ? null : error.stack
+            });
+        }
     });
-}
+});
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
