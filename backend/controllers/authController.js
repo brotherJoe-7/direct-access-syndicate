@@ -9,17 +9,36 @@ const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+
 
 const login = async (req, res) => {
   const { username, password } = req.body;
+  console.log(`[Auth] Attempting login for: ${username}`);
 
   try {
     // 1. Check Admins table First
-    const { rows: admins } = await pool.query('SELECT * FROM admins WHERE username = $1', [username]);
+    console.log('[Auth] Querying admins table...');
+    let admins;
+    try {
+        const result = await pool.query('SELECT * FROM admins WHERE username = $1', [username]);
+        admins = result.rows;
+    } catch (queryErr) {
+        console.error('[Auth DB Error] Admin query failed:', queryErr.message);
+        throw new Error(`Database query failed: ${queryErr.message}`);
+    }
+
     if (admins.length > 0) {
       const admin = admins[0];
-      const isMatch = await bcrypt.compare(password, admin.password);
+      console.log(`[Auth] Admin found: ${admin.username}. Comparing password...`);
+      
+      let isMatch;
+      try {
+          isMatch = await bcrypt.compare(password, admin.password);
+      } catch (bcryptErr) {
+          console.error('[Auth Bcrypt Error]:', bcryptErr.message);
+          throw new Error(`Bcrypt verification failed: ${bcryptErr.message}`);
+      }
+
       if (isMatch) {
         const userRole = admin.role || 'admin';
+        console.log(`[Auth] Password match. Role: ${userRole}. Checking JWT_SECRET...`);
         
-        // Check for JWT_SECRET
         if (!process.env.JWT_SECRET) {
           console.error('CRITICAL ERROR: JWT_SECRET is missing from environment variables.');
           return res.status(500).json({ 
@@ -29,36 +48,52 @@ const login = async (req, res) => {
         }
 
         // Create JWT Token
-        const token = jwt.sign(
-          { id: admin.id, role: userRole, name: admin.username },
-          process.env.JWT_SECRET,
-          { expiresIn: '1d' }
-        );
+        console.log('[Auth] Generating JWT token...');
+        let token;
+        try {
+            token = jwt.sign(
+                { id: admin.id, role: userRole, name: admin.username },
+                process.env.JWT_SECRET,
+                { expiresIn: '1d' }
+            );
+        } catch (jwtErr) {
+            console.error('[Auth JWT Error]:', jwtErr.message);
+            throw new Error(`Token generation failed: ${jwtErr.message}`);
+        }
 
         // Log the activity
-        await pool.query(
-          'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
-          [admin.id, userRole, 'login', `${userRole} ${admin.username} logged in`]
-        );
+        console.log('[Auth] Logging activity...');
+        try {
+            await pool.query(
+                'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
+                [admin.id, userRole, 'login', `${userRole} ${admin.username} logged in`]
+            );
+        } catch (logErr) {
+            console.warn('[Auth Log Warning] Activity log failed:', logErr.message);
+            // Don't fail the whole login if logging fails
+        }
 
+        console.log('[Auth] Login successful.');
         return res.json({ token, role: userRole, user: { id: admin.id, name: admin.username } });
+      } else {
+        console.log('[Auth] Password mismatch.');
       }
     }
 
     // 2. If not admin, check Parents table (username = email in PHP code)
+    console.log('[Auth] Admin check failed. Checking parents table...');
     const { rows: parents } = await pool.query('SELECT * FROM parents WHERE email = $1', [username]);
     if (parents.length > 0) {
       const parent = parents[0];
       const isMatch = await bcrypt.compare(password, parent.password);
       if (isMatch) {
-         // Create JWT Token
+         console.log(`[Auth] Parent found and matched: ${parent.parent_name}`);
          const token = jwt.sign(
           { id: parent.id, role: 'parent', name: parent.parent_name },
           process.env.JWT_SECRET,
           { expiresIn: '1d' }
         );
 
-        // Log the activity
         await pool.query(
           'INSERT INTO activity_logs (user_id, role, action, details) VALUES ($1, $2, $3, $4)',
           [parent.id, 'parent', 'login', `Parent ${parent.parent_name} logged in`]
@@ -68,14 +103,14 @@ const login = async (req, res) => {
       }
     }
 
-    // If no match found or wrong password
+    console.log('[Auth] No user found with these credentials.');
     return res.status(401).json({ message: 'Invalid username/email or password' });
   } catch (error) {
-    console.error('Login Error:', error);
+    console.error('[Auth Fatal Error]:', error);
     res.status(500).json({ 
-      message: 'Server error during login', 
-      debug: error.message,
-      stack: error.stack
+      error: 'Internal Server Error during Login',
+      message: error.message,
+      code: 'LOGIN_CRASH'
     });
   }
 };
