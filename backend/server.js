@@ -103,34 +103,27 @@ app.get('/api/audit', (req, res) => {
 
 console.log('Server initializing...');
 
-// --- SECURE ROUTE REGISTRATION ---
-// We use literal require() strings here so Vercel's bundler (NFT) 
-// can correctly identify and include the route files in the bundle.
-const safeLoad = (modulePath) => {
-    try {
-        const mod = require(modulePath);
-        return { module: mod };
-    } catch (e) {
-        console.error(`Module Load Error (${modulePath}):`, e.message);
-        return { error: e.message };
-    }
-};
+// Explicitly require all modules at top level for Vercel NFT bundling
+const authMod = require('./routes/auth');
+const studentMod = require('./routes/students');
+const receiptMod = require('./routes/receipts');
+const attendanceMod = require('./routes/attendance');
+const expenseMod = require('./routes/expenses');
+const dashboardMod = require('./routes/dashboard');
+const feedbackMod = require('./routes/feedbacks');
+const whatsappMod = require('./routes/whatsapp');
+const parentMod = require('./routes/parents');
+const communityMod = require('./routes/community');
+const learningMod = require('./routes/learning');
+const gradingMod = require('./routes/grading');
+const staffMod = require('./routes/staff');
+const aiMod = require('./routes/ai');
+const callMod = require('./routes/calls');
 
-const registerSafe = (path, result) => {
-    if (!result || result.error) {
-        app.use(path, (req, res) => {
-            res.status(500).json({
-                error: 'Service temporarily unavailable.',
-                code: 'MODULE_INITIALIZATION_FAILED',
-                detail: result?.error || 'Unknown initialization error'
-            });
-        });
-        return;
-    }
-    
+const registerSafe = (path, routerInstance) => {
     app.use(path, (req, res, next) => {
         try {
-            result.module(req, res, next);
+            routerInstance(req, res, next);
         } catch (err) {
             console.error(`Runtime failure at ${path}:`, err.message);
             res.status(500).json({
@@ -141,22 +134,22 @@ const registerSafe = (path, result) => {
     });
 };
 
-// Explicitly require modules with literal strings for Vercel bundling
-registerSafe('/api/auth', safeLoad('./routes/auth'));
-registerSafe('/api/students', safeLoad('./routes/students'));
-registerSafe('/api/receipts', safeLoad('./routes/receipts'));
-registerSafe('/api/attendance', safeLoad('./routes/attendance'));
-registerSafe('/api/expenses', safeLoad('./routes/expenses'));
-registerSafe('/api/dashboard', safeLoad('./routes/dashboard'));
-registerSafe('/api/feedbacks', safeLoad('./routes/feedbacks'));
-registerSafe('/api/whatsapp', safeLoad('./routes/whatsapp'));
-registerSafe('/api/parents', safeLoad('./routes/parents'));
-registerSafe('/api/community', safeLoad('./routes/community'));
-registerSafe('/api/learning', safeLoad('./routes/learning'));
-registerSafe('/api/grades', safeLoad('./routes/grading'));
-registerSafe('/api/staff', safeLoad('./routes/staff'));
-registerSafe('/api/ai', safeLoad('./routes/ai'));
-registerSafe('/api/calls', safeLoad('./routes/calls'));
+// Register them safely
+registerSafe('/api/auth', authMod);
+registerSafe('/api/students', studentMod);
+registerSafe('/api/receipts', receiptMod);
+registerSafe('/api/attendance', attendanceMod);
+registerSafe('/api/expenses', expenseMod);
+registerSafe('/api/dashboard', dashboardMod);
+registerSafe('/api/feedbacks', feedbackMod);
+registerSafe('/api/whatsapp', whatsappMod);
+registerSafe('/api/parents', parentMod);
+registerSafe('/api/community', communityMod);
+registerSafe('/api/learning', learningMod);
+registerSafe('/api/grades', gradingMod);
+registerSafe('/api/staff', staffMod);
+registerSafe('/api/ai', aiMod);
+registerSafe('/api/calls', callMod);
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
