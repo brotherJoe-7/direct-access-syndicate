@@ -1,4 +1,3 @@
-console.log('authController.js loading...');
 const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -9,7 +8,6 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
 const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886'; // Default sandbox number
 
 const login = async (req, res) => {
-  console.log('Login attempt for username:', req.body.username);
   const { username, password } = req.body;
 
   try {

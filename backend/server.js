@@ -86,53 +86,57 @@ app.get('/api/audit', (req, res) => {
 console.log('Server initializing...');
 
 // --- SECURE ROUTE REGISTRATION ---
-// We use path.join and static imports for Vercel stability.
-// We also wrap everything in a try-catch to hide technical details from "hackers".
-
-const registerSafeRoute = (routePath, moduleRelativePath) => {
+// We use literal require() strings here so Vercel's bundler (NFT) 
+// can correctly identify and include the route files in the bundle.
+const safeLoad = (modulePath) => {
     try {
-        const absolutePath = path.join(__dirname, moduleRelativePath);
-        const routerModule = require(absolutePath);
-        
-        app.use(routePath, (req, res, next) => {
-            try {
-                routerModule(req, res, next);
-            } catch (routeError) {
-                console.error(`Runtime crash in ${routePath}:`, routeError.message);
-                res.status(500).json({
-                    error: 'An internal server error occurred.',
-                    code: 'ROUTE_ERROR'
-                });
-            }
-        });
-    } catch (importError) {
-        console.error(`Failed to load module for ${routePath}:`, importError.message);
-        // We don't want the server to die, but we won't show the path to the user
-        app.use(routePath, (req, res) => {
-            res.status(500).json({
-                error: 'Service temporarily unavailable.',
-                code: 'MODULE_MISSING'
-            });
-        });
+        return require(modulePath);
+    } catch (e) {
+        console.error(`Module Load Error (${modulePath}):`, e.message);
+        return null;
     }
 };
 
-// Register all routes with the security-hardened loader
-registerSafeRoute('/api/auth', './routes/auth');
-registerSafeRoute('/api/students', './routes/students');
-registerSafeRoute('/api/receipts', './routes/receipts');
-registerSafeRoute('/api/attendance', './routes/attendance');
-registerSafeRoute('/api/expenses', './routes/expenses');
-registerSafeRoute('/api/dashboard', './routes/dashboard');
-registerSafeRoute('/api/feedbacks', './routes/feedbacks');
-registerSafeRoute('/api/whatsapp', './routes/whatsapp');
-registerSafeRoute('/api/parents', './routes/parents');
-registerSafeRoute('/api/community', './routes/community');
-registerSafeRoute('/api/learning', './routes/learning');
-registerSafeRoute('/api/grades', './routes/grading');
-registerSafeRoute('/api/staff', './routes/staff');
-registerSafeRoute('/api/ai', './routes/ai');
-registerSafeRoute('/api/calls', './routes/calls');
+const registerSafe = (path, routerInstance) => {
+    if (!routerInstance) {
+        app.use(path, (req, res) => {
+            res.status(500).json({
+                error: 'Service temporarily unavailable.',
+                code: 'MODULE_INITIALIZATION_FAILED'
+            });
+        });
+        return;
+    }
+    
+    app.use(path, (req, res, next) => {
+        try {
+            routerInstance(req, res, next);
+        } catch (err) {
+            console.error(`Runtime failure at ${path}:`, err.message);
+            res.status(500).json({
+                error: 'An internal error occurred.',
+                code: 'SERVER_RUNTIME_ERROR'
+            });
+        }
+    });
+};
+
+// Explicitly require modules with literal strings for Vercel bundling
+registerSafe('/api/auth', safeLoad('./routes/auth'));
+registerSafe('/api/students', safeLoad('./routes/students'));
+registerSafe('/api/receipts', safeLoad('./routes/receipts'));
+registerSafe('/api/attendance', safeLoad('./routes/attendance'));
+registerSafe('/api/expenses', safeLoad('./routes/expenses'));
+registerSafe('/api/dashboard', safeLoad('./routes/dashboard'));
+registerSafe('/api/feedbacks', safeLoad('./routes/feedbacks'));
+registerSafe('/api/whatsapp', safeLoad('./routes/whatsapp'));
+registerSafe('/api/parents', safeLoad('./routes/parents'));
+registerSafe('/api/community', safeLoad('./routes/community'));
+registerSafe('/api/learning', safeLoad('./routes/learning'));
+registerSafe('/api/grades', safeLoad('./routes/grading'));
+registerSafe('/api/staff', safeLoad('./routes/staff'));
+registerSafe('/api/ai', safeLoad('./routes/ai'));
+registerSafe('/api/calls', safeLoad('./routes/calls'));
 
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
