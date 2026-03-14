@@ -144,12 +144,15 @@ Always encourage visitors to click "Apply Now" if they're interested in joining 
 };
 
 const generateAcademicAssistant = async (req, res) => {
+    const startTime = Date.now();
     try {
-        const { type, studentName, subject, score } = req.body;
+        const { type, studentName, subject, score, context } = req.body;
         
         if (!type || !studentName || !subject) {
             return res.status(400).json({ message: 'Type, Student Name, and Subject are required' });
         }
+
+        console.log(`[AcademicAI] Starting ${type} generation for ${studentName}. Context length: ${context?.length || 0}`);
 
         const genAI = getGenAI();
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -158,17 +161,23 @@ const generateAcademicAssistant = async (req, res) => {
         if (type === 'feedback') {
             prompt = `
             You are a professional teacher at "Direct Access Syndicate" (DAS). 
-            Write a detailed, professional, and encouraging performance report for a student named "${studentName}" in the category/subject "${subject}".
+            Write a professional, constructive performance report for a student named "${studentName}" in the category/subject "${subject}".
+            
+            ${context ? `IMPORTANT CONTEXT: The teacher provided these specific notes/observations: "${context}". You MUST incorporate these notes into the report professionally.` : 'Write a general encouraging report.'}
+
             The report should:
-            1. Highlight potential strengths.
-            2. Mention areas for improvement in a constructive way.
-            3. End with a motivational sentence.
+            1. Be professional and suitable for a parent to read.
+            2. Be constructive if negative behavior is mentioned (e.g., instead of "bad", use "needs more focus" or "struggles with").
+            3. End with a specific, motivational next step.
+            
             Keep it between 2-3 sentences. Do NOT use placeholders. Write the final text ready to be saved.
             `;
         } else if (type === 'grade_remark') {
             prompt = `
             You are a professional teacher at "Direct Access Syndicate" (DAS).
             Generate a concise academic remark for a student named "${studentName}" who scored ${score}/100 in "${subject}".
+            ${context ? `CONTEXT: Use these notes to personalize the remark: "${context}"` : ''}
+            
             The remark should be appropriate for the score (Excellent for 90+, Good for 70-89, Encouraging for 50-69, and Constructive/Action-oriented for below 50).
             Keep it to one sentence. Do NOT use placeholders. Write the final text ready to be saved.
             `;
@@ -178,12 +187,24 @@ const generateAcademicAssistant = async (req, res) => {
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text().trim().replace(/^"|"$/g, ''); // Clean quotes if AI adds them
+        const text = response.text().trim().replace(/^["']|["']$/g, ''); 
 
+        const duration = Date.now() - startTime;
+        console.log(`[AcademicAI] Success. Duration: ${duration}ms`);
         res.json({ text });
     } catch (error) {
-        console.error('Academic Assistant Error:', error);
-        res.status(500).json({ message: 'AI Assistant is currently unavailable', detail: error.message });
+        const duration = Date.now() - startTime;
+        console.error(`[AcademicAI] Error after ${duration}ms:`, error);
+        
+        let userMessage = 'AI Assistant is currently busy';
+        if (error.message?.includes('fetch failed')) userMessage = 'Network connection to AI is slow';
+        else if (error.message?.includes('429')) userMessage = 'Too many requests, please wait a minute';
+
+        res.status(500).json({ 
+            message: userMessage, 
+            detail: error.message,
+            code: error.status || 'AI_ERROR'
+        });
     }
 };
 

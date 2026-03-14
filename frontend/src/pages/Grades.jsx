@@ -41,12 +41,14 @@ const Grades = () => {
                 type: 'grade_remark',
                 studentName: selectedStudent?.student_name || 'the student',
                 subject: formData.subject,
-                score: formData.score
+                score: formData.score,
+                context: formData.remark // Pass current remark as context
             });
             setFormData({ ...formData, remark: data.text });
         } catch (err) {
             console.error('AI Suggest Error:', err);
-            alert('AI Assistant is busy, please try again.');
+            const msg = err.response?.data?.message || 'AI Assistant is busy';
+            alert(`${msg}. Please try again in a moment.`);
         } finally {
             setAiLoading(false);
         }

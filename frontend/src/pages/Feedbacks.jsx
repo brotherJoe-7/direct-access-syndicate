@@ -69,12 +69,14 @@ const Feedbacks = () => {
         const { data } = await api.post('/ai/academic-assistant', {
             type: 'feedback',
             studentName: student?.student_name || 'the student',
-            subject: formData.subject
+            subject: formData.subject,
+            context: formData.feedback_text // Pass current text as context
         });
         setFormData({ ...formData, feedback_text: data.text });
     } catch (err) {
         console.error('AI Assist Error:', err);
-        alert('AI Assistant is busy, please try again.');
+        const msg = err.response?.data?.message || 'AI Assistant is busy';
+        alert(`${msg}. Please try again in a moment.`);
     } finally {
         setAiLoading(false);
     }
