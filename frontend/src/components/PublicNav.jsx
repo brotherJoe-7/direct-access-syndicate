@@ -39,6 +39,7 @@ const PublicNav = () => {
                     ? 'text-green-600'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
+                onClick={() => window.scrollTo(0,0)}
               >
                 {link.label}
               </Link>
