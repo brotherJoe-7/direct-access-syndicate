@@ -12,8 +12,8 @@ const getAttendance = async (req, res) => {
     let params = [];
 
     if (req.user.role === 'parent') {
-      // Find parent's children
-      const { rows: children } = await pool.query('SELECT student_id FROM parents WHERE id = $1', [req.user.id]);
+      // Find parent's children STRICTLY from parent_students table
+      const { rows: children } = await pool.query('SELECT student_id FROM parent_students WHERE parent_id = $1', [req.user.id]);
       if (children.length === 0) {
          return res.json([]); 
       }

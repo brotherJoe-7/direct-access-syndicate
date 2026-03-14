@@ -3,13 +3,27 @@ const pool = require('../config/db');
 const getGradesByStudent = async (req, res) => {
     try {
         const { student_id } = req.params;
-        const { rows } = await pool.query(`
+        let query = `
             SELECT g.*, s.student_name 
             FROM student_grades g 
             JOIN students s ON g.student_id = s.id 
-            WHERE g.student_id = $1 
-            ORDER BY g.created_at DESC
-        `, [student_id]);
+        `;
+        let params = [student_id];
+
+        if (req.user.role === 'parent') {
+            // Strictly enforce API ownership
+            query += `
+                JOIN parent_students ps ON s.id = ps.student_id 
+                WHERE g.student_id = $1 AND ps.parent_id = $2
+            `;
+            params.push(req.user.id);
+        } else {
+            query += ` WHERE g.student_id = $1 `;
+        }
+
+        query += ` ORDER BY g.created_at DESC`;
+
+        const { rows } = await pool.query(query, params);
         res.json(rows);
     } catch (error) {
         console.error('Error fetching student grades:', error);

@@ -8,9 +8,18 @@ const getReceipts = async (req, res) => {
     let params = [];
 
     if (req.user.role === 'parent') {
-      // Parents can only see receipts associated with their name
-      query = 'SELECT * FROM receipts WHERE parent_name = $1 ORDER BY issue_date DESC';
-      params = [req.user.name];
+      // Parents can only see receipts for their mapped students
+      const { rows: children } = await pool.query('SELECT student_id FROM parent_students WHERE parent_id = $1', [req.user.id]);
+      if (children.length === 0) return res.json([]);
+      
+      const childIds = children.map(c => c.student_id);
+      query = `
+        SELECT r.* 
+        FROM receipts r
+        JOIN students s ON r.student_name = s.student_name
+        WHERE s.id = ANY($1) 
+        ORDER BY r.issue_date DESC`;
+      params = [childIds];
     }
 
     const { rows } = await pool.query(query, params);

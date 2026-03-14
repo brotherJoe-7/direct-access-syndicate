@@ -12,17 +12,18 @@ const getFeedbacks = async (req, res) => {
     `;
     let params = [];
 
-    // If parent, only show feedbacks for students linked to their name
+    // If parent, strict IDOR check via parent_students
     if (req.user.role === 'parent') {
       query = `
         SELECT f.*, a.username as teacher_name, s.student_name 
         FROM student_feedbacks f
         JOIN admins a ON f.teacher_id = a.id
         JOIN students s ON f.student_id = s.id
-        WHERE s.parent_name = $1
+        JOIN parent_students ps ON s.id = ps.student_id
+        WHERE ps.parent_id = $1
         ORDER BY f.created_at DESC
       `;
-      params = [req.user.name];
+      params = [req.user.id];
     } else {
       query += ' ORDER BY f.created_at DESC';
     }
