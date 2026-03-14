@@ -131,7 +131,10 @@ const Layout = ({ children }) => {
 
         <div className="p-4 border-t border-slate-800/50">
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              window.location.href = '/';
+            }}
             className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all font-medium"
           >
             <LogOut size={20} />

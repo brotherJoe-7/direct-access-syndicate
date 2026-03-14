@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import PublicNav from '../components/PublicNav';
 import VisitorChatbot from '../components/VisitorChatbot';
-import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight, Zap, Smartphone, Heart } from 'lucide-react';
+import { Shield, CheckCircle, Users, BookOpen, Receipt, MessageCircle, ArrowRight, Zap, Smartphone, Heart, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import InstallButton from '../components/InstallButton';
 import logo from '../assets/logo.png';
@@ -18,6 +18,7 @@ import developerImg from '../assets/developer.jpeg';
 
 const Landing = () => {
   const { user, enterDemoMode } = useAuth();
+  const [showDemoSelector, setShowDemoSelector] = useState(false);
 
   const handleDemo = (role) => {
     enterDemoMode(role);
@@ -121,61 +122,50 @@ const Landing = () => {
           <Link to="/services" className="border border-slate-200 text-slate-600 px-6 py-3 rounded-xl font-semibold hover:border-slate-300 transition-all text-sm">
             Learn More
           </Link>
-          <div className="flex flex-col items-center gap-4 w-full max-w-2xl mx-auto bg-white/50 backdrop-blur-sm p-6 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-200/20">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Experience the Full Ecosystem</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <button 
-                onClick={() => handleDemo('admin')}
-                className="bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-xs"
-              >
-                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><Shield size={12} /></div> Admin View
-              </button>
-              <button 
-                onClick={() => handleDemo('teacher')}
-                className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-green-500/10 hover:bg-green-700 transition-all flex items-center gap-2 text-xs"
-              >
-                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><BookOpen size={12} /></div> Teacher Portal
-              </button>
-              <button 
-                onClick={() => handleDemo('parent')}
-                className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/10 hover:bg-blue-700 transition-all flex items-center gap-2 text-xs"
-              >
-                <div className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center"><Users size={12} /></div> Parent Portal
-              </button>
-            </div>
+          
+          <div className="relative">
+            <button 
+              onClick={() => setShowDemoSelector(!showDemoSelector)}
+              className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all flex items-center gap-2 text-sm"
+            >
+              Experience the Portal <ChevronDown size={16} className={`transition-transform ${showDemoSelector ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {showDemoSelector && (
+              <div className="absolute top-full left-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 animate-fade-in-up">
+                <p className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400">Select Trial Role</p>
+                <button onClick={() => handleDemo('admin')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center"><Shield size={16} /></div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">School Admin</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Full oversight & finances</p>
+                  </div>
+                </button>
+                <button onClick={() => handleDemo('teacher')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-green-600 text-white flex items-center justify-center"><BookOpen size={16} /></div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">Teacher Portal</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Grades & Attendance</p>
+                  </div>
+                </button>
+                <button onClick={() => handleDemo('parent')} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-left transition-colors">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center"><Users size={16} /></div>
+                  <div>
+                    <p className="text-sm font-bold text-slate-800">Parent Dashboard</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Track child's data</p>
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
-          <div className="flex justify-center mt-4">
+          
+          <div className="flex justify-center mt-2">
             <InstallButton />
           </div>
         </div>
       </section>
 
-      {/* Why Choose DAS */}
-      <section className="py-16 px-4 bg-slate-900 text-white">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
-            <div className="space-y-4">
-                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                    <Smartphone className="text-white" size={24} />
-                </div>
-                <h3 className="text-xl font-black italic tracking-tight">Mobile First</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">Designed to work perfectly on your phone. No complex app store downloads needed—install directly from your browser.</p>
-            </div>
-            <div className="space-y-4">
-                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                    <Shield className="text-white" size={24} />
-                </div>
-                <h3 className="text-xl font-black italic tracking-tight">Ultra Secure</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">Bank-grade data privacy. Parents only see their own children’s data, protected by WhatsApp 2FA verification.</p>
-            </div>
-            <div className="space-y-4">
-                <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                    <Heart className="text-white" size={24} />
-                </div>
-                <h3 className="text-xl font-black italic tracking-tight">Built for SL</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">Tailored specifically for Sierra Leonean schools, handling local fee structures and parent communication habits.</p>
-            </div>
-        </div>
-      </section>
+      {/* Why Choose DAS - REMOVED from here */}
 
       {/* Leadership Section */}
       <section className="py-16 px-4 max-w-6xl mx-auto border-t border-slate-100">
@@ -244,64 +234,70 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Premium ROI Redesign - Located near bottom */}
-      <section className="py-24 px-4 bg-slate-50">
+      {/* Bottom Marketing Zone (Moved & Unified) */}
+      <section className="py-20 px-4 bg-slate-900 border-t border-slate-800">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-slate-900 rounded-[3.5rem] p-10 sm:p-20 text-white relative overflow-hidden shadow-2xl">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-600/20 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-600/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
-            
-            <div className="relative z-10">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 font-bold text-xs uppercase tracking-widest mb-8">
-                    <Zap size={14} /> Efficiency Index
-                  </div>
-                  <h2 className="text-4xl sm:text-5xl font-black mb-8 leading-[1.1] tracking-tight">
-                    Built to Save You <span className="text-green-500">Time and Money</span>
-                  </h2>
-                  <p className="text-slate-400 text-lg mb-10 leading-relaxed max-w-lg">
-                    Say goodbye to manual filing and paper records. Our digital infrastructure automates your school's most tedious tasks so you can focus on education and financial stewardship.
-                  </p>
-                  
-                  <div className="space-y-6">
-                    {[
-                      { title: '80% Faster Fee Processing', detail: 'Instant digital verification' },
-                      { title: 'Zero Cost for Paper Receipts', detail: 'Save millions on printing annually' },
-                      { title: 'Real-Time Parent Comm', detail: 'Automated WhatsApp synchronization' }
-                    ].map((item, i) => (
-                      <div key={i} className="flex gap-4 group">
-                        <div className="mt-1 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 shrink-0 group-hover:scale-110 transition-transform">
-                          <CheckCircle size={14} />
-                        </div>
-                        <div>
-                          <p className="font-bold text-white text-lg">{item.title}</p>
-                          <p className="text-slate-500 text-sm font-medium">{item.detail}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+          {/* Why Choose DAS (Simple Cards) */}
+          <div className="grid md:grid-cols-3 gap-8 mb-20 text-center">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/20">
+                <Smartphone className="text-white" size={24} />
+              </div>
+              <h3 className="text-xl font-black text-white italic tracking-tight mb-4">Mobile First</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">Designed for phones. No complex downloads—install directly from your browser.</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/20">
+                <Shield className="text-white" size={24} />
+              </div>
+              <h3 className="text-xl font-black text-white italic tracking-tight mb-4">Ultra Secure</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">Bank-grade privacy. WhatsApp 2FA verification protection for every parent.</p>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-colors">
+              <div className="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/20">
+                <Heart className="text-white" size={24} />
+              </div>
+              <h3 className="text-xl font-black text-white italic tracking-tight mb-4">Built for SL</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">Tailored for Sierra Leonean schools, local fee structures, and communication habits.</p>
+            </div>
+          </div>
 
-                <div className="grid grid-cols-2 gap-6 relative">
-                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all">
-                    <div className="text-5xl font-black mb-2 text-green-500">100%</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Digital Archive</div>
+          {/* ROI Redesign (Simplified but Premium) */}
+          <div className="bg-gradient-to-br from-emerald-600 to-green-700 rounded-[3.5rem] p-8 sm:p-16 text-white relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
+            <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl sm:text-5xl font-black mb-6 tracking-tight leading-[1.1]">
+                  Built to Save You <span className="text-green-200">Time and Money</span>
+                </h2>
+                <p className="text-green-50 text-base sm:text-lg mb-8 leading-relaxed">
+                   Automate tedious school tasks with 100% digital accuracy. Reduce paper waste and increase processing speeds by over 80%.
+                </p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <div className="text-3xl font-black mb-1">80%</div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-green-100 italic">Efficiency Boost</p>
                   </div>
-                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all mt-8">
-                    <div className="text-5xl font-black mb-2 text-white">0%</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Paper Waste</div>
-                  </div>
-                  <div className="bg-green-600 rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center shadow-lg shadow-green-600/20 group hover:scale-105 transition-all">
-                    <div className="text-3xl font-black mb-1">REAL-TIME</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-green-100">WhatsApp Sync</div>
-                  </div>
-                  <div className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 flex flex-col items-center justify-center text-center group hover:bg-white/10 transition-all mt-8">
-                    <div className="text-4xl font-black mb-2">AUTO</div>
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Audit Trails</div>
+                  <div className="bg-white/20 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                    <div className="text-3xl font-black mb-1">ZERO</div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-green-100 italic">Paper Printing</p>
                   </div>
                 </div>
+              </div>
+              <div className="space-y-4">
+                {[
+                  'Instant digital fee verification',
+                  'Real-time WhatsApp notifications',
+                  'Centralized student history archive',
+                  'Automated audit trails for transparency'
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-4 bg-white/10 rounded-2xl p-4 border border-white/5 group hover:bg-white/20 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                      <CheckCircle size={18} />
+                    </div>
+                    <span className="font-bold text-sm sm:text-base">{item}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
