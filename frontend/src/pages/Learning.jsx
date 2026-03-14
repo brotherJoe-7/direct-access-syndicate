@@ -100,7 +100,7 @@ const Learning = () => {
             }
             
             const fileName = `${titleSlug}${extension}`;
-            const backendBase = import.meta.env.VITE_API_URL || `${window.location.protocol}//${window.location.hostname}:5000`;
+            const backendBase = import.meta.env.VITE_API_URL || window.location.origin;
             // Append /filename to the URL to hint Microsoft about the extension
             const secureUrl = `${backendBase}/api/learning/view-secure/${mat.id}/${fileName}?token=${token}`;
 
@@ -135,7 +135,8 @@ const Learning = () => {
     const resolveLink = (mat) => {
         if (mat.file_path) {
             if (mat.file_path.startsWith('data:')) return mat.file_path;
-            return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${mat.file_path}`;
+            const base = import.meta.env.VITE_API_URL || window.location.origin;
+            return `${base}${mat.file_path}`;
         }
         return mat.content_link;
     };
