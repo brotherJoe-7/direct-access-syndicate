@@ -38,17 +38,24 @@ const createMaterial = async (req, res) => {
             const base64Data = req.file.buffer.toString('base64');
             finalContentLink = `data:${req.file.mimetype};base64,${base64Data}`;
             filePath = finalContentLink;
+            
+            // Auto-detect type only if not explicitly provided
             if (!material_type) {
                 if (req.file.mimetype.startsWith('video/')) finalMaterialType = 'local_video';
                 else if (req.file.mimetype.startsWith('image/')) finalMaterialType = 'image';
                 else finalMaterialType = 'document';
+            } else {
+                finalMaterialType = material_type;
             }
         } else {
             if (!finalContentLink) {
                 return res.status(400).json({ message: 'Either a file upload or a content link is required' });
             }
-            if (finalContentLink.includes('youtube.com') || finalContentLink.includes('youtu.be')) {
+            // Auto-detect YouTube if type not provided
+            if (!material_type && (finalContentLink.includes('youtube.com') || finalContentLink.includes('youtu.be'))) {
                 finalMaterialType = 'youtube';
+            } else if (material_type) {
+                finalMaterialType = material_type;
             }
         }
 
@@ -59,8 +66,17 @@ const createMaterial = async (req, res) => {
 
         res.status(201).json(rows[0]);
     } catch (error) {
-        console.error('Error creating learning material:', error);
-        res.status(500).json({ message: 'Error creating learning material', detail: error.message });
+        console.error('SERVER ERROR [createMaterial]:', {
+            message: error.message,
+            stack: error.stack,
+            body: req.body,
+            file: req.file ? { size: req.file.size, type: req.file.mimetype } : 'none'
+        });
+        res.status(500).json({ 
+            message: 'Error creating learning material', 
+            detail: error.message,
+            hint: 'If you are uploading a file, ensure it is small (under 4MB) for serverless stability.' 
+        });
     }
 };
 

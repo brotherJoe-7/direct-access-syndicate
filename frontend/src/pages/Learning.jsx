@@ -42,10 +42,25 @@ const Learning = () => {
                 data.append('title', formData.title);
                 data.append('description', formData.description);
                 data.append('level_target', formData.level_target);
-                if (file) data.append('file', file);
+                
+                // Explicitly signal material type for better backend handling
+                if (file) {
+                    data.append('file', file);
+                    if (file.type === 'application/pdf') {
+                        data.append('material_type', 'document');
+                    } else if (file.type.startsWith('video/')) {
+                        data.append('material_type', 'local_video');
+                    }
+                }
+                
                 await api.post('/learning', data, { headers: { 'Content-Type': 'multipart/form-data' }});
             } else {
-                await api.post('/learning', formData);
+                // Ensure material_type is set for common link types
+                let finalData = { ...formData };
+                if (formData.content_link.includes('youtube.com') || formData.content_link.includes('youtu.be')) {
+                    finalData.material_type = 'youtube';
+                }
+                await api.post('/learning', finalData);
             }
             
             setFormData({ title: '', description: '', content_link: '', level_target: 'All' });
@@ -54,7 +69,8 @@ const Learning = () => {
             fetchMaterials();
         } catch (err) {
             console.error(err);
-            alert('Failed to add material. Check that all fields are filled properly.');
+            const errorMsg = err.response?.data?.detail || 'Check that all fields are filled properly and file size is small.';
+            alert(`Failed to add material: ${errorMsg}`);
         }
     };
 
@@ -67,6 +83,17 @@ const Learning = () => {
             console.error('Delete failed:', err);
             alert('Failed to delete material');
         }
+    };
+
+    // Helper to resolve links correctly (Handles relative paths vs Data URIs)
+    const resolveLink = (mat) => {
+        if (mat.file_path) {
+            // If it's a Data URI (base64 from backend), return as is
+            if (mat.file_path.startsWith('data:')) return mat.file_path;
+            // Otherwise prepend API URL
+            return `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${mat.file_path}`;
+        }
+        return mat.content_link;
     };
 
     return (
@@ -123,9 +150,7 @@ const Learning = () => {
                         if (mat.material_type === 'local_video' || mat.material_type === 'youtube') IconMarker = Video;
                         else if (mat.material_type === 'document') IconMarker = FileText;
 
-                        const fullLink = mat.file_path 
-                            ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${mat.file_path}` 
-                            : mat.content_link;
+                        const fullLink = resolveLink(mat);
 
                         return (
                         <div key={mat.id} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all group relative overflow-hidden flex flex-col justify-between">
@@ -210,7 +235,7 @@ const Learning = () => {
                         </div>
                         <div className="flex-1 bg-slate-200 relative overflow-hidden" onContextMenu={(e) => e.preventDefault()}>
                             <iframe 
-                                src={`${selectedFile}#toolbar=0&navpanes=0&scrollbar=1`} 
+                                src={selectedFile.startsWith('data:') ? selectedFile : `${selectedFile}#toolbar=0&navpanes=0&scrollbar=1`} 
                                 className="w-full h-full border-none pointer-events-auto"
                                 title="Protected Content"
                             ></iframe>
